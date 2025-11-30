@@ -1,8 +1,5 @@
 # Visual Studio files
 .vs/
-x64/
-Debug/
-Release/
 *.user
 *.suo
 *.db
@@ -10,13 +7,21 @@ Release/
 *.ipch
 
 # Build outputs
+x64/
+Debug/
+Release/
 *.obj
 *.exe
 *.pdb
 *.ilk
 *.log
 
+# DLL files (should not be in repo)
+*.dll
+
+# Plugin folder
+plugin/
+
 # Temporary files
 *.tmp
 *~
-
