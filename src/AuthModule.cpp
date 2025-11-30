@@ -1,7 +1,6 @@
 // ============================================================
 // AuthModule.cpp - Authentication Module Implementation
 // Hospital Appointment Booking System
-// Auto-detects user role from credentials
 // ============================================================
 
 #include "../include/AuthModule.h"
@@ -13,112 +12,173 @@ AuthModule::AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
 
 bool AuthModule::login() {
     console.clearScreen();
-    console.printHeader("LOGIN PAGE");
-    
-    std::string email, password;
+    console.printHeader("USER LOGIN");
     
     std::cin.ignore(10000, '\n');
     
-    // Get email with validation
     console.setColor(WHITE);
-    std::cout << "\n  Please enter your credentials:\n" << std::endl;
-    
-    do {
-        email = console.getStringInput("  Email    : ");
-        if (!console.isValidEmail(email)) {
-            console.printError("Invalid email format. Please try again.");
-        }
-    } while (!console.isValidEmail(email));
-    
-    // Get password (masked)
-    console.setColor(CYAN);
-    std::cout << "  Password : ";
+    std::cout << "\n  Login to access your account." << std::endl;
+    std::cout << "  You will need your registered email and password.\n" << std::endl;
     console.resetColor();
-    password = console.getPasswordInput();
     
-    console.showLoading("\n  Authenticating", 3);
+    console.setColor(DARK_GRAY);
+    std::cout << "  ------------------------------------------------" << std::endl;
+    std::cout << "  ENTER YOUR CREDENTIALS" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
     
-    // Auto-detect role by trying each user type
-    int userID = -1;
-    std::string userName = "";
-    std::string userType = "";
+    console.setColor(WHITE);
+    std::cout << "  Enter the email address you used to register." << std::endl;
+    console.resetColor();
+    std::string email = console.getStringInput("  Email: ");
     
-    // Try Patient
-    userID = db.authenticatePatient(email, password);
-    if (userID > 0) {
-        Patient p = db.getPatientById(userID);
-        userName = p.patientName;
-        userType = "Patient";
-    }
+    std::cout << std::endl;
+    console.setColor(WHITE);
+    std::cout << "  Enter your password (characters will be hidden)." << std::endl;
+    console.resetColor();
+    console.setColor(CYAN);
+    std::cout << "  Password: ";
+    console.resetColor();
+    std::string password = console.getPasswordInput();
     
-    // Try Doctor
-    if (userID <= 0) {
-        userID = db.authenticateDoctor(email, password);
-        if (userID > 0) {
-            Doctor d = db.getDoctorById(userID);
-            userName = d.doctorName;
-            userType = "Doctor";
-        }
-    }
+    console.showLoading("\n  Verifying credentials", 2);
     
-    // Try Staff
-    if (userID <= 0) {
-        userID = db.authenticateStaff(email, password);
-        if (userID > 0) {
-            Staff s = db.getStaffById(userID);
-            userName = s.staffName;
-            userType = "Staff";
-        }
-    }
-    
-    // Try Admin
-    if (userID <= 0) {
-        userID = db.authenticateAdmin(email, password);
-        if (userID > 0) {
-            Admin a = db.getAdminById(userID);
-            userName = a.adminName;
-            userType = "Admin";
-        }
-    }
-    
-    // Check if login successful
-    if (userID > 0) {
-        session.userID = userID;
-        session.userName = userName;
-        session.userType = userType;
+    // Try login as Patient
+    int patientID = db.loginPatient(email, password);
+    if (patientID > 0) {
+        Patient patient = db.getPatientById(patientID);
+        session.userID = patientID;
+        session.userName = patient.patientName;
+        session.userEmail = patient.email;
+        session.userType = "Patient";
         session.isLoggedIn = true;
         
-        db.logActivity(userType, userID, "Login", "User logged in successfully");
-        
-        // Display success with role info
         console.setColor(GREEN);
         std::cout << "\n  +-----------------------------------------+" << std::endl;
-        std::cout << "  |            LOGIN SUCCESSFUL             |" << std::endl;
+        std::cout << "  |          LOGIN SUCCESSFUL!              |" << std::endl;
         std::cout << "  +-----------------------------------------+" << std::endl;
         console.resetColor();
         
         console.setColor(WHITE);
-        std::cout << "\n  Welcome, " << userName << "!" << std::endl;
-        std::cout << "  Role: " << userType << std::endl;
+        std::cout << "\n  Welcome, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: PATIENT" << std::endl;
         console.resetColor();
         
-        console.setColor(DARK_GRAY);
-        std::cout << "\n  Redirecting to " << userType << " Dashboard..." << std::endl;
-        console.resetColor();
-        
-        Sleep(2000);
+        db.logActivity("Patient", patientID, "Login", "Successful login");
+        Sleep(1500);
         return true;
-    } else {
-        console.setColor(RED);
+    }
+    
+    // Try login as Staff
+    int staffID = db.loginStaff(email, password);
+    if (staffID > 0) {
+        Staff staff = db.getStaffById(staffID);
+        session.userID = staffID;
+        session.userName = staff.staffName;
+        session.userEmail = staff.email;
+        session.userType = "Staff";
+        session.isLoggedIn = true;
+        
+        console.setColor(GREEN);
         std::cout << "\n  +-----------------------------------------+" << std::endl;
-        std::cout << "  |             LOGIN FAILED                |" << std::endl;
+        std::cout << "  |          LOGIN SUCCESSFUL!              |" << std::endl;
         std::cout << "  +-----------------------------------------+" << std::endl;
         console.resetColor();
         
-        console.printError("Invalid email or password!");
-        console.printInfo("If you are a new Doctor/Staff, your account may be pending approval.");
+        console.setColor(WHITE);
+        std::cout << "\n  Welcome, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: STAFF" << std::endl;
+        console.resetColor();
         
-        console.pauseScreen();
-        return false;
+        db.logActivity("Staff", staffID, "Login", "Successful login");
+        Sleep(1500);
+        return true;
     }
+    
+    // Try login as Doctor
+    int doctorID = db.loginDoctor(email, password);
+    if (doctorID > 0) {
+        Doctor doctor = db.getDoctorById(doctorID);
+        session.userID = doctorID;
+        session.userName = doctor.doctorName;
+        session.userEmail = doctor.email;
+        session.userType = "Doctor";
+        session.isLoggedIn = true;
+        
+        console.setColor(GREEN);
+        std::cout << "\n  +-----------------------------------------+" << std::endl;
+        std::cout << "  |          LOGIN SUCCESSFUL!              |" << std::endl;
+        std::cout << "  +-----------------------------------------+" << std::endl;
+        console.resetColor();
+        
+        console.setColor(WHITE);
+        std::cout << "\n  Welcome, Dr. " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: DOCTOR" << std::endl;
+        console.resetColor();
+        
+        db.logActivity("Doctor", doctorID, "Login", "Successful login");
+        Sleep(1500);
+        return true;
+    }
+    
+    // Try login as Admin
+    int adminID = db.loginAdmin(email, password);
+    if (adminID > 0) {
+        Admin admin = db.getAdminById(adminID);
+        session.userID = adminID;
+        session.userName = admin.adminName;
+        session.userEmail = admin.email;
+        session.userType = "Admin";
+        session.isLoggedIn = true;
+        
+        console.setColor(GREEN);
+        std::cout << "\n  +-----------------------------------------+" << std::endl;
+        std::cout << "  |          LOGIN SUCCESSFUL!              |" << std::endl;
+        std::cout << "  +-----------------------------------------+" << std::endl;
+        console.resetColor();
+        
+        console.setColor(WHITE);
+        std::cout << "\n  Welcome, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: ADMIN" << std::endl;
+        console.resetColor();
+        
+        db.logActivity("Admin", adminID, "Login", "Successful login");
+        Sleep(1500);
+        return true;
+    }
+    
+    // Login failed
+    console.setColor(RED);
+    std::cout << "\n  +-----------------------------------------+" << std::endl;
+    std::cout << "  |            LOGIN FAILED!                |" << std::endl;
+    std::cout << "  +-----------------------------------------+" << std::endl;
+    console.resetColor();
+    
+    std::cout << std::endl;
+    console.setColor(WHITE);
+    std::cout << "  Invalid email or password." << std::endl;
+    std::cout << "\n  Possible reasons:" << std::endl;
+    std::cout << "    - Email is not registered" << std::endl;
+    std::cout << "    - Password is incorrect" << std::endl;
+    std::cout << "    - Caps Lock may be on" << std::endl;
+    std::cout << "\n  If you don't have an account, please register first." << std::endl;
+    console.resetColor();
+    
+    console.pauseScreen();
+    return false;
+}
+
+void AuthModule::logout() {
+    if (session.isLoggedIn) {
+        db.logActivity(session.userType, session.userID, "Logout", "User logged out");
+    }
+    session = UserSession();
+}
+
+bool AuthModule::isLoggedIn() {
+    return session.isLoggedIn;
+}
+
+std::string AuthModule::getUserType() {
+    return session.userType;
 }
