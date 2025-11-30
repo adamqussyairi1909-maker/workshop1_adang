@@ -11,12 +11,13 @@
 #pragma warning(disable: 4251)
 
 // MySQL Connector C++ JDBC Headers
-#include <cppconn/driver.h>
-#include <cppconn/connection.h>
-#include <cppconn/statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/exception.h>
+// Include path should be: ...\include\jdbc
+#include "mysql_driver.h"
+#include "mysql_connection.h"
+#include "cppconn/statement.h"
+#include "cppconn/resultset.h"
+#include "cppconn/prepared_statement.h"
+#include "cppconn/exception.h"
 
 #include <string>
 #include <vector>

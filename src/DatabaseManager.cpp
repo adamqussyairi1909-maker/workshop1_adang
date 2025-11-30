@@ -14,7 +14,7 @@ DatabaseManager::~DatabaseManager() {
 
 bool DatabaseManager::connect() {
     try {
-        driver = get_driver_instance();
+        driver = sql::mysql::get_mysql_driver_instance();
         connection.reset(driver->connect(host, user, password));
         connection->setSchema(database);
         isConnected = true;
