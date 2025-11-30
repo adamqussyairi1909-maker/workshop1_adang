@@ -36,9 +36,9 @@ void displayMainMenu() {
     console.printMenuOption(2, "Register as Patient");
     console.printMenuOption(3, "Exit");
     
-    std::cout << std::endl;
+    
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your choice:" << std::endl;
+    std::cout << "  >> Enter your choice (1-3): ";
     console.resetColor();
 }
 
@@ -82,7 +82,7 @@ int main() {
     // Main application loop
     while (true) {
         displayMainMenu();
-        int choice = console.getIntInput("     Your choice: ", 1, 3);
+        int choice = console.getIntInput("", 1, 3);
         
         switch (choice) {
             case 1: // Login

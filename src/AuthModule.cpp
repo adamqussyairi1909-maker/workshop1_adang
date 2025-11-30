@@ -26,18 +26,16 @@ bool AuthModule::login() {
     console.resetColor();
     
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your email address:" << std::endl;
+    std::cout << "  >> Enter your email address: ";
     console.resetColor();
     
     if (std::cin.peek() == '\n') std::cin.ignore();
-    std::string email = console.getStringInput("     Email: ");
+    std::string email;
+    std::getline(std::cin, email);
     
-    std::cout << std::endl;
+    
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your password (characters will be hidden):" << std::endl;
-    console.resetColor();
-    console.setColor(CYAN);
-    std::cout << "     Password: ";
+    std::cout << "  >> Enter your password: ";
     console.resetColor();
     std::string password = console.getPasswordInput();
     

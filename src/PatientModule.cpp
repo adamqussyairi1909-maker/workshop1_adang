@@ -32,46 +32,39 @@ void PatientModule::registerPatient() {
     
     // Full Name
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your full name as per IC/Passport:" << std::endl;
+    std::cout << "  >> Enter your full name: ";
     console.resetColor();
     
     if (std::cin.peek() == '\n') std::cin.ignore();
-    name = console.getStringInput("     Full Name: ");
+    std::getline(std::cin, name);
     
     // Phone validation
-    std::cout << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  >> Enter your phone number (10-12 digits):" << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "     Example: 0123456789 or 60123456789" << std::endl;
-    console.resetColor();
     do {
-        phone = console.getStringInput("     Phone Number: ");
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your phone number (10-12 digits): ";
+        console.resetColor();
+        std::getline(std::cin, phone);
         if (!console.isValidPhone(phone)) {
-            console.printError("Invalid format! Use 10-12 digits only.");
+            console.printError("Invalid format! Example: 0123456789");
         }
     } while (!console.isValidPhone(phone));
     
     // Email validation
-    std::cout << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  >> Enter your email address (for login):" << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "     Example: yourname@email.com" << std::endl;
-    console.resetColor();
     do {
-        email = console.getStringInput("     Email Address: ");
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your email address: ";
+        console.resetColor();
+        std::getline(std::cin, email);
         if (!console.isValidEmail(email)) {
-            console.printError("Invalid format! Include @ and domain (e.g., .com)");
+            console.printError("Invalid format! Example: name@email.com");
         }
     } while (!console.isValidEmail(email));
     
     // Address
-    std::cout << std::endl;
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your home address:" << std::endl;
+    std::cout << "  >> Enter your home address: ";
     console.resetColor();
-    address = console.getStringInput("     Home Address: ");
+    std::getline(std::cin, address);
     
     std::cout << std::endl;
     console.setColor(DARK_GRAY);
@@ -82,55 +75,44 @@ void PatientModule::registerPatient() {
     
     // DOB validation
     std::cout << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  >> Enter your date of birth:" << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "     Format: YYYY-MM-DD (e.g., 1990-05-15)" << std::endl;
-    console.resetColor();
     do {
-        dob = console.getStringInput("     Date of Birth: ");
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your date of birth (YYYY-MM-DD): ";
+        console.resetColor();
+        std::getline(std::cin, dob);
         if (!console.isValidDate(dob)) {
-            console.printError("Invalid format! Use YYYY-MM-DD");
+            console.printError("Invalid format! Example: 1990-05-15");
         }
     } while (!console.isValidDate(dob));
     
     // Gender selection
-    std::cout << std::endl;
     console.setColor(YELLOW);
-    std::cout << "  >> Select your gender:" << std::endl;
+    std::cout << "  >> Select your gender (1=Male, 2=Female): ";
     console.resetColor();
-    console.printMenuOption(1, "Male");
-    console.printMenuOption(2, "Female");
-    int genderChoice = console.getIntInput("     Enter 1 or 2: ", 1, 2);
+    int genderChoice = console.getIntInput("", 1, 2);
     gender = (genderChoice == 1) ? "Male" : "Female";
+    
     
     std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 3 OF 4: CREATE PASSWORD" << std::endl;
-    std::cout << "  ================================================" << std::endl;
-    console.resetColor();
-    
-    std::cout << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  >> Create a password (minimum 6 characters):" << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "     You will use this password to login." << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
     do {
-        console.setColor(CYAN);
-        std::cout << "     Password: ";
+        console.setColor(YELLOW);
+        std::cout << "  >> Create a password (min 6 characters): ";
         console.resetColor();
         password = console.getPasswordInput();
         
         if (password.length() < 6) {
-            console.printError("Too short! Minimum 6 characters required.");
+            console.printError("Too short! Minimum 6 characters.");
             continue;
         }
         
-        console.setColor(CYAN);
-        std::cout << "     Confirm Password: ";
+        console.setColor(YELLOW);
+        std::cout << "  >> Confirm your password: ";
         console.resetColor();
         confirmPassword = console.getPasswordInput();
         
@@ -160,11 +142,12 @@ void PatientModule::registerPatient() {
     std::cout << "  +-------------------------------------------+" << std::endl;
     console.resetColor();
     
-    std::cout << std::endl;
+    
     console.setColor(YELLOW);
-    std::cout << "  >> Is this information correct?" << std::endl;
+    std::cout << "  >> Confirm registration (Y/N): ";
     console.resetColor();
-    std::string confirm = console.getStringInput("     Type Y to confirm, N to cancel: ");
+    std::string confirm;
+    std::getline(std::cin, confirm);
     
     if (confirm != "Y" && confirm != "y") {
         console.printInfo("Registration cancelled. No account created.");
@@ -221,7 +204,7 @@ void PatientModule::bookAppointment() {
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 1 OF 3: SELECT A DOCTOR" << std::endl;
-    std::cout << "  ================================================\n" << std::endl;
+    std::cout << "  ================================================" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_CYAN);
@@ -633,27 +616,27 @@ void PatientModule::showDashboard() {
         console.clearScreen();
         console.printHeader("PATIENT DASHBOARD");
         
-    console.setColor(CYAN);
-    std::cout << "\n  Welcome back, " << session.userName << "!\n" << std::endl;
-    console.resetColor();
-    
-    console.setColor(DARK_GRAY);
-    std::cout << "  ================================================" << std::endl;
-    std::cout << "  MENU" << std::endl;
-    std::cout << "  ================================================\n" << std::endl;
-    console.resetColor();
-    
-    console.printMenuOption(1, "Book New Appointment");
-    console.printMenuOption(2, "View My Appointments");
-    console.printMenuOption(3, "Cancel Appointment");
-    console.printMenuOption(4, "Update Personal Details");
-    console.printMenuOption(5, "Logout");
-    
-    std::cout << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  >> Enter your choice:" << std::endl;
-    console.resetColor();
-    int choice = console.getIntInput("     Your choice: ", 1, 5);
+        console.setColor(CYAN);
+        std::cout << "\n  Welcome back, " << session.userName << "!\n" << std::endl;
+        console.resetColor();
+        
+        console.setColor(DARK_GRAY);
+        std::cout << "  ================================================" << std::endl;
+        std::cout << "  MENU" << std::endl;
+        std::cout << "  ================================================" << std::endl;
+        console.resetColor();
+        
+        console.printMenuOption(1, "Book New Appointment");
+        console.printMenuOption(2, "View My Appointments");
+        console.printMenuOption(3, "Cancel Appointment");
+        console.printMenuOption(4, "Update Personal Details");
+        console.printMenuOption(5, "Logout");
+        
+        std::cout << std::endl;
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your choice:" << std::endl;
+        console.resetColor();
+        int choice = console.getIntInput("     Your choice: ", 1, 5);
         
         switch (choice) {
             case 1: bookAppointment(); break;

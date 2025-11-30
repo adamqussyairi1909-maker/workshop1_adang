@@ -895,7 +895,7 @@ void AdminModule::showDashboard() {
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
         std::cout << "  MENU" << std::endl;
-        std::cout << "  ================================================\n" << std::endl;
+        std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
         console.printMenuOption(1, "Manage Patients");
