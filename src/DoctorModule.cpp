@@ -351,31 +351,28 @@ void DoctorModule::showDashboard() {
         console.clearScreen();
         console.printHeader("DOCTOR DASHBOARD");
         
-        console.setColor(WHITE);
-        std::cout << "\n  +-------------------------------------------------+" << std::endl;
-        std::cout << "  |  Welcome back, Dr. " << std::left << std::setw(29) << (session.userName + "!") << "|" << std::endl;
-        std::cout << "  |  You are logged in as: Doctor                   |" << std::endl;
-        std::cout << "  +-------------------------------------------------+" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "\n  Welcome back, Dr. " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: Doctor\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
-        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  MENU" << std::endl;
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
         std::cout << std::endl;
-        console.printMenuOption(1, "Today's Appointments  - View today's schedule");
-        console.printMenuOption(2, "All Appointments      - View all appointments");
-        console.printMenuOption(3, "Complete Appointment  - Mark patient visit done");
-        console.printMenuOption(4, "View Patient Info     - See patient details");
-        console.printMenuOption(5, "Update Availability   - Change your status");
-        console.printMenuOption(6, "Logout                - Exit to main menu");
+        console.printMenuOption(1, "Today's Appointments");
+        console.printMenuOption(2, "All Appointments");
+        console.printMenuOption(3, "Complete Appointment");
+        console.printMenuOption(4, "View Patient Info");
+        console.printMenuOption(5, "Update Availability");
+        console.printMenuOption(6, "Logout");
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice (1-6):" << std::endl;
+        std::cout << "  >> Enter your choice:" << std::endl;
         console.resetColor();
         int choice = console.getIntInput("     Your choice: ", 1, 6);
         

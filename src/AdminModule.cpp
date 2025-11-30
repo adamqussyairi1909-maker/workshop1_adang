@@ -888,31 +888,28 @@ void AdminModule::showDashboard() {
         console.clearScreen();
         console.printHeader("ADMIN DASHBOARD");
         
-        console.setColor(WHITE);
-        std::cout << "\n  +-------------------------------------------------+" << std::endl;
-        std::cout << "  |  Welcome back, " << std::left << std::setw(33) << (session.userName + "!") << "|" << std::endl;
-        std::cout << "  |  You are logged in as: Administrator            |" << std::endl;
-        std::cout << "  +-------------------------------------------------+" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: Administrator\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
-        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  MENU" << std::endl;
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
         std::cout << std::endl;
-        console.printMenuOption(1, "Manage Patients     - View/delete patient records");
-        console.printMenuOption(2, "Manage Doctors      - Add/edit/delete doctors");
-        console.printMenuOption(3, "Manage Staff        - Add/delete staff accounts");
-        console.printMenuOption(4, "System Logs         - View activity history");
-        console.printMenuOption(5, "Statistics          - View system statistics");
-        console.printMenuOption(6, "Logout              - Exit to main menu");
+        console.printMenuOption(1, "Manage Patients");
+        console.printMenuOption(2, "Manage Doctors");
+        console.printMenuOption(3, "Manage Staff");
+        console.printMenuOption(4, "System Logs");
+        console.printMenuOption(5, "Statistics");
+        console.printMenuOption(6, "Logout");
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice (1-6):" << std::endl;
+        std::cout << "  >> Enter your choice:" << std::endl;
         console.resetColor();
         int choice = console.getIntInput("     Your choice: ", 1, 6);
         

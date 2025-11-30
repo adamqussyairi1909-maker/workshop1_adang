@@ -431,31 +431,28 @@ void StaffModule::showDashboard() {
         console.clearScreen();
         console.printHeader("STAFF DASHBOARD");
         
-        console.setColor(WHITE);
-        std::cout << "\n  +-------------------------------------------------+" << std::endl;
-        std::cout << "  |  Welcome back, " << std::left << std::setw(33) << (session.userName + "!") << "|" << std::endl;
-        std::cout << "  |  You are logged in as: Staff                    |" << std::endl;
-        std::cout << "  +-------------------------------------------------+" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: Staff\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
-        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  MENU" << std::endl;
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
         std::cout << std::endl;
-        console.printMenuOption(1, "View All Appointments - See all bookings");
-        console.printMenuOption(2, "Approve Appointments  - Process pending requests");
-        console.printMenuOption(3, "Search Patient        - Find patient records");
-        console.printMenuOption(4, "View Doctors          - See doctor list");
-        console.printMenuOption(5, "Generate Report       - Create summary reports");
-        console.printMenuOption(6, "Logout                - Exit to main menu");
+        console.printMenuOption(1, "View All Appointments");
+        console.printMenuOption(2, "Approve Appointments");
+        console.printMenuOption(3, "Search Patient");
+        console.printMenuOption(4, "View Doctors");
+        console.printMenuOption(5, "Generate Report");
+        console.printMenuOption(6, "Logout");
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice (1-6):" << std::endl;
+        std::cout << "  >> Enter your choice:" << std::endl;
         console.resetColor();
         int choice = console.getIntInput("     Your choice: ", 1, 6);
         

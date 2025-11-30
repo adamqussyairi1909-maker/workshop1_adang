@@ -22,28 +22,25 @@ UserSession currentSession;
 void displayMainMenu() {
     console.displayWelcomeBanner();
     
-    console.setColor(WHITE);
-    std::cout << "  +-------------------------------------------------+" << std::endl;
-    std::cout << "  |  Welcome to the Hospital Appointment System!    |" << std::endl;
-    std::cout << "  |  Please select an option below to continue.     |" << std::endl;
-    std::cout << "  +-------------------------------------------------+" << std::endl;
+    console.setColor(CYAN);
+    std::cout << "  Welcome to the Hospital Appointment System!" << std::endl;
+    std::cout << "  Please select an option below to continue.\n" << std::endl;
     console.resetColor();
     
-    std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
-    std::cout << "  MAIN MENU - SELECT AN OPTION" << std::endl;
+    std::cout << "  MAIN MENU" << std::endl;
     std::cout << "  ================================================" << std::endl;
     console.resetColor();
     
     std::cout << std::endl;
-    console.printMenuOption(1, "Login               - Access your account");
-    console.printMenuOption(2, "Register as Patient - Create new patient account");
-    console.printMenuOption(3, "Exit                - Close the application");
+    console.printMenuOption(1, "Login");
+    console.printMenuOption(2, "Register as Patient");
+    console.printMenuOption(3, "Exit");
     
     std::cout << std::endl;
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your choice (1, 2, or 3):" << std::endl;
+    std::cout << "  >> Enter your choice:" << std::endl;
     console.resetColor();
 }
 

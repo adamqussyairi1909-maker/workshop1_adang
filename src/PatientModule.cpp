@@ -21,14 +21,11 @@ void PatientModule::registerPatient() {
     
     std::string name, phone, email, address, dob, gender, password, confirmPassword;
     
-    console.setColor(WHITE);
-    std::cout << "\n  +-------------------------------------------------+" << std::endl;
-    std::cout << "  |  Create your patient account to book appointments |" << std::endl;
-    std::cout << "  |  Please fill in all required fields below.        |" << std::endl;
-    std::cout << "  +-------------------------------------------------+" << std::endl;
+    console.setColor(CYAN);
+    std::cout << "\n  Create your patient account to book appointments." << std::endl;
+    std::cout << "  Please fill in all required fields below.\n" << std::endl;
     console.resetColor();
     
-    std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 1 OF 4: PERSONAL INFORMATION" << std::endl;
@@ -218,15 +215,11 @@ void PatientModule::bookAppointment() {
         return;
     }
     
-    console.setColor(WHITE);
-    std::cout << "\n  +-------------------------------------------------+" << std::endl;
-    std::cout << "  |  Book an appointment with one of our doctors.   |" << std::endl;
-    std::cout << "  |  Follow the 3 steps below to complete booking.  |" << std::endl;
-    std::cout << "  +-------------------------------------------------+" << std::endl;
+    console.setColor(CYAN);
+    std::cout << "\n  Book an appointment with one of our doctors." << std::endl;
+    std::cout << "  Follow the 3 steps below to complete booking.\n" << std::endl;
     console.resetColor();
     
-    // Step 1: Select Doctor
-    std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 1 OF 3: SELECT A DOCTOR" << std::endl;
@@ -642,30 +635,27 @@ void PatientModule::showDashboard() {
         console.clearScreen();
         console.printHeader("PATIENT DASHBOARD");
         
-        console.setColor(WHITE);
-        std::cout << "\n  +-------------------------------------------------+" << std::endl;
-        std::cout << "  |  Welcome back, " << std::left << std::setw(33) << (session.userName + "!") << "|" << std::endl;
-        std::cout << "  |  You are logged in as: Patient                  |" << std::endl;
-        std::cout << "  +-------------------------------------------------+" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
+        std::cout << "  You are logged in as: Patient\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
-        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  MENU" << std::endl;
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
         std::cout << std::endl;
-        console.printMenuOption(1, "Book New Appointment    - Schedule a doctor visit");
-        console.printMenuOption(2, "View My Appointments    - See all your bookings");
-        console.printMenuOption(3, "Cancel Appointment      - Cancel a booking");
-        console.printMenuOption(4, "Update Personal Details - Edit your profile");
-        console.printMenuOption(5, "Logout                  - Exit to main menu");
+        console.printMenuOption(1, "Book New Appointment");
+        console.printMenuOption(2, "View My Appointments");
+        console.printMenuOption(3, "Cancel Appointment");
+        console.printMenuOption(4, "Update Personal Details");
+        console.printMenuOption(5, "Logout");
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice (1-5):" << std::endl;
+        std::cout << "  >> Enter your choice:" << std::endl;
         console.resetColor();
         int choice = console.getIntInput("     Your choice: ", 1, 5);
         
