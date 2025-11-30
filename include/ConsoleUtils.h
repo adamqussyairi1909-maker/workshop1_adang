@@ -293,20 +293,19 @@ public:
     void displayWelcomeBanner() {
         clearScreen();
         setColor(MAGENTA);
-        std::cout << R"(
-    ╔══════════════════════════════════════════════════════════╗
-    ║                                                          ║
-    ║   ██╗  ██╗ ██████╗ ███████╗██████╗ ██╗████████╗ █████╗   ║
-    ║   ██║  ██║██╔═══██╗██╔════╝██╔══██╗██║╚══██╔══╝██╔══██╗  ║
-    ║   ███████║██║   ██║███████╗██████╔╝██║   ██║   ███████║  ║
-    ║   ██╔══██║██║   ██║╚════██║██╔═══╝ ██║   ██║   ██╔══██║  ║
-    ║   ██║  ██║╚██████╔╝███████║██║     ██║   ██║   ██║  ██║  ║
-    ║   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝  ║
-    ║                                                          ║
-    ║         HOSPITAL APPOINTMENT BOOKING SYSTEM              ║
-    ║                                                          ║
-    ╚══════════════════════════════════════════════════════════╝
-)" << std::endl;
+        std::cout << "\n";
+        std::cout << "    +============================================================+" << std::endl;
+        std::cout << "    |                                                            |" << std::endl;
+        std::cout << "    |   H   H  OOOOO  SSSSS  PPPPP  III TTTTT  AAAAA  L          |" << std::endl;
+        std::cout << "    |   H   H  O   O  S      P   P   I    T    A   A  L          |" << std::endl;
+        std::cout << "    |   HHHHH  O   O  SSSSS  PPPPP   I    T    AAAAA  L          |" << std::endl;
+        std::cout << "    |   H   H  O   O      S  P       I    T    A   A  L          |" << std::endl;
+        std::cout << "    |   H   H  OOOOO  SSSSS  P      III   T    A   A  LLLLL      |" << std::endl;
+        std::cout << "    |                                                            |" << std::endl;
+        std::cout << "    |          HOSPITAL APPOINTMENT BOOKING SYSTEM               |" << std::endl;
+        std::cout << "    |                                                            |" << std::endl;
+        std::cout << "    +============================================================+" << std::endl;
+        std::cout << "\n";
         resetColor();
     }
 };
