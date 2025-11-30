@@ -292,23 +292,16 @@ public:
     // Display welcome banner
     void displayWelcomeBanner() {
         clearScreen();
-        setColor(MAGENTA);
-        std::cout << "\n";
-        std::cout << "    +============================================================+" << std::endl;
-        std::cout << "    |                                                            |" << std::endl;
+        std::cout << "\n\n";
         setColor(CYAN);
-        std::cout << "    |    H   H  OOOOO   SSSSS  PPPPP   III  TTTTT   AAA   L      |" << std::endl;
-        std::cout << "    |    H   H  O   O   S      P   P    I     T    A   A  L      |" << std::endl;
-        std::cout << "    |    HHHHH  O   O   SSSSS  PPPPP    I     T    AAAAA  L      |" << std::endl;
-        std::cout << "    |    H   H  O   O       S  P        I     T    A   A  L      |" << std::endl;
-        std::cout << "    |    H   H  OOOOO   SSSSS  P       III    T    A   A  LLLLL  |" << std::endl;
-        setColor(MAGENTA);
-        std::cout << "    |                                                            |" << std::endl;
-        setColor(YELLOW);
-        std::cout << "    |          HOSPITAL APPOINTMENT BOOKING SYSTEM               |" << std::endl;
-        setColor(MAGENTA);
-        std::cout << "    |                                                            |" << std::endl;
-        std::cout << "    +============================================================+" << std::endl;
+        std::cout << "      ========================================================" << std::endl;
+        setColor(WHITE);
+        std::cout << "                  HOSPITAL APPOINTMENT SYSTEM                 " << std::endl;
+        setColor(CYAN);
+        std::cout << "      ========================================================" << std::endl;
+        std::cout << "\n";
+        setColor(DARK_GRAY);
+        std::cout << "                    [ Welcome to the System ]                 " << std::endl;
         std::cout << "\n";
         resetColor();
     }
