@@ -140,7 +140,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang\include;C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang\include;C:\Users\ADAMQUSSYAIRI\Downloads\mysql-connector-c++-9.1.0-winx64 (1)\mysql-connector-c++-9.1.0-winx64\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
