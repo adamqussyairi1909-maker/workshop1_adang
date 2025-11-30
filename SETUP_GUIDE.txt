@@ -24,28 +24,28 @@ STEP 1: INSTALL MYSQL CONNECTOR C++
 STEP 2: CONFIGURE VISUAL STUDIO 2022 PROJECT
 ================================================================================
 
-A. INCLUDE DIRECTORIES (Using XAMPP):
--------------------------------------
+A. INCLUDE DIRECTORIES (MySQL Connector C++):
+----------------------------------------------
 1. Right-click project in Solution Explorer → Properties
 2. Set Configuration: "All Configurations", Platform: "x64"
 3. Go to: Configuration Properties → C/C++ → General
 4. Add to "Additional Include Directories":
    
-   C:\xampp\mysql\include
+   C:\Users\ADAMQUSSYAIRI\Downloads\mysql-connector-c++-9.1.0-winx64 (1)\mysql-connector-c++-9.1.0-winx64\include\jdbc
 
-B. LIBRARY DIRECTORIES (Using XAMPP):
--------------------------------------
+B. LIBRARY DIRECTORIES (MySQL Connector C++):
+----------------------------------------------
 1. Go to: Configuration Properties → Linker → General
 2. Add to "Additional Library Directories":
    
-   C:\xampp\mysql\lib
+   C:\Users\ADAMQUSSYAIRI\Downloads\mysql-connector-c++-9.1.0-winx64 (1)\mysql-connector-c++-9.1.0-winx64\lib64\vs14
 
 C. LINKER INPUT:
 ----------------
 1. Go to: Configuration Properties → Linker → Input
 2. Add to "Additional Dependencies":
    
-   libmysql.lib
+   mysqlcppconn.lib
 
 D. PREPROCESSOR DEFINITIONS:
 ----------------------------
@@ -59,13 +59,16 @@ E. DISABLE SPECIFIC WARNINGS (Optional):
 1. Go to: Configuration Properties → C/C++ → Advanced
 2. Add to "Disable Specific Warnings":
    
-   4267
+   4267;4251
 
-F. COPY DLL FILE:
------------------
-Copy this DLL file to your project's output folder (x64\Debug or x64\Release):
+F. COPY DLL FILES:
+------------------
+Copy these files to your project's output folder (x64\Debug or x64\Release):
 
-   C:\xampp\mysql\lib\libmysql.dll
+From: C:\Users\ADAMQUSSYAIRI\Downloads\mysql-connector-c++-9.1.0-winx64 (1)\mysql-connector-c++-9.1.0-winx64\lib64\
+   - mysqlcppconn-10-vs14.dll
+   - libssl-3-x64.dll
+   - libcrypto-3-x64.dll
 
 G. ADD SOURCE FILES TO PROJECT:
 -------------------------------

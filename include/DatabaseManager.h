@@ -1,34 +1,39 @@
 // ============================================================
-// DatabaseManager.h - MySQL Database Connection Manager
+// DatabaseManager.h - MySQL Connector C++ (JDBC API)
 // Hospital Appointment Booking System
 // ============================================================
 
 #ifndef DATABASE_MANAGER_H
 #define DATABASE_MANAGER_H
 
-// Disable size_t to int conversion warning
+// Disable warnings
 #pragma warning(disable: 4267)
+#pragma warning(disable: 4251)
 
-// MySQL C API Header
-// If using XAMPP, the path is: C:\xampp\mysql\include
-// Add this path to: Project Properties → C/C++ → General → Additional Include Directories
-#include <mysql.h>
+// MySQL Connector C++ JDBC Headers
+#include <cppconn/driver.h>
+#include <cppconn/connection.h>
+#include <cppconn/statement.h>
+#include <cppconn/resultset.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/exception.h>
+
 #include <string>
 #include <vector>
-#include <iostream>
-#include "Models.h"  // Same folder
+#include <memory>
+#include "Models.h"
 
 class DatabaseManager {
 private:
-    MYSQL* connection;
+    sql::Driver* driver;
+    std::unique_ptr<sql::Connection> connection;
     bool isConnected;
     
     // Database configuration
-    const char* host = "localhost";
-    const char* user = "root";
-    const char* password = "";
-    const char* database = "hospital_appointment_db";
-    unsigned int port = 3306;
+    std::string host = "tcp://127.0.0.1:3306";
+    std::string user = "root";
+    std::string password = "";
+    std::string database = "hospital_appointment_db";
     
 public:
     DatabaseManager();
@@ -38,9 +43,7 @@ public:
     bool connect();
     void disconnect();
     bool checkConnection();
-    bool executeQuery(const std::string& query);
     int getLastInsertId();
-    std::string escapeString(const std::string& str);
     
     // Authentication
     int authenticatePatient(const std::string& email, const std::string& password);

@@ -19,25 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdminModule.h" />
-    <ClInclude Include="AuthModule.h" />
-    <ClInclude Include="ConsoleUtils.h" />
-    <ClInclude Include="DatabaseManager.h" />
-    <ClInclude Include="DoctorModule.h" />
-    <ClInclude Include="Models.h" />
-    <ClInclude Include="PatientModule.h" />
-    <ClInclude Include="StaffModule.h" />
-    <ClInclude Include="Utilities.h" />
+    <ClInclude Include="include\AdminModule.h" />
+    <ClInclude Include="include\AuthModule.h" />
+    <ClInclude Include="include\ConsoleUtils.h" />
+    <ClInclude Include="include\DatabaseManager.h" />
+    <ClInclude Include="include\DoctorModule.h" />
+    <ClInclude Include="include\Models.h" />
+    <ClInclude Include="include\PatientModule.h" />
+    <ClInclude Include="include\StaffModule.h" />
+    <ClInclude Include="include\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdminModule.cpp" />
-    <ClCompile Include="AuthModule.cpp" />
-    <ClCompile Include="DatabaseManager.cpp" />
-    <ClCompile Include="DoctorModule.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="PatientModule.cpp" />
-    <ClCompile Include="StaffModule.cpp" />
-    <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="src\AdminModule.cpp" />
+    <ClCompile Include="src\AuthModule.cpp" />
+    <ClCompile Include="src\DatabaseManager.cpp" />
+    <ClCompile Include="src\DoctorModule.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\PatientModule.cpp" />
+    <ClCompile Include="src\StaffModule.cpp" />
+    <ClCompile Include="src\Utilities.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -140,7 +140,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\ADAMQUSSYAIRI\Downloads\mysql-connector-c++-9.1.0-winx64 (1)\mysql-connector-c++-9.1.0-winx64\include\jdbc;C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang\include;C:\Users\ADAMQUSSYAIRI\source\repos\workshop1_adang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

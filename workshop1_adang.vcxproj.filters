@@ -15,57 +15,57 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdminModule.h">
+    <ClInclude Include="include\AdminModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AuthModule.h">
+    <ClInclude Include="include\AuthModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleUtils.h">
+    <ClInclude Include="include\ConsoleUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DatabaseManager.h">
+    <ClInclude Include="include\DatabaseManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DoctorModule.h">
+    <ClInclude Include="include\DoctorModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Models.h">
+    <ClInclude Include="include\Models.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PatientModule.h">
+    <ClInclude Include="include\PatientModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StaffModule.h">
+    <ClInclude Include="include\StaffModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities.h">
+    <ClInclude Include="include\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdminModule.cpp">
+    <ClCompile Include="src\AdminModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AuthModule.cpp">
+    <ClCompile Include="src\AuthModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DatabaseManager.cpp">
+    <ClCompile Include="src\DatabaseManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DoctorModule.cpp">
+    <ClCompile Include="src\DoctorModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PatientModule.cpp">
+    <ClCompile Include="src\PatientModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StaffModule.cpp">
+    <ClCompile Include="src\StaffModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities.cpp">
+    <ClCompile Include="src\Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
