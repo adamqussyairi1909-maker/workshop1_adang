@@ -3,8 +3,8 @@
 // Hospital Appointment Booking System
 // ============================================================
 
-#include "PatientModule.h"
-#include "Utilities.h"
+#include "../include/PatientModule.h"
+#include "../include/Utilities.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>

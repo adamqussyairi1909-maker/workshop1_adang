@@ -3,7 +3,7 @@
 // Hospital Appointment Booking System
 // ============================================================
 
-#include "AuthModule.h"
+#include "../include/AuthModule.h"
 #include <iostream>
 #include <windows.h>
 

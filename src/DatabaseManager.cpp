@@ -3,7 +3,7 @@
 // Hospital Appointment Booking System
 // ============================================================
 
-#include "DatabaseManager.h"
+#include "../include/DatabaseManager.h"
 #include <stdexcept>
 
 DatabaseManager::DatabaseManager() : connection(nullptr), isConnected(false) {}

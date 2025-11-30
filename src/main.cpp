@@ -23,15 +23,15 @@
 #include <windows.h>
 
 // Include all modules
-#include "Models.h"
-#include "ConsoleUtils.h"
-#include "DatabaseManager.h"
-#include "Utilities.h"
-#include "AuthModule.h"
-#include "PatientModule.h"
-#include "DoctorModule.h"
-#include "StaffModule.h"
-#include "AdminModule.h"
+#include "../include/Models.h"
+#include "../include/ConsoleUtils.h"
+#include "../include/DatabaseManager.h"
+#include "../include/Utilities.h"
+#include "../include/AuthModule.h"
+#include "../include/PatientModule.h"
+#include "../include/DoctorModule.h"
+#include "../include/StaffModule.h"
+#include "../include/AdminModule.h"
 
 // Global instances
 ConsoleUtils console;

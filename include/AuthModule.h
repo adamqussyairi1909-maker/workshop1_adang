@@ -6,9 +6,9 @@
 #ifndef AUTH_MODULE_H
 #define AUTH_MODULE_H
 
-#include "Models.h"
-#include "ConsoleUtils.h"
-#include "DatabaseManager.h"
+#include "Models.h"           // Same folder
+#include "ConsoleUtils.h"     // Same folder
+#include "DatabaseManager.h"  // Same folder
 
 class AuthModule {
 private:
