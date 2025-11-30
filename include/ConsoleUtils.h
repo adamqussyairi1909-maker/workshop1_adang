@@ -175,9 +175,9 @@ public:
     // Pause and wait for key press
     void pauseScreen() {
         setColor(DARK_GRAY);
-        std::cout << "\nPress any key to continue...";
+        std::cout << "\n  Press any key to continue...";
         resetColor();
-        _getch();
+        (void)_getch();  // Cast to void to suppress warning
     }
     
     // Get validated integer input
