@@ -1,28 +1,11 @@
 // ============================================================
 // Hospital Appointment Booking System
 // Main Application Entry Point
-// 
-// Project Structure:
-// - Models.h          : Data structures
-// - ConsoleUtils.h    : HCI console utilities
-// - DatabaseManager   : MySQL database operations
-// - Utilities         : Common helper functions
-// - AuthModule        : Authentication
-// - PatientModule     : Patient dashboard
-// - DoctorModule      : Doctor dashboard
-// - StaffModule       : Staff dashboard
-// - AdminModule       : Admin dashboard
-// 
-// Requirements:
-// - Visual Studio 2022
-// - XAMPP (MySQL)
-// - MySQL Connector C++
 // ============================================================
 
 #include <iostream>
 #include <windows.h>
 
-// Include all modules
 #include "../include/Models.h"
 #include "../include/ConsoleUtils.h"
 #include "../include/DatabaseManager.h"
@@ -38,7 +21,7 @@ ConsoleUtils console;
 DatabaseManager db;
 UserSession currentSession;
 
-// Module instances (will be initialized in main)
+// Module instances
 AuthModule* authModule = nullptr;
 PatientModule* patientModule = nullptr;
 DoctorModule* doctorModule = nullptr;
@@ -53,17 +36,18 @@ void displayMainMenu() {
         console.displayWelcomeBanner();
         
         console.setColor(WHITE);
-        std::cout << std::endl;
+        std::cout << "  Please select an option:\n" << std::endl;
         console.printMenuOption(1, "Login");
-        console.printMenuOption(2, "Patient Registration");
-        console.printMenuOption(3, "Exit");
+        console.printMenuOption(2, "Register as New Patient");
+        console.printMenuOption(3, "Exit System");
         
-        int choice = console.getIntInput("\nEnter your choice: ", 1, 3);
+        std::cout << std::endl;
+        int choice = console.getIntInput("  Enter your choice: ", 1, 3);
         
         switch (choice) {
             case 1: {
                 if (authModule->login()) {
-                    // Navigate to appropriate dashboard based on user type
+                    // Auto-redirect based on detected role
                     if (currentSession.userType == "Patient") {
                         patientModule->showDashboard();
                     } else if (currentSession.userType == "Doctor") {
@@ -81,12 +65,17 @@ void displayMainMenu() {
                 break;
             case 3:
                 console.clearScreen();
-                console.setColor(CYAN);
                 std::cout << "\n\n";
-                console.printCentered("Thank you for using");
-                console.printCentered("Hospital Appointment Booking System");
+                console.setColor(CYAN);
+                std::cout << "      ========================================================" << std::endl;
+                console.setColor(WHITE);
+                std::cout << "                      Thank you for using                     " << std::endl;
+                std::cout << "               Hospital Appointment Booking System            " << std::endl;
+                console.setColor(CYAN);
+                std::cout << "      ========================================================" << std::endl;
                 std::cout << "\n";
-                console.printCentered("Goodbye!");
+                console.setColor(DARK_GRAY);
+                std::cout << "                          Goodbye!                            " << std::endl;
                 console.resetColor();
                 std::cout << "\n\n";
                 Sleep(2000);
@@ -102,21 +91,35 @@ int main() {
     // Set console title
     SetConsoleTitleA("Hospital Appointment Booking System");
     
-    // Initialize database connection
-    console.showLoading("Connecting to database");
+    // Clear screen and show loading
+    console.clearScreen();
+    std::cout << "\n\n";
+    console.setColor(CYAN);
+    std::cout << "      ========================================================" << std::endl;
+    console.setColor(WHITE);
+    std::cout << "                  HOSPITAL APPOINTMENT SYSTEM                 " << std::endl;
+    console.setColor(CYAN);
+    std::cout << "      ========================================================" << std::endl;
+    console.resetColor();
+    
+    console.showLoading("\n      Initializing system", 3);
+    console.showLoading("      Connecting to database", 3);
     
     if (!db.connect()) {
         console.printError("Failed to connect to database!");
-        console.printInfo("Please ensure:");
-        std::cout << "  1. XAMPP is running with MySQL service active" << std::endl;
-        std::cout << "  2. Database 'hospital_appointment_db' exists" << std::endl;
-        std::cout << "  3. Run 'database_setup.sql' in phpMyAdmin first" << std::endl;
+        std::cout << std::endl;
+        console.setColor(WHITE);
+        std::cout << "  Please ensure:" << std::endl;
+        std::cout << "    1. XAMPP is running with MySQL service active" << std::endl;
+        std::cout << "    2. Database 'hospital_appointment_db' exists" << std::endl;
+        std::cout << "    3. Run 'database_setup.sql' in phpMyAdmin first" << std::endl;
+        console.resetColor();
         console.pauseScreen();
         return 1;
     }
     
     console.printSuccess("Database connected successfully!");
-    Sleep(1000);
+    console.showLoading("      Loading modules", 2);
     
     // Initialize modules
     authModule = new AuthModule(console, db, currentSession);
@@ -124,6 +127,9 @@ int main() {
     doctorModule = new DoctorModule(console, db, currentSession);
     staffModule = new StaffModule(console, db, currentSession);
     adminModule = new AdminModule(console, db, currentSession);
+    
+    console.printSuccess("System ready!");
+    Sleep(1000);
     
     // Start main application
     displayMainMenu();
@@ -139,4 +145,3 @@ int main() {
     
     return 0;
 }
-

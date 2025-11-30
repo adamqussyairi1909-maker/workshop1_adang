@@ -25,15 +25,19 @@ void StaffModule::viewAppointments() {
         return;
     }
     
+    console.setColor(WHITE);
+    std::cout << "\n  All system appointments:\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(DARK_CYAN);
-    std::cout << std::left 
+    std::cout << "  " << std::left 
               << std::setw(6) << "ID"
               << std::setw(18) << "Patient"
               << std::setw(18) << "Doctor"
               << std::setw(11) << "Date"
               << std::setw(8) << "Time"
               << std::setw(10) << "Status" << std::endl;
-    std::cout << std::string(71, '-') << std::endl;
+    std::cout << "  " << std::string(71, '-') << std::endl;
     console.resetColor();
     
     for (const auto& apt : appointments) {
@@ -43,7 +47,7 @@ void StaffModule::viewAppointments() {
         else if (apt.status == "Completed") console.setColor(CYAN);
         else console.resetColor();
         
-        std::cout << std::setw(6) << apt.appointmentID
+        std::cout << "  " << std::setw(6) << apt.appointmentID
                   << std::setw(18) << apt.patientName.substr(0, 16)
                   << std::setw(18) << apt.doctorName.substr(0, 16)
                   << std::setw(11) << apt.appointmentDate
@@ -51,6 +55,8 @@ void StaffModule::viewAppointments() {
                   << std::setw(10) << apt.status << std::endl;
     }
     console.resetColor();
+    
+    std::cout << "\n  Total: " << appointments.size() << " appointment(s)" << std::endl;
     
     console.pauseScreen();
 }
@@ -62,27 +68,27 @@ void StaffModule::approveAppointment() {
     std::vector<Appointment> pending = db.getAllAppointments("Pending");
     
     if (pending.empty()) {
-        console.printInfo("No pending appointments.");
+        console.printInfo("No pending appointments to process.");
         console.pauseScreen();
         return;
     }
     
     console.setColor(YELLOW);
-    std::cout << "\nPending Appointments:\n" << std::endl;
+    std::cout << "\n  Pending Appointments (" << pending.size() << "):\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_CYAN);
-    std::cout << std::left 
+    std::cout << "  " << std::left 
               << std::setw(5) << "No."
               << std::setw(8) << "ID"
               << std::setw(18) << "Patient"
               << std::setw(18) << "Doctor"
               << std::setw(12) << "Date" << std::endl;
-    std::cout << std::string(61, '-') << std::endl;
+    std::cout << "  " << std::string(61, '-') << std::endl;
     console.resetColor();
     
     for (int i = 0; i < (int)pending.size(); i++) {
-        std::cout << std::setw(5) << (i + 1)
+        std::cout << "  " << std::setw(5) << (i + 1)
                   << std::setw(8) << pending[i].appointmentID
                   << std::setw(18) << pending[i].patientName.substr(0, 16)
                   << std::setw(18) << pending[i].doctorName.substr(0, 16)
@@ -90,7 +96,7 @@ void StaffModule::approveAppointment() {
     }
     
     std::cout << std::endl;
-    int choice = console.getIntInput("Select appointment (0 to go back): ", 0, (int)pending.size());
+    int choice = console.getIntInput("  Select appointment (0 to go back): ", 0, (int)pending.size());
     
     if (choice == 0) return;
     
@@ -98,31 +104,36 @@ void StaffModule::approveAppointment() {
     
     console.clearScreen();
     console.printSubHeader("Appointment Details");
-    std::cout << "\nPatient: " << selected.patientName << std::endl;
-    std::cout << "Doctor: " << selected.doctorName << std::endl;
-    std::cout << "Date: " << selected.appointmentDate << " | Time: " << selected.appointmentTime.substr(0, 5) << std::endl;
-    std::cout << "Reason: " << selected.reason << std::endl;
-    std::cout << std::string(45, '-') << std::endl;
     
-    std::cin.ignore(10000, '\n');
-    std::string confirm = console.getStringInput("Approve this appointment? (Y/N): ");
+    std::cout << "\n  Patient  : " << selected.patientName << std::endl;
+    std::cout << "  Doctor   : " << selected.doctorName << std::endl;
+    std::cout << "  Date     : " << selected.appointmentDate << std::endl;
+    std::cout << "  Time     : " << selected.appointmentTime.substr(0, 5) << std::endl;
+    std::cout << "  Reason   : " << selected.reason << std::endl;
+    std::cout << "  " << std::string(45, '-') << std::endl;
     
-    if (confirm == "Y" || confirm == "y") {
+    std::cout << "\n  Actions:" << std::endl;
+    console.printMenuOption(1, "Approve");
+    console.printMenuOption(2, "Reject/Cancel");
+    console.printMenuOption(3, "Go Back");
+    
+    int action = console.getIntInput("\n  Enter choice: ", 1, 3);
+    
+    if (action == 1) {
         if (db.updateAppointmentStatus(selected.appointmentID, "Confirmed", session.userID)) {
-            console.printSuccess("Appointment APT" + std::to_string(selected.appointmentID) + " has been APPROVED.");
+            console.printSuccess("Appointment APPROVED successfully!");
             db.logActivity("Staff", session.userID, "Approve Appointment",
                           "Approved appointment ID: " + std::to_string(selected.appointmentID));
         } else {
             console.printError("Failed to approve appointment.");
         }
-    } else if (confirm == "N" || confirm == "n") {
-        std::string cancelConfirm = console.getStringInput("Cancel this appointment? (Y/N): ");
-        if (cancelConfirm == "Y" || cancelConfirm == "y") {
-            if (db.updateAppointmentStatus(selected.appointmentID, "Cancelled", session.userID)) {
-                console.printSuccess("Appointment has been CANCELLED.");
-                db.logActivity("Staff", session.userID, "Cancel Appointment",
-                              "Cancelled appointment ID: " + std::to_string(selected.appointmentID));
-            }
+    } else if (action == 2) {
+        if (db.updateAppointmentStatus(selected.appointmentID, "Cancelled", session.userID)) {
+            console.printSuccess("Appointment CANCELLED.");
+            db.logActivity("Staff", session.userID, "Cancel Appointment",
+                          "Cancelled appointment ID: " + std::to_string(selected.appointmentID));
+        } else {
+            console.printError("Failed to cancel appointment.");
         }
     }
     
@@ -131,7 +142,7 @@ void StaffModule::approveAppointment() {
 
 void StaffModule::managePatients() {
     console.clearScreen();
-    console.printHeader("MANAGE PATIENT RECORDS");
+    console.printHeader("PATIENT RECORDS");
     
     std::vector<Patient> patients = db.getAllPatients();
     
@@ -141,56 +152,65 @@ void StaffModule::managePatients() {
         return;
     }
     
+    console.setColor(WHITE);
+    std::cout << "\n  Registered Patients:\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(DARK_CYAN);
-    std::cout << std::left 
+    std::cout << "  " << std::left 
               << std::setw(5) << "ID"
               << std::setw(22) << "Name"
               << std::setw(15) << "Phone"
               << std::setw(8) << "Gender"
               << std::setw(12) << "DOB" << std::endl;
-    std::cout << std::string(62, '-') << std::endl;
+    std::cout << "  " << std::string(62, '-') << std::endl;
     console.resetColor();
     
     for (const auto& p : patients) {
-        std::cout << std::setw(5) << p.patientID
+        std::cout << "  " << std::setw(5) << p.patientID
                   << std::setw(22) << p.patientName.substr(0, 20)
                   << std::setw(15) << p.phoneNumber
                   << std::setw(8) << p.gender
                   << std::setw(12) << p.dob << std::endl;
     }
     
-    std::cout << "\nTotal Patients: " << patients.size() << std::endl;
+    std::cout << "\n  Total: " << patients.size() << " patient(s)" << std::endl;
     
     console.pauseScreen();
 }
 
 void StaffModule::generateReport() {
     console.clearScreen();
-    console.printHeader("DAILY APPOINTMENT SUMMARY");
+    console.printHeader("APPOINTMENT SUMMARY REPORT");
     
     AppointmentSummary summary = db.getDailyAppointmentSummary("");
     
+    std::cout << "\n  +----------------------------------+" << std::endl;
+    std::cout << "  |     APPOINTMENT STATISTICS       |" << std::endl;
+    std::cout << "  +----------------------------------+" << std::endl;
+    
     console.setColor(WHITE);
-    std::cout << "\nTotal Appointments: " << summary.total << std::endl;
+    std::cout << "  | Total Appointments : " << std::setw(10) << summary.total << " |" << std::endl;
     console.setColor(GREEN);
-    std::cout << "Confirmed: " << summary.confirmed << std::endl;
+    std::cout << "  | Confirmed          : " << std::setw(10) << summary.confirmed << " |" << std::endl;
     console.setColor(YELLOW);
-    std::cout << "Pending: " << summary.pending << std::endl;
+    std::cout << "  | Pending            : " << std::setw(10) << summary.pending << " |" << std::endl;
     console.setColor(CYAN);
-    std::cout << "Completed: " << summary.completed << std::endl;
+    std::cout << "  | Completed          : " << std::setw(10) << summary.completed << " |" << std::endl;
     console.setColor(RED);
-    std::cout << "Cancelled: " << summary.cancelled << std::endl;
+    std::cout << "  | Cancelled          : " << std::setw(10) << summary.cancelled << " |" << std::endl;
     console.resetColor();
     
-    std::cout << "\n" << std::string(45, '-') << std::endl;
-    std::cout << "\nMost Active Doctor: " << db.getMostActiveDoctor() << std::endl;
-    std::cout << "Most Frequent Patient: " << db.getMostFrequentPatient() << std::endl;
+    std::cout << "  +----------------------------------+" << std::endl;
+    
+    std::cout << "\n  Most Active Doctor   : " << db.getMostActiveDoctor() << std::endl;
+    std::cout << "  Most Frequent Patient: " << db.getMostFrequentPatient() << std::endl;
     
     console.setColor(GREEN);
-    std::cout << "\nReport generated successfully on " << getCurrentDateTime() << std::endl;
+    std::cout << "\n  Report generated on " << getCurrentDateTime() << std::endl;
     console.resetColor();
     
-    db.logActivity("Staff", session.userID, "Generate Report", "Generated daily summary report");
+    db.logActivity("Staff", session.userID, "Generate Report", "Generated summary report");
     
     console.pauseScreen();
 }
@@ -203,26 +223,28 @@ void StaffModule::showDashboard() {
         Staff staff = db.getStaffById(session.userID);
         
         console.setColor(WHITE);
-        std::cout << "\nWelcome, " << staff.staffName << std::endl;
-        std::cout << "Role: " << staff.role << std::endl;
+        std::cout << "\n  Welcome, " << staff.staffName << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  Role: " << staff.role << std::endl;
         console.resetColor();
         
         // Show pending count
         std::vector<Appointment> pending = db.getAllAppointments("Pending");
         if (!pending.empty()) {
             console.setColor(YELLOW);
-            std::cout << "\n[!] " << pending.size() << " appointment(s) pending approval" << std::endl;
+            std::cout << "\n  [!] " << pending.size() << " appointment(s) pending approval" << std::endl;
             console.resetColor();
         }
         
-        std::cout << std::endl;
-        console.printMenuOption(1, "View Appointments");
-        console.printMenuOption(2, "Approve / Cancel Appointment");
-        console.printMenuOption(3, "Manage Patient Records");
-        console.printMenuOption(4, "Generate Daily Report");
+        std::cout << "\n  What would you like to do?\n" << std::endl;
+        console.printMenuOption(1, "View All Appointments");
+        console.printMenuOption(2, "Approve / Cancel Appointments");
+        console.printMenuOption(3, "View Patient Records");
+        console.printMenuOption(4, "Generate Report");
         console.printMenuOption(5, "Logout");
         
-        int choice = console.getIntInput("\nEnter your choice: ", 1, 5);
+        std::cout << std::endl;
+        int choice = console.getIntInput("  Enter your choice: ", 1, 5);
         
         switch (choice) {
             case 1: viewAppointments(); break;
@@ -238,4 +260,3 @@ void StaffModule::showDashboard() {
         }
     }
 }
-
