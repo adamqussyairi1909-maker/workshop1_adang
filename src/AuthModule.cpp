@@ -5,6 +5,7 @@
 
 #include "../include/AuthModule.h"
 #include <iostream>
+#include <limits>
 #include <windows.h>
 
 AuthModule::AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
@@ -13,8 +14,6 @@ AuthModule::AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
 bool AuthModule::login() {
     console.clearScreen();
     console.printHeader("USER LOGIN");
-    
-    std::cin.ignore(10000, '\n');
     
     console.setColor(CYAN);
     std::cout << "\n  Login to access your account.\n" << std::endl;
@@ -29,6 +28,8 @@ bool AuthModule::login() {
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address:" << std::endl;
     console.resetColor();
+    
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string email = console.getStringInput("     Email: ");
     
     std::cout << std::endl;

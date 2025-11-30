@@ -7,6 +7,7 @@
 #include "../include/Utilities.h"
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include <vector>
 #include <windows.h>
 
@@ -16,8 +17,6 @@ PatientModule::PatientModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s
 void PatientModule::registerPatient() {
     console.clearScreen();
     console.printHeader("PATIENT REGISTRATION");
-    
-    std::cin.ignore(10000, '\n');
     
     std::string name, phone, email, address, dob, gender, password, confirmPassword;
     
@@ -35,6 +34,8 @@ void PatientModule::registerPatient() {
     console.setColor(YELLOW);
     std::cout << "  >> Enter your full name as per IC/Passport:" << std::endl;
     console.resetColor();
+    
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     name = console.getStringInput("     Full Name: ");
     
     // Phone validation
