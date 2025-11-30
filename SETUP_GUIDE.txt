@@ -24,56 +24,50 @@ STEP 1: INSTALL MYSQL CONNECTOR C++
 STEP 2: CONFIGURE VISUAL STUDIO 2022 PROJECT
 ================================================================================
 
-A. INCLUDE DIRECTORIES:
------------------------
+A. INCLUDE DIRECTORIES (Using XAMPP):
+-------------------------------------
 1. Right-click project in Solution Explorer → Properties
-2. Go to: Configuration Properties → C/C++ → General
-3. Add to "Additional Include Directories":
+2. Set Configuration: "All Configurations", Platform: "x64"
+3. Go to: Configuration Properties → C/C++ → General
+4. Add to "Additional Include Directories":
    
-   C:\Program Files\MySQL\MySQL Connector C++ 8.0\include
-   C:\Program Files\MySQL\MySQL Connector C++ 8.0\include\jdbc
+   C:\xampp\mysql\include
 
-   (Alternative if using older MySQL C Connector):
-   C:\Program Files\MySQL\MySQL Server 8.0\include
-
-B. LIBRARY DIRECTORIES:
------------------------
+B. LIBRARY DIRECTORIES (Using XAMPP):
+-------------------------------------
 1. Go to: Configuration Properties → Linker → General
 2. Add to "Additional Library Directories":
    
-   C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64\vs14
-
-   (Alternative for 32-bit):
-   C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib\vs14
+   C:\xampp\mysql\lib
 
 C. LINKER INPUT:
 ----------------
 1. Go to: Configuration Properties → Linker → Input
 2. Add to "Additional Dependencies":
    
-   mysqlcppconn.lib
-   
-   OR if using MySQL C API directly:
    libmysql.lib
 
-D. PREPROCESSOR DEFINITIONS (Optional):
----------------------------------------
+D. PREPROCESSOR DEFINITIONS:
+----------------------------
 1. Go to: Configuration Properties → C/C++ → Preprocessor
 2. Add to "Preprocessor Definitions":
    
    _CRT_SECURE_NO_WARNINGS
-   STATIC_CONCPP
 
-E. COPY DLL FILES:
-------------------
-Copy these DLL files to your project's output folder (Debug/Release):
-- mysqlcppconn-9-vs14.dll (or similar version)
-- libssl-1_1-x64.dll
-- libcrypto-1_1-x64.dll
+E. DISABLE SPECIFIC WARNINGS (Optional):
+----------------------------------------
+1. Go to: Configuration Properties → C/C++ → Advanced
+2. Add to "Disable Specific Warnings":
+   
+   4267
 
-Location: C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64
+F. COPY DLL FILE:
+-----------------
+Copy this DLL file to your project's output folder (x64\Debug or x64\Release):
 
-F. ADD SOURCE FILES TO PROJECT:
+   C:\xampp\mysql\lib\libmysql.dll
+
+G. ADD SOURCE FILES TO PROJECT:
 -------------------------------
 1. Right-click "Source Files" in Solution Explorer → Add → Existing Item
 2. Add all .cpp files:

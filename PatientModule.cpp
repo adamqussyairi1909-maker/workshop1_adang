@@ -115,7 +115,7 @@ void PatientModule::bookAppointment() {
     std::cout << std::string(55, '-') << std::endl;
     console.resetColor();
     
-    for (size_t i = 0; i < doctors.size(); i++) {
+    for (int i = 0; i < (int)doctors.size(); i++) {
         std::cout << std::setw(5) << (i + 1)
                   << std::setw(25) << doctors[i].doctorName
                   << std::setw(15) << doctors[i].specialty
@@ -263,7 +263,7 @@ void PatientModule::cancelAppointment() {
     std::cout << std::string(55, '-') << std::endl;
     console.resetColor();
     
-    for (size_t i = 0; i < cancelable.size(); i++) {
+    for (int i = 0; i < (int)cancelable.size(); i++) {
         std::cout << std::setw(5) << (i + 1)
                   << std::setw(8) << cancelable[i].appointmentID
                   << std::setw(20) << cancelable[i].doctorName

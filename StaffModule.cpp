@@ -81,7 +81,7 @@ void StaffModule::approveAppointment() {
     std::cout << std::string(61, '-') << std::endl;
     console.resetColor();
     
-    for (size_t i = 0; i < pending.size(); i++) {
+    for (int i = 0; i < (int)pending.size(); i++) {
         std::cout << std::setw(5) << (i + 1)
                   << std::setw(8) << pending[i].appointmentID
                   << std::setw(18) << pending[i].patientName.substr(0, 16)

@@ -6,6 +6,12 @@
 #ifndef DATABASE_MANAGER_H
 #define DATABASE_MANAGER_H
 
+// Disable size_t to int conversion warning
+#pragma warning(disable: 4267)
+
+// MySQL C API Header
+// If using XAMPP, the path is: C:\xampp\mysql\include
+// Add this path to: Project Properties → C/C++ → General → Additional Include Directories
 #include <mysql.h>
 #include <string>
 #include <vector>
