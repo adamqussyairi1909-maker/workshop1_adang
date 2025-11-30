@@ -1,0 +1,173 @@
+// ============================================================
+// DoctorModule.cpp - Doctor Dashboard Implementation
+// Hospital Appointment Booking System
+// ============================================================
+
+#include "DoctorModule.h"
+#include "Utilities.h"
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <windows.h>
+
+DoctorModule::DoctorModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
+    : console(c), db(d), session(s) {}
+
+void DoctorModule::viewSchedule() {
+    console.clearScreen();
+    console.printHeader("DOCTOR DASHBOARD");
+    
+    Doctor doc = db.getDoctorById(session.userID);
+    
+    console.setColor(WHITE);
+    std::cout << "\nDoctor: " << doc.doctorName << std::endl;
+    std::cout << "Date: " << getCurrentDate() << std::endl;
+    console.resetColor();
+    
+    console.printSubHeader("Today's Schedule");
+    
+    std::vector<Appointment> appointments = db.getDoctorAppointments(session.userID, getCurrentDate());
+    
+    if (appointments.empty()) {
+        console.printInfo("No appointments scheduled for today.");
+    } else {
+        for (const auto& apt : appointments) {
+            if (apt.status == "Confirmed") console.setColor(GREEN);
+            else if (apt.status == "Pending") console.setColor(YELLOW);
+            else console.setColor(WHITE);
+            
+            std::cout << apt.appointmentTime.substr(0, 5) << " - " 
+                      << apt.patientName << " (" << apt.status << ")" << std::endl;
+        }
+        console.resetColor();
+        
+        std::cout << "\n" << std::string(45, '-') << std::endl;
+        std::cout << "Total Appointments: " << appointments.size() << std::endl;
+    }
+    
+    std::cout << std::endl;
+    console.printMenuOptionLetter('U', "Update availability");
+    console.printMenuOptionLetter('L', "Logout");
+    
+    console.pauseScreen();
+}
+
+void DoctorModule::viewAllAppointments() {
+    console.clearScreen();
+    console.printHeader("ALL APPOINTMENTS");
+    
+    std::vector<Appointment> appointments = db.getDoctorAppointments(session.userID);
+    
+    if (appointments.empty()) {
+        console.printInfo("No appointments found.");
+        console.pauseScreen();
+        return;
+    }
+    
+    console.setColor(DARK_CYAN);
+    std::cout << std::left 
+              << std::setw(8) << "ID"
+              << std::setw(20) << "Patient"
+              << std::setw(12) << "Date"
+              << std::setw(10) << "Time"
+              << std::setw(12) << "Status" << std::endl;
+    std::cout << std::string(62, '-') << std::endl;
+    console.resetColor();
+    
+    for (const auto& apt : appointments) {
+        if (apt.status == "Confirmed") console.setColor(GREEN);
+        else if (apt.status == "Pending") console.setColor(YELLOW);
+        else if (apt.status == "Cancelled") console.setColor(RED);
+        else console.resetColor();
+        
+        std::cout << std::setw(8) << apt.appointmentID
+                  << std::setw(20) << apt.patientName
+                  << std::setw(12) << apt.appointmentDate
+                  << std::setw(10) << apt.appointmentTime.substr(0, 5)
+                  << std::setw(12) << apt.status << std::endl;
+    }
+    console.resetColor();
+    
+    console.pauseScreen();
+}
+
+void DoctorModule::viewPatientList() {
+    console.clearScreen();
+    console.printHeader("MY PATIENTS");
+    
+    std::vector<Appointment> appointments = db.getDoctorAppointments(session.userID);
+    
+    // Get unique patients
+    std::vector<int> patientIDs;
+    for (const auto& apt : appointments) {
+        bool found = false;
+        for (int id : patientIDs) {
+            if (id == apt.patientID) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) patientIDs.push_back(apt.patientID);
+    }
+    
+    if (patientIDs.empty()) {
+        console.printInfo("No patients assigned yet.");
+        console.pauseScreen();
+        return;
+    }
+    
+    console.setColor(DARK_CYAN);
+    std::cout << std::left 
+              << std::setw(5) << "No."
+              << std::setw(25) << "Patient Name"
+              << std::setw(15) << "Phone"
+              << std::setw(10) << "Gender" << std::endl;
+    std::cout << std::string(55, '-') << std::endl;
+    console.resetColor();
+    
+    int count = 1;
+    for (int pid : patientIDs) {
+        Patient p = db.getPatientById(pid);
+        std::cout << std::setw(5) << count++
+                  << std::setw(25) << p.patientName
+                  << std::setw(15) << p.phoneNumber
+                  << std::setw(10) << p.gender << std::endl;
+    }
+    
+    console.pauseScreen();
+}
+
+void DoctorModule::showDashboard() {
+    while (session.isLoggedIn) {
+        console.clearScreen();
+        console.printHeader("DOCTOR DASHBOARD");
+        
+        Doctor doc = db.getDoctorById(session.userID);
+        
+        console.setColor(WHITE);
+        std::cout << "\nWelcome, " << doc.doctorName << std::endl;
+        std::cout << "Specialty: " << doc.specialty << " | Room: " << doc.roomNo << std::endl;
+        console.resetColor();
+        
+        std::cout << std::endl;
+        console.printMenuOption(1, "View Appointment Schedule");
+        console.printMenuOption(2, "View All Appointments");
+        console.printMenuOption(3, "View Patient List");
+        console.printMenuOption(4, "Logout");
+        
+        int choice = console.getIntInput("\nEnter your choice: ", 1, 4);
+        
+        switch (choice) {
+            case 1: viewSchedule(); break;
+            case 2: viewAllAppointments(); break;
+            case 3: viewPatientList(); break;
+            case 4:
+                db.logActivity("Doctor", session.userID, "Logout", "Doctor logged out");
+                session = UserSession();
+                console.printSuccess("Logged out successfully!");
+                Sleep(1000);
+                return;
+        }
+    }
+}
+

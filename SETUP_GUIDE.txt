@@ -1,0 +1,288 @@
+================================================================================
+    HOSPITAL APPOINTMENT BOOKING SYSTEM - SETUP GUIDE
+    Visual Studio 2022 + XAMPP + MySQL Connector C++
+================================================================================
+
+PREREQUISITES:
+- Visual Studio 2022 (Community/Professional/Enterprise)
+- XAMPP (with MySQL/MariaDB)
+- MySQL Connector C++ 8.0
+
+================================================================================
+STEP 1: INSTALL MYSQL CONNECTOR C++
+================================================================================
+
+1. Download MySQL Connector C++ from:
+   https://dev.mysql.com/downloads/connector/cpp/
+
+2. Choose "Windows (x86, 64-bit), MSI Installer" for your architecture
+
+3. Install to default location:
+   C:\Program Files\MySQL\MySQL Connector C++ 8.0
+
+================================================================================
+STEP 2: CONFIGURE VISUAL STUDIO 2022 PROJECT
+================================================================================
+
+A. INCLUDE DIRECTORIES:
+-----------------------
+1. Right-click project in Solution Explorer → Properties
+2. Go to: Configuration Properties → C/C++ → General
+3. Add to "Additional Include Directories":
+   
+   C:\Program Files\MySQL\MySQL Connector C++ 8.0\include
+   C:\Program Files\MySQL\MySQL Connector C++ 8.0\include\jdbc
+
+   (Alternative if using older MySQL C Connector):
+   C:\Program Files\MySQL\MySQL Server 8.0\include
+
+B. LIBRARY DIRECTORIES:
+-----------------------
+1. Go to: Configuration Properties → Linker → General
+2. Add to "Additional Library Directories":
+   
+   C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64\vs14
+
+   (Alternative for 32-bit):
+   C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib\vs14
+
+C. LINKER INPUT:
+----------------
+1. Go to: Configuration Properties → Linker → Input
+2. Add to "Additional Dependencies":
+   
+   mysqlcppconn.lib
+   
+   OR if using MySQL C API directly:
+   libmysql.lib
+
+D. PREPROCESSOR DEFINITIONS (Optional):
+---------------------------------------
+1. Go to: Configuration Properties → C/C++ → Preprocessor
+2. Add to "Preprocessor Definitions":
+   
+   _CRT_SECURE_NO_WARNINGS
+   STATIC_CONCPP
+
+E. COPY DLL FILES:
+------------------
+Copy these DLL files to your project's output folder (Debug/Release):
+- mysqlcppconn-9-vs14.dll (or similar version)
+- libssl-1_1-x64.dll
+- libcrypto-1_1-x64.dll
+
+Location: C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64
+
+F. ADD SOURCE FILES TO PROJECT:
+-------------------------------
+1. Right-click "Source Files" in Solution Explorer → Add → Existing Item
+2. Add all .cpp files:
+   - main.cpp
+   - DatabaseManager.cpp
+   - Utilities.cpp
+   - AuthModule.cpp
+   - PatientModule.cpp
+   - DoctorModule.cpp
+   - StaffModule.cpp
+   - AdminModule.cpp
+
+3. Right-click "Header Files" in Solution Explorer → Add → Existing Item
+4. Add all .h files:
+   - Models.h
+   - ConsoleUtils.h
+   - DatabaseManager.h
+   - Utilities.h
+   - AuthModule.h
+   - PatientModule.h
+   - DoctorModule.h
+   - StaffModule.h
+   - AdminModule.h
+
+================================================================================
+STEP 3: SETUP XAMPP AND DATABASE
+================================================================================
+
+1. Start XAMPP Control Panel
+2. Start Apache and MySQL services
+3. Open phpMyAdmin: http://localhost/phpmyadmin
+4. Click on "Import" tab
+5. Choose file: database_setup.sql
+6. Click "Go" to execute
+
+================================================================================
+STEP 4: VERIFY DATABASE CONNECTION
+================================================================================
+
+Default connection settings in DatabaseManager.h:
+- Host: localhost
+- User: root
+- Password: (empty - default XAMPP setting)
+- Database: hospital_appointment_db
+- Port: 3306
+
+If your XAMPP has different settings, modify DatabaseManager.h:
+    const char* host = "localhost";
+    const char* user = "root";
+    const char* password = "";  // Change if you set a password
+    const char* database = "hospital_appointment_db";
+    unsigned int port = 3306;
+
+================================================================================
+STEP 5: BUILD AND RUN
+================================================================================
+
+1. Set configuration to "Release" or "Debug" (x64 recommended)
+2. Build solution: Ctrl + Shift + B
+3. Run: F5 or Ctrl + F5
+
+================================================================================
+ALTERNATIVE: USING MYSQL C API (SIMPLER SETUP)
+================================================================================
+
+If you have issues with MySQL Connector C++, you can use MySQL C API:
+
+1. Install MySQL Server or MySQL Community Installer
+2. Include path: C:\Program Files\MySQL\MySQL Server 8.0\include
+3. Library path: C:\Program Files\MySQL\MySQL Server 8.0\lib
+4. Link with: libmysql.lib
+5. Copy libmysql.dll to output folder
+
+The code uses mysql.h which is the C API and should work with either method.
+
+================================================================================
+TEST ACCOUNTS (After running database_setup.sql)
+================================================================================
+
+ADMIN:
+- Email: admin@hospital.com
+- Password: admin123
+
+DOCTORS:
+- Email: noor@hospital.com / Password: doc123 (Approved)
+- Email: ahmad@hospital.com / Password: doc123 (Approved)
+- Email: siti@hospital.com / Password: doc123 (Pending - needs admin approval)
+- Email: lim@hospital.com / Password: doc123 (Approved)
+
+STAFF:
+- Email: sarah@hospital.com / Password: staff123 (Approved)
+- Email: muthu@hospital.com / Password: staff123 (Approved)
+
+PATIENTS:
+- Email: adam@email.com / Password: patient123
+- Email: khadijah@email.com / Password: patient123
+- Email: hafiz@email.com / Password: patient123
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+ERROR: "Cannot open include file: 'mysql.h'"
+SOLUTION: Verify include directories are set correctly in project properties
+
+ERROR: "LNK2019: unresolved external symbol"
+SOLUTION: Check library directories and linker input settings
+
+ERROR: "Cannot find mysqlcppconn.dll" or similar
+SOLUTION: Copy required DLL files to the output directory
+
+ERROR: "Access denied for user 'root'@'localhost'"
+SOLUTION: Check XAMPP MySQL password settings, update DatabaseManager.h
+
+ERROR: "Unknown database 'hospital_appointment_db'"
+SOLUTION: Run database_setup.sql in phpMyAdmin first
+
+================================================================================
+PROJECT STRUCTURE
+================================================================================
+
+workshop1_adang/
+│
+├── Header Files (.h)
+│   ├── Models.h            # Data structures (Patient, Doctor, Staff, etc.)
+│   ├── ConsoleUtils.h      # HCI utilities (colors, formatting, validation)
+│   ├── DatabaseManager.h   # MySQL database operations header
+│   ├── Utilities.h         # Common helper functions header
+│   ├── AuthModule.h        # Authentication module header
+│   ├── PatientModule.h     # Patient dashboard header
+│   ├── DoctorModule.h      # Doctor dashboard header
+│   ├── StaffModule.h       # Staff dashboard header
+│   └── AdminModule.h       # Admin dashboard header
+│
+├── Source Files (.cpp)
+│   ├── main.cpp            # Main application entry point
+│   ├── DatabaseManager.cpp # MySQL database operations implementation
+│   ├── Utilities.cpp       # Common helper functions implementation
+│   ├── AuthModule.cpp      # Authentication module implementation
+│   ├── PatientModule.cpp   # Patient dashboard implementation
+│   ├── DoctorModule.cpp    # Doctor dashboard implementation
+│   ├── StaffModule.cpp     # Staff dashboard implementation
+│   └── AdminModule.cpp     # Admin dashboard implementation
+│
+├── SQL Files
+│   └── database_setup.sql  # SQL script to create database and tables
+│
+├── Documentation
+│   └── SETUP_GUIDE.txt     # This file
+│
+└── Visual Studio Files
+    ├── workshop1_adang.sln     # Visual Studio solution file
+    └── workshop1_adang.vcxproj # Visual Studio project file
+
+================================================================================
+FEATURES IMPLEMENTED
+================================================================================
+
+1. USER AUTHENTICATION
+   - Secure login for Patient, Doctor, Staff, Admin
+   - Password masking during input
+   - Session management
+
+2. PATIENT MODULE
+   - Registration with validation
+   - Book appointments with available doctors
+   - View appointment history
+   - Cancel appointments
+   - Update personal details
+
+3. DOCTOR MODULE
+   - View appointment schedule
+   - View patient list
+   - See today's schedule with status
+
+4. STAFF MODULE
+   - View all appointments
+   - Approve/Cancel pending appointments
+   - Manage patient records
+   - Generate daily reports
+
+5. ADMIN MODULE
+   - Manage all user accounts
+   - Approve doctor/staff accounts
+   - Monitor system activity logs
+   - Generate comprehensive reports
+
+6. HCI ELEMENTS
+   - Color-coded console output
+   - Formatted tables and menus
+   - Loading animations
+   - Success/Error/Warning messages
+   - Input validation with feedback
+
+7. ERROR HANDLING
+   - Database connection error handling
+   - Input validation for all fields
+   - Email/Phone/Date format validation
+   - Duplicate booking prevention
+   - Graceful error recovery
+
+================================================================================
+CONTACT & SUPPORT
+================================================================================
+
+For any issues or questions regarding this system, please refer to:
+- Visual Studio Documentation
+- MySQL Connector C++ Documentation
+- XAMPP Documentation
+
+================================================================================
+
