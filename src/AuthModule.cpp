@@ -5,8 +5,8 @@
 
 #include "../include/AuthModule.h"
 #include <iostream>
-#include <limits>
 #include <windows.h>
+#undef max
 
 AuthModule::AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
     : console(c), db(d), session(s) {}
@@ -29,7 +29,7 @@ bool AuthModule::login() {
     std::cout << "  >> Enter your email address:" << std::endl;
     console.resetColor();
     
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (std::cin.peek() == '\n') std::cin.ignore();
     std::string email = console.getStringInput("     Email: ");
     
     std::cout << std::endl;

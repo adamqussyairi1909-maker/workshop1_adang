@@ -7,9 +7,9 @@
 #include "../include/Utilities.h"
 #include <iostream>
 #include <iomanip>
-#include <limits>
 #include <vector>
 #include <windows.h>
+#undef max
 
 PatientModule::PatientModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
     : console(c), db(d), session(s) {}
@@ -35,7 +35,7 @@ void PatientModule::registerPatient() {
     std::cout << "  >> Enter your full name as per IC/Passport:" << std::endl;
     console.resetColor();
     
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (std::cin.peek() == '\n') std::cin.ignore();
     name = console.getStringInput("     Full Name: ");
     
     // Phone validation
