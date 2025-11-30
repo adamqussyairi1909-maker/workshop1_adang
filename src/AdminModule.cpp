@@ -135,11 +135,13 @@ void AdminModule::deletePatient() {
     console.resetColor();
     
     console.setColor(WHITE);
-    std::cout << "\n  Enter the Patient ID to delete." << std::endl;
-    std::cout << "  Enter 0 to cancel.\n" << std::endl;
+    std::cout << "\n  Enter the Patient ID to delete.\n" << std::endl;
     console.resetColor();
     
-    int patientID = console.getIntInput("  Patient ID: ", 0, 99999);
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter Patient ID (or 0 to cancel):" << std::endl;
+    console.resetColor();
+    int patientID = console.getIntInput("     Patient ID: ", 0, 99999);
     
     if (patientID == 0) return;
     
@@ -376,11 +378,13 @@ void AdminModule::updateDoctor() {
     console.printHeader("UPDATE DOCTOR");
     
     console.setColor(WHITE);
-    std::cout << "\n  Enter the Doctor ID to update." << std::endl;
-    std::cout << "  Enter 0 to cancel.\n" << std::endl;
+    std::cout << "\n  Enter the Doctor ID to update.\n" << std::endl;
     console.resetColor();
     
-    int doctorID = console.getIntInput("  Doctor ID: ", 0, 99999);
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter Doctor ID (or 0 to cancel):" << std::endl;
+    console.resetColor();
+    int doctorID = console.getIntInput("     Doctor ID: ", 0, 99999);
     
     if (doctorID == 0) return;
     
@@ -487,11 +491,13 @@ void AdminModule::deleteDoctor() {
     console.resetColor();
     
     console.setColor(WHITE);
-    std::cout << "\n  Enter the Doctor ID to delete." << std::endl;
-    std::cout << "  Enter 0 to cancel.\n" << std::endl;
+    std::cout << "\n  Enter the Doctor ID to delete.\n" << std::endl;
     console.resetColor();
     
-    int doctorID = console.getIntInput("  Doctor ID: ", 0, 99999);
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter Doctor ID (or 0 to cancel):" << std::endl;
+    console.resetColor();
+    int doctorID = console.getIntInput("     Doctor ID: ", 0, 99999);
     
     if (doctorID == 0) return;
     
@@ -707,11 +713,13 @@ void AdminModule::deleteStaff() {
     console.printHeader("DELETE STAFF");
     
     console.setColor(WHITE);
-    std::cout << "\n  Enter the Staff ID to delete." << std::endl;
-    std::cout << "  Enter 0 to cancel.\n" << std::endl;
+    std::cout << "\n  Enter the Staff ID to delete.\n" << std::endl;
     console.resetColor();
     
-    int staffID = console.getIntInput("  Staff ID: ", 0, 99999);
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter Staff ID (or 0 to cancel):" << std::endl;
+    console.resetColor();
+    int staffID = console.getIntInput("     Staff ID: ", 0, 99999);
     
     if (staffID == 0) return;
     

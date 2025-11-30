@@ -482,10 +482,10 @@ void PatientModule::cancelAppointment() {
     }
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter 0 to go back without cancelling." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Select an appointment to cancel (or enter 0 to go back):" << std::endl;
     console.resetColor();
-    int choice = console.getIntInput("  Select appointment (0-" + std::to_string(cancelable.size()) + "): ", 0, (int)cancelable.size());
+    int choice = console.getIntInput("     Enter number (0-" + std::to_string(cancelable.size()) + "): ", 0, (int)cancelable.size());
     
     if (choice == 0) return;
     
@@ -496,14 +496,23 @@ void PatientModule::cancelAppointment() {
     console.resetColor();
     
     console.setColor(WHITE);
-    std::cout << "  You are about to cancel:" << std::endl;
-    std::cout << "  - Doctor: " << cancelable[choice - 1].doctorName << std::endl;
-    std::cout << "  - Date: " << cancelable[choice - 1].appointmentDate << std::endl;
-    std::cout << "  - Time: " << cancelable[choice - 1].appointmentTime.substr(0, 5) << std::endl;
+    std::cout << "\n  APPOINTMENT TO CANCEL:" << std::endl;
+    std::cout << "  +-----------------------------------+" << std::endl;
+    std::cout << "  | Doctor : " << std::left << std::setw(25) << cancelable[choice - 1].doctorName << "|" << std::endl;
+    std::cout << "  | Date   : " << std::left << std::setw(25) << cancelable[choice - 1].appointmentDate << "|" << std::endl;
+    std::cout << "  | Time   : " << std::left << std::setw(25) << cancelable[choice - 1].appointmentTime.substr(0, 5) << "|" << std::endl;
+    std::cout << "  +-----------------------------------+" << std::endl;
+    console.resetColor();
+    
+    console.setColor(RED);
+    std::cout << "\n  WARNING: This action CANNOT be undone!" << std::endl;
     console.resetColor();
     
     std::cout << std::endl;
-    std::string confirm = console.getStringInput("  Type Y to confirm cancellation, N to go back: ");
+    console.setColor(YELLOW);
+    std::cout << "  >> Confirm cancellation:" << std::endl;
+    console.resetColor();
+    std::string confirm = console.getStringInput("     Type Y to confirm, N to go back: ");
     
     if (confirm == "Y" || confirm == "y") {
         if (db.cancelAppointment(cancelable[choice - 1].appointmentID)) {

@@ -165,21 +165,27 @@ void DoctorModule::completeAppointment() {
     }
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter 0 to go back without making changes." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Select an appointment to complete (or enter 0 to go back):" << std::endl;
     console.resetColor();
-    int choice = console.getIntInput("  Select appointment (0-" + std::to_string(confirmed.size()) + "): ", 0, (int)confirmed.size());
+    int choice = console.getIntInput("     Enter number (0-" + std::to_string(confirmed.size()) + "): ", 0, (int)confirmed.size());
     
     if (choice == 0) return;
     
     console.setColor(WHITE);
-    std::cout << "\n  You are about to complete:" << std::endl;
-    std::cout << "  - Patient: " << confirmed[choice - 1].patientName << std::endl;
-    std::cout << "  - Time: " << confirmed[choice - 1].appointmentTime.substr(0, 5) << std::endl;
+    std::cout << "\n  APPOINTMENT TO COMPLETE:" << std::endl;
+    std::cout << "  +-----------------------------------+" << std::endl;
+    std::cout << "  | Patient : " << std::left << std::setw(24) << confirmed[choice - 1].patientName << "|" << std::endl;
+    std::cout << "  | Time    : " << std::left << std::setw(24) << confirmed[choice - 1].appointmentTime.substr(0, 5) << "|" << std::endl;
+    std::cout << "  +-----------------------------------+" << std::endl;
     console.resetColor();
     
     std::cin.ignore(10000, '\n');
-    std::string confirm = console.getStringInput("\n  Confirm completion? (Y/N): ");
+    std::cout << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Confirm completion:" << std::endl;
+    console.resetColor();
+    std::string confirm = console.getStringInput("     Type Y to confirm, N to go back: ");
     
     if (confirm == "Y" || confirm == "y") {
         if (db.updateAppointmentStatus(confirmed[choice - 1].appointmentID, "Completed")) {
@@ -240,10 +246,10 @@ void DoctorModule::viewPatientInfo() {
     }
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter 0 to go back." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Select a patient to view details (or enter 0 to go back):" << std::endl;
     console.resetColor();
-    int choice = console.getIntInput("  Select patient (0-" + std::to_string(patientNames.size()) + "): ", 0, (int)patientNames.size());
+    int choice = console.getIntInput("     Enter number (0-" + std::to_string(patientNames.size()) + "): ", 0, (int)patientNames.size());
     
     if (choice == 0) return;
     

@@ -116,10 +116,10 @@ void StaffModule::approveAppointment() {
     }
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter 0 to go back without approving." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Select an appointment to review (or enter 0 to go back):" << std::endl;
     console.resetColor();
-    int choice = console.getIntInput("  Select appointment (0-" + std::to_string(pending.size()) + "): ", 0, (int)pending.size());
+    int choice = console.getIntInput("     Enter number (0-" + std::to_string(pending.size()) + "): ", 0, (int)pending.size());
     
     if (choice == 0) return;
     
@@ -233,10 +233,10 @@ void StaffModule::searchPatient() {
     }
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter a Patient ID to view details, or 0 to go back." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter a Patient ID to view details (or 0 to go back):" << std::endl;
     console.resetColor();
-    int patientID = console.getIntInput("  Patient ID (0 to go back): ", 0, 99999);
+    int patientID = console.getIntInput("     Patient ID: ", 0, 99999);
     
     if (patientID == 0) return;
     
