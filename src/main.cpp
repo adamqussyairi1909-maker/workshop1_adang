@@ -23,23 +23,27 @@ void displayMainMenu() {
     console.displayWelcomeBanner();
     
     console.setColor(WHITE);
-    std::cout << "  Welcome to the Hospital Appointment Booking System!" << std::endl;
-    std::cout << "  Please select an option below to continue.\n" << std::endl;
+    std::cout << "  +-------------------------------------------------+" << std::endl;
+    std::cout << "  |  Welcome to the Hospital Appointment System!    |" << std::endl;
+    std::cout << "  |  Please select an option below to continue.     |" << std::endl;
+    std::cout << "  +-------------------------------------------------+" << std::endl;
     console.resetColor();
     
+    std::cout << std::endl;
     console.setColor(DARK_GRAY);
-    std::cout << "  ------------------------------------------------" << std::endl;
-    std::cout << "  MAIN MENU" << std::endl;
-    std::cout << "  ------------------------------------------------\n" << std::endl;
+    std::cout << "  ================================================" << std::endl;
+    std::cout << "  MAIN MENU - SELECT AN OPTION" << std::endl;
+    std::cout << "  ================================================" << std::endl;
     console.resetColor();
     
+    std::cout << std::endl;
     console.printMenuOption(1, "Login               - Access your account");
     console.printMenuOption(2, "Register as Patient - Create new patient account");
     console.printMenuOption(3, "Exit                - Close the application");
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter a number (1-3) to select an option." << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter your choice (1, 2, or 3):" << std::endl;
     console.resetColor();
 }
 
@@ -83,7 +87,7 @@ int main() {
     // Main application loop
     while (true) {
         displayMainMenu();
-        int choice = console.getIntInput("  Your choice: ", 1, 3);
+        int choice = console.getIntInput("     Your choice: ", 1, 3);
         
         switch (choice) {
             case 1: // Login

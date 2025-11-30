@@ -881,13 +881,20 @@ void AdminModule::showDashboard() {
         console.printHeader("ADMIN DASHBOARD");
         
         console.setColor(WHITE);
-        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
-        console.setColor(DARK_GRAY);
-        std::cout << "  You are logged in as: Administrator" << std::endl;
+        std::cout << "\n  +-------------------------------------------------+" << std::endl;
+        std::cout << "  |  Welcome back, " << std::left << std::setw(33) << (session.userName + "!") << "|" << std::endl;
+        std::cout << "  |  You are logged in as: Administrator            |" << std::endl;
+        std::cout << "  +-------------------------------------------------+" << std::endl;
         console.resetColor();
         
-        std::cout << "\n  What would you like to do?\n" << std::endl;
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ================================================" << std::endl;
+        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  ================================================" << std::endl;
+        console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "Manage Patients     - View/delete patient records");
         console.printMenuOption(2, "Manage Doctors      - Add/edit/delete doctors");
         console.printMenuOption(3, "Manage Staff        - Add/delete staff accounts");
@@ -896,10 +903,10 @@ void AdminModule::showDashboard() {
         console.printMenuOption(6, "Logout              - Exit to main menu");
         
         std::cout << std::endl;
-        console.setColor(WHITE);
-        std::cout << "  Enter a number (1-6) to select an option." << std::endl;
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your choice (1-6):" << std::endl;
         console.resetColor();
-        int choice = console.getIntInput("  Your choice: ", 1, 6);
+        int choice = console.getIntInput("     Your choice: ", 1, 6);
         
         switch (choice) {
             case 1: managePatients(); break;

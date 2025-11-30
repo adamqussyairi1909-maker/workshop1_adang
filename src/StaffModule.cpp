@@ -432,13 +432,20 @@ void StaffModule::showDashboard() {
         console.printHeader("STAFF DASHBOARD");
         
         console.setColor(WHITE);
-        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
-        console.setColor(DARK_GRAY);
-        std::cout << "  You are logged in as: Staff" << std::endl;
+        std::cout << "\n  +-------------------------------------------------+" << std::endl;
+        std::cout << "  |  Welcome back, " << std::left << std::setw(33) << (session.userName + "!") << "|" << std::endl;
+        std::cout << "  |  You are logged in as: Staff                    |" << std::endl;
+        std::cout << "  +-------------------------------------------------+" << std::endl;
         console.resetColor();
         
-        std::cout << "\n  What would you like to do?\n" << std::endl;
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ================================================" << std::endl;
+        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  ================================================" << std::endl;
+        console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "View All Appointments - See all bookings");
         console.printMenuOption(2, "Approve Appointments  - Process pending requests");
         console.printMenuOption(3, "Search Patient        - Find patient records");
@@ -447,10 +454,10 @@ void StaffModule::showDashboard() {
         console.printMenuOption(6, "Logout                - Exit to main menu");
         
         std::cout << std::endl;
-        console.setColor(WHITE);
-        std::cout << "  Enter a number (1-6) to select an option." << std::endl;
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your choice (1-6):" << std::endl;
         console.resetColor();
-        int choice = console.getIntInput("  Your choice: ", 1, 6);
+        int choice = console.getIntInput("     Your choice: ", 1, 6);
         
         switch (choice) {
             case 1: viewAllAppointments(); break;

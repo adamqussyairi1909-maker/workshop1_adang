@@ -17,27 +17,31 @@ bool AuthModule::login() {
     std::cin.ignore(10000, '\n');
     
     console.setColor(WHITE);
-    std::cout << "\n  Login to access your account." << std::endl;
-    std::cout << "  You will need your registered email and password.\n" << std::endl;
+    std::cout << "\n  +-------------------------------------------------+" << std::endl;
+    std::cout << "  |  Login to access your account.                   |" << std::endl;
+    std::cout << "  |  Enter your registered email and password below. |" << std::endl;
+    std::cout << "  +-------------------------------------------------+" << std::endl;
     console.resetColor();
-    
-    console.setColor(DARK_GRAY);
-    std::cout << "  ------------------------------------------------" << std::endl;
-    std::cout << "  ENTER YOUR CREDENTIALS" << std::endl;
-    std::cout << "  ------------------------------------------------\n" << std::endl;
-    console.resetColor();
-    
-    console.setColor(WHITE);
-    std::cout << "  Enter the email address you used to register." << std::endl;
-    console.resetColor();
-    std::string email = console.getStringInput("  Email: ");
     
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter your password (characters will be hidden)." << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ================================================" << std::endl;
+    std::cout << "  ENTER YOUR CREDENTIALS" << std::endl;
+    std::cout << "  ================================================" << std::endl;
+    console.resetColor();
+    
+    std::cout << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter your email address:" << std::endl;
+    console.resetColor();
+    std::string email = console.getStringInput("     Email: ");
+    
+    std::cout << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter your password (characters will be hidden):" << std::endl;
     console.resetColor();
     console.setColor(CYAN);
-    std::cout << "  Password: ";
+    std::cout << "     Password: ";
     console.resetColor();
     std::string password = console.getPasswordInput();
     

@@ -346,13 +346,20 @@ void DoctorModule::showDashboard() {
         console.printHeader("DOCTOR DASHBOARD");
         
         console.setColor(WHITE);
-        std::cout << "\n  Welcome back, Dr. " << session.userName << "!" << std::endl;
-        console.setColor(DARK_GRAY);
-        std::cout << "  You are logged in as: Doctor" << std::endl;
+        std::cout << "\n  +-------------------------------------------------+" << std::endl;
+        std::cout << "  |  Welcome back, Dr. " << std::left << std::setw(29) << (session.userName + "!") << "|" << std::endl;
+        std::cout << "  |  You are logged in as: Doctor                   |" << std::endl;
+        std::cout << "  +-------------------------------------------------+" << std::endl;
         console.resetColor();
         
-        std::cout << "\n  What would you like to do?\n" << std::endl;
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ================================================" << std::endl;
+        std::cout << "  MENU - SELECT AN OPTION" << std::endl;
+        std::cout << "  ================================================" << std::endl;
+        console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "Today's Appointments  - View today's schedule");
         console.printMenuOption(2, "All Appointments      - View all appointments");
         console.printMenuOption(3, "Complete Appointment  - Mark patient visit done");
@@ -361,10 +368,10 @@ void DoctorModule::showDashboard() {
         console.printMenuOption(6, "Logout                - Exit to main menu");
         
         std::cout << std::endl;
-        console.setColor(WHITE);
-        std::cout << "  Enter a number (1-6) to select an option." << std::endl;
+        console.setColor(YELLOW);
+        std::cout << "  >> Enter your choice (1-6):" << std::endl;
         console.resetColor();
-        int choice = console.getIntInput("  Your choice: ", 1, 6);
+        int choice = console.getIntInput("     Your choice: ", 1, 6);
         
         switch (choice) {
             case 1: viewTodayAppointments(); break;
