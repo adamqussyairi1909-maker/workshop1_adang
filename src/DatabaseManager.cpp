@@ -60,7 +60,7 @@ int DatabaseManager::getLastInsertId() {
 // Authentication Methods
 // ============================================================
 
-int DatabaseManager::authenticatePatient(const std::string& email, const std::string& pwd) {
+int DatabaseManager::loginPatient(const std::string& email, const std::string& pwd) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
             connection->prepareStatement("SELECT PatientID FROM Patient WHERE Email = ? AND Password = ?"));
@@ -77,10 +77,10 @@ int DatabaseManager::authenticatePatient(const std::string& email, const std::st
     return -1;
 }
 
-int DatabaseManager::authenticateDoctor(const std::string& email, const std::string& pwd) {
+int DatabaseManager::loginDoctor(const std::string& email, const std::string& pwd) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
-            connection->prepareStatement("SELECT DoctorID FROM Doctors WHERE Email = ? AND Password = ? AND IsApproved = TRUE"));
+            connection->prepareStatement("SELECT DoctorID FROM Doctors WHERE Email = ? AND Password = ?"));
         pstmt->setString(1, email);
         pstmt->setString(2, pwd);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
@@ -94,10 +94,10 @@ int DatabaseManager::authenticateDoctor(const std::string& email, const std::str
     return -1;
 }
 
-int DatabaseManager::authenticateStaff(const std::string& email, const std::string& pwd) {
+int DatabaseManager::loginStaff(const std::string& email, const std::string& pwd) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
-            connection->prepareStatement("SELECT StaffID FROM Staff WHERE Email = ? AND Password = ? AND IsApproved = TRUE"));
+            connection->prepareStatement("SELECT StaffID FROM Staff WHERE Email = ? AND Password = ?"));
         pstmt->setString(1, email);
         pstmt->setString(2, pwd);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
@@ -111,7 +111,7 @@ int DatabaseManager::authenticateStaff(const std::string& email, const std::stri
     return -1;
 }
 
-int DatabaseManager::authenticateAdmin(const std::string& email, const std::string& pwd) {
+int DatabaseManager::loginAdmin(const std::string& email, const std::string& pwd) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
             connection->prepareStatement("SELECT AdminID FROM Admin WHERE Email = ? AND Password = ?"));
@@ -170,7 +170,7 @@ Patient DatabaseManager::getPatientById(int patientID) {
             patient.phoneNumber = res->getString("PhoneNumber");
             patient.email = res->getString("Email");
             patient.address = res->getString("Address");
-            patient.dob = res->getString("DOB");
+            patient.dateOfBirth = res->getString("DOB");
             patient.gender = res->getString("Gender");
         }
     }
@@ -200,11 +200,44 @@ bool DatabaseManager::updatePatient(int patientID, const std::string& name, cons
     }
 }
 
-std::vector<Patient> DatabaseManager::getAllPatients() {
+bool DatabaseManager::deletePatient(int patientID) {
+    try {
+        // Delete appointments first
+        std::unique_ptr<sql::PreparedStatement> pstmt1(
+            connection->prepareStatement("DELETE FROM Appointment WHERE PatientID = ?"));
+        pstmt1->setInt(1, patientID);
+        pstmt1->executeUpdate();
+        
+        // Delete patient
+        std::unique_ptr<sql::PreparedStatement> pstmt2(
+            connection->prepareStatement("DELETE FROM Patient WHERE PatientID = ?"));
+        pstmt2->setInt(1, patientID);
+        pstmt2->executeUpdate();
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+        return false;
+    }
+}
+
+std::vector<Patient> DatabaseManager::searchPatients(const std::string& search) {
     std::vector<Patient> patients;
     try {
-        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM Patient ORDER BY PatientName"));
+        std::string query = "SELECT * FROM Patient";
+        if (!search.empty()) {
+            query += " WHERE PatientName LIKE ? OR Email LIKE ? OR PhoneNumber LIKE ?";
+        }
+        query += " ORDER BY PatientName";
+        
+        std::unique_ptr<sql::PreparedStatement> pstmt(connection->prepareStatement(query));
+        if (!search.empty()) {
+            std::string searchPattern = "%" + search + "%";
+            pstmt->setString(1, searchPattern);
+            pstmt->setString(2, searchPattern);
+            pstmt->setString(3, searchPattern);
+        }
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         while (res->next()) {
             Patient p;
             p.patientID = res->getInt("PatientID");
@@ -212,7 +245,7 @@ std::vector<Patient> DatabaseManager::getAllPatients() {
             p.phoneNumber = res->getString("PhoneNumber");
             p.email = res->getString("Email");
             p.address = res->getString("Address");
-            p.dob = res->getString("DOB");
+            p.dateOfBirth = res->getString("DOB");
             p.gender = res->getString("Gender");
             patients.push_back(p);
         }
@@ -241,7 +274,7 @@ Doctor DatabaseManager::getDoctorById(int doctorID) {
             doctor.phoneNumber = res->getString("PhoneNumber");
             doctor.email = res->getString("Email");
             doctor.roomNo = res->getString("RoomNo");
-            doctor.isApproved = res->getBoolean("IsApproved");
+            doctor.isAvailable = res->getBoolean("IsAvailable");
         }
     }
     catch (sql::SQLException& e) {
@@ -250,11 +283,11 @@ Doctor DatabaseManager::getDoctorById(int doctorID) {
     return doctor;
 }
 
-std::vector<Doctor> DatabaseManager::getAllDoctors(bool approvedOnly) {
+std::vector<Doctor> DatabaseManager::getAllDoctors(bool availableOnly) {
     std::vector<Doctor> doctors;
     try {
         std::string query = "SELECT * FROM Doctors";
-        if (approvedOnly) query += " WHERE IsApproved = TRUE";
+        if (availableOnly) query += " WHERE IsAvailable = TRUE";
         query += " ORDER BY DoctorName";
         
         std::unique_ptr<sql::Statement> stmt(connection->createStatement());
@@ -267,7 +300,7 @@ std::vector<Doctor> DatabaseManager::getAllDoctors(bool approvedOnly) {
             d.phoneNumber = res->getString("PhoneNumber");
             d.email = res->getString("Email");
             d.roomNo = res->getString("RoomNo");
-            d.isApproved = res->getBoolean("IsApproved");
+            d.isAvailable = res->getBoolean("IsAvailable");
             doctors.push_back(d);
         }
     }
@@ -277,12 +310,77 @@ std::vector<Doctor> DatabaseManager::getAllDoctors(bool approvedOnly) {
     return doctors;
 }
 
-bool DatabaseManager::approveDoctor(int doctorID) {
+bool DatabaseManager::addDoctor(const std::string& name, const std::string& specialty,
+                               const std::string& room, const std::string& phone,
+                               const std::string& email, const std::string& password) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
-            connection->prepareStatement("UPDATE Doctors SET IsApproved = TRUE WHERE DoctorID = ?"));
-        pstmt->setInt(1, doctorID);
+            connection->prepareStatement(
+                "INSERT INTO Doctors (DoctorName, Specialty, RoomNo, PhoneNumber, Email, Password, IsAvailable) "
+                "VALUES (?, ?, ?, ?, ?, ?, TRUE)"));
+        pstmt->setString(1, name);
+        pstmt->setString(2, specialty);
+        pstmt->setString(3, room);
+        pstmt->setString(4, phone);
+        pstmt->setString(5, email);
+        pstmt->setString(6, password);
         pstmt->executeUpdate();
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::updateDoctor(int doctorID, const std::string& name, const std::string& specialty,
+                                  const std::string& room, const std::string& phone) {
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement(
+                "UPDATE Doctors SET DoctorName = ?, Specialty = ?, RoomNo = ?, PhoneNumber = ? WHERE DoctorID = ?"));
+        pstmt->setString(1, name);
+        pstmt->setString(2, specialty);
+        pstmt->setString(3, room);
+        pstmt->setString(4, phone);
+        pstmt->setInt(5, doctorID);
+        pstmt->executeUpdate();
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::updateDoctorAvailability(int doctorID, bool isAvailable) {
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement("UPDATE Doctors SET IsAvailable = ? WHERE DoctorID = ?"));
+        pstmt->setBoolean(1, isAvailable);
+        pstmt->setInt(2, doctorID);
+        pstmt->executeUpdate();
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::deleteDoctor(int doctorID) {
+    try {
+        // Cancel appointments first
+        std::unique_ptr<sql::PreparedStatement> pstmt1(
+            connection->prepareStatement("UPDATE Appointment SET Status = 'Cancelled' WHERE DoctorID = ?"));
+        pstmt1->setInt(1, doctorID);
+        pstmt1->executeUpdate();
+        
+        // Delete doctor
+        std::unique_ptr<sql::PreparedStatement> pstmt2(
+            connection->prepareStatement("DELETE FROM Doctors WHERE DoctorID = ?"));
+        pstmt2->setInt(1, doctorID);
+        pstmt2->executeUpdate();
         return true;
     }
     catch (sql::SQLException& e) {
@@ -305,10 +403,9 @@ Staff DatabaseManager::getStaffById(int staffID) {
         if (res->next()) {
             staff.staffID = res->getInt("StaffID");
             staff.staffName = res->getString("StaffName");
+            staff.department = res->getString("Department");
             staff.phoneNumber = res->getString("PhoneNumber");
             staff.email = res->getString("Email");
-            staff.role = res->getString("Role");
-            staff.isApproved = res->getBoolean("IsApproved");
         }
     }
     catch (sql::SQLException& e) {
@@ -317,23 +414,18 @@ Staff DatabaseManager::getStaffById(int staffID) {
     return staff;
 }
 
-std::vector<Staff> DatabaseManager::getAllStaff(bool approvedOnly) {
+std::vector<Staff> DatabaseManager::getAllStaff() {
     std::vector<Staff> staffList;
     try {
-        std::string query = "SELECT * FROM Staff";
-        if (approvedOnly) query += " WHERE IsApproved = TRUE";
-        query += " ORDER BY StaffName";
-        
         std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query));
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM Staff ORDER BY StaffName"));
         while (res->next()) {
             Staff s;
             s.staffID = res->getInt("StaffID");
             s.staffName = res->getString("StaffName");
+            s.department = res->getString("Department");
             s.phoneNumber = res->getString("PhoneNumber");
             s.email = res->getString("Email");
-            s.role = res->getString("Role");
-            s.isApproved = res->getBoolean("IsApproved");
             staffList.push_back(s);
         }
     }
@@ -343,10 +435,32 @@ std::vector<Staff> DatabaseManager::getAllStaff(bool approvedOnly) {
     return staffList;
 }
 
-bool DatabaseManager::approveStaff(int staffID) {
+bool DatabaseManager::addStaff(const std::string& name, const std::string& department,
+                              const std::string& phone, const std::string& email,
+                              const std::string& password) {
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
-            connection->prepareStatement("UPDATE Staff SET IsApproved = TRUE WHERE StaffID = ?"));
+            connection->prepareStatement(
+                "INSERT INTO Staff (StaffName, Department, PhoneNumber, Email, Password) "
+                "VALUES (?, ?, ?, ?, ?)"));
+        pstmt->setString(1, name);
+        pstmt->setString(2, department);
+        pstmt->setString(3, phone);
+        pstmt->setString(4, email);
+        pstmt->setString(5, password);
+        pstmt->executeUpdate();
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::deleteStaff(int staffID) {
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement("DELETE FROM Staff WHERE StaffID = ?"));
         pstmt->setInt(1, staffID);
         pstmt->executeUpdate();
         return true;
@@ -475,22 +589,19 @@ std::vector<Appointment> DatabaseManager::getDoctorAppointments(int doctorID, co
     return appointments;
 }
 
-std::vector<Appointment> DatabaseManager::getAllAppointments(const std::string& status) {
+std::vector<Appointment> DatabaseManager::getDoctorAllAppointments(int doctorID) {
+    return getDoctorAppointments(doctorID, "");
+}
+
+std::vector<Appointment> DatabaseManager::getAllAppointments() {
     std::vector<Appointment> appointments;
     try {
-        std::string query = "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
-                           "JOIN Patient p ON a.PatientID = p.PatientID "
-                           "JOIN Doctors d ON a.DoctorID = d.DoctorID";
-        if (!status.empty()) {
-            query += " WHERE a.Status = ?";
-        }
-        query += " ORDER BY a.AppointmentDate DESC, a.AppointmentTime";
-        
-        std::unique_ptr<sql::PreparedStatement> pstmt(connection->prepareStatement(query));
-        if (!status.empty()) {
-            pstmt->setString(1, status);
-        }
-        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+            "JOIN Patient p ON a.PatientID = p.PatientID "
+            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+            "ORDER BY a.AppointmentDate DESC, a.AppointmentTime"));
         while (res->next()) {
             Appointment a;
             a.appointmentID = res->getInt("AppointmentID");
@@ -511,22 +622,42 @@ std::vector<Appointment> DatabaseManager::getAllAppointments(const std::string& 
     return appointments;
 }
 
-bool DatabaseManager::updateAppointmentStatus(int appointmentID, const std::string& status, int staffID) {
+std::vector<Appointment> DatabaseManager::getPendingAppointments() {
+    std::vector<Appointment> appointments;
     try {
-        std::string query = "UPDATE Appointment SET Status = ?";
-        if (staffID > 0) {
-            query += ", StaffID = ?";
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+            "JOIN Patient p ON a.PatientID = p.PatientID "
+            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+            "WHERE a.Status = 'Pending' "
+            "ORDER BY a.AppointmentDate, a.AppointmentTime"));
+        while (res->next()) {
+            Appointment a;
+            a.appointmentID = res->getInt("AppointmentID");
+            a.status = res->getString("Status");
+            a.appointmentTime = res->getString("AppointmentTime");
+            a.appointmentDate = res->getString("AppointmentDate");
+            a.reason = res->getString("Reason");
+            a.patientID = res->getInt("PatientID");
+            a.doctorID = res->getInt("DoctorID");
+            a.patientName = res->getString("PatientName");
+            a.doctorName = res->getString("DoctorName");
+            appointments.push_back(a);
         }
-        query += " WHERE AppointmentID = ?";
-        
-        std::unique_ptr<sql::PreparedStatement> pstmt(connection->prepareStatement(query));
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appointments;
+}
+
+bool DatabaseManager::updateAppointmentStatus(int appointmentID, const std::string& status) {
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement("UPDATE Appointment SET Status = ? WHERE AppointmentID = ?"));
         pstmt->setString(1, status);
-        if (staffID > 0) {
-            pstmt->setInt(2, staffID);
-            pstmt->setInt(3, appointmentID);
-        } else {
-            pstmt->setInt(2, appointmentID);
-        }
+        pstmt->setInt(2, appointmentID);
         pstmt->executeUpdate();
         return true;
     }
@@ -581,75 +712,6 @@ bool DatabaseManager::checkPatientDailyLimit(int patientID, int doctorID, const 
 }
 
 // ============================================================
-// Report Operations
-// ============================================================
-
-AppointmentSummary DatabaseManager::getDailyAppointmentSummary(const std::string& date) {
-    AppointmentSummary summary;
-    try {
-        std::string query = "SELECT Status, COUNT(*) as cnt FROM Appointment ";
-        if (!date.empty()) {
-            query += "WHERE AppointmentDate = ? ";
-        }
-        query += "GROUP BY Status";
-        
-        std::unique_ptr<sql::PreparedStatement> pstmt(connection->prepareStatement(query));
-        if (!date.empty()) {
-            pstmt->setString(1, date);
-        }
-        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-        while (res->next()) {
-            std::string status = res->getString("Status");
-            int count = res->getInt("cnt");
-            summary.total += count;
-            if (status == "Confirmed") summary.confirmed = count;
-            else if (status == "Pending") summary.pending = count;
-            else if (status == "Completed") summary.completed = count;
-            else if (status == "Cancelled") summary.cancelled = count;
-        }
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
-    }
-    return summary;
-}
-
-std::string DatabaseManager::getMostActiveDoctor() {
-    try {
-        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
-            "SELECT d.DoctorName, COUNT(*) as cnt FROM Appointment a "
-            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
-            "WHERE a.Status != 'Cancelled' "
-            "GROUP BY a.DoctorID ORDER BY cnt DESC LIMIT 1"));
-        if (res->next()) {
-            return res->getString("DoctorName");
-        }
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
-    }
-    return "N/A";
-}
-
-std::string DatabaseManager::getMostFrequentPatient() {
-    try {
-        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
-            "SELECT p.PatientName, COUNT(*) as cnt FROM Appointment a "
-            "JOIN Patient p ON a.PatientID = p.PatientID "
-            "GROUP BY a.PatientID ORDER BY cnt DESC LIMIT 1"));
-        if (res->next()) {
-            return res->getString("PatientName");
-        }
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
-    }
-    return "N/A";
-}
-
-// ============================================================
 // Activity Log Operations
 // ============================================================
 
@@ -672,21 +734,21 @@ bool DatabaseManager::logActivity(const std::string& userType, int userID,
     }
 }
 
-std::vector<ActivityLogEntry> DatabaseManager::getActivityLogs(int limit) {
-    std::vector<ActivityLogEntry> logs;
+std::vector<ActivityLog> DatabaseManager::getActivityLogs(int limit) {
+    std::vector<ActivityLog> logs;
     try {
         std::unique_ptr<sql::PreparedStatement> pstmt(
             connection->prepareStatement("SELECT * FROM ActivityLog ORDER BY LogTime DESC LIMIT ?"));
         pstmt->setInt(1, limit);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         while (res->next()) {
-            ActivityLogEntry log;
+            ActivityLog log;
             log.logID = res->getInt("LogID");
             log.userType = res->getString("UserType");
             log.userID = res->getInt("UserID");
             log.action = res->getString("Action");
             log.details = res->getString("Details");
-            log.logTime = res->getString("LogTime");
+            log.timestamp = res->getString("LogTime");
             logs.push_back(log);
         }
     }
@@ -694,32 +756,4 @@ std::vector<ActivityLogEntry> DatabaseManager::getActivityLogs(int limit) {
         std::cerr << "[ERROR] " << e.what() << std::endl;
     }
     return logs;
-}
-
-int DatabaseManager::getPendingDoctorsCount() {
-    try {
-        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT COUNT(*) as cnt FROM Doctors WHERE IsApproved = FALSE"));
-        if (res->next()) {
-            return res->getInt("cnt");
-        }
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
-    }
-    return 0;
-}
-
-int DatabaseManager::getPendingStaffCount() {
-    try {
-        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
-        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT COUNT(*) as cnt FROM Staff WHERE IsApproved = FALSE"));
-        if (res->next()) {
-            return res->getInt("cnt");
-        }
-    }
-    catch (sql::SQLException& e) {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
-    }
-    return 0;
 }

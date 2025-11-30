@@ -15,6 +15,7 @@ struct UserSession {
     int userID = -1;
     std::string userType = "";
     std::string userName = "";
+    std::string userEmail = "";
     bool isLoggedIn = false;
 };
 
@@ -28,7 +29,7 @@ struct Doctor {
     std::string phoneNumber;
     std::string email;
     std::string roomNo;
-    bool isApproved = false;
+    bool isAvailable = true;
 };
 
 // ============================================================
@@ -40,7 +41,7 @@ struct Patient {
     std::string phoneNumber;
     std::string email;
     std::string address;
-    std::string dob;
+    std::string dateOfBirth;
     std::string gender;
 };
 
@@ -50,10 +51,9 @@ struct Patient {
 struct Staff {
     int staffID = 0;
     std::string staffName;
+    std::string department;
     std::string phoneNumber;
     std::string email;
-    std::string role;
-    bool isApproved = false;
 };
 
 // ============================================================
@@ -83,50 +83,15 @@ struct Appointment {
 };
 
 // ============================================================
-// Payment Model
+// Activity Log Model
 // ============================================================
-struct Payment {
-    int paymentID = 0;
-    double amount = 0.0;
-    std::string paymentDate;
-    std::string paymentMethod;
-    int appointmentID = 0;
-};
-
-// ============================================================
-// Doctor Schedule Model
-// ============================================================
-struct DoctorSchedule {
-    int scheduleID = 0;
-    int doctorID = 0;
-    std::string dayOfWeek;
-    std::string startTime;
-    std::string endTime;
-    bool isAvailable = true;
-};
-
-// ============================================================
-// Activity Log Entry Model
-// ============================================================
-struct ActivityLogEntry {
+struct ActivityLog {
     int logID = 0;
     std::string userType;
     int userID = 0;
     std::string action;
     std::string details;
-    std::string logTime;
-};
-
-// ============================================================
-// Appointment Summary for Reports
-// ============================================================
-struct AppointmentSummary {
-    int total = 0;
-    int confirmed = 0;
-    int pending = 0;
-    int completed = 0;
-    int cancelled = 0;
+    std::string timestamp;
 };
 
 #endif // MODELS_H
-

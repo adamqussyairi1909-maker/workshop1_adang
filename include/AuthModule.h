@@ -6,9 +6,9 @@
 #ifndef AUTH_MODULE_H
 #define AUTH_MODULE_H
 
-#include "Models.h"           // Same folder
-#include "ConsoleUtils.h"     // Same folder
-#include "DatabaseManager.h"  // Same folder
+#include "Models.h"
+#include "ConsoleUtils.h"
+#include "DatabaseManager.h"
 
 class AuthModule {
 private:
@@ -19,7 +19,9 @@ private:
 public:
     AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
     bool login();
+    void logout();
+    bool isLoggedIn();
+    std::string getUserType();
 };
 
 #endif // AUTH_MODULE_H
-

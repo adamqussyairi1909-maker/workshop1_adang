@@ -6,9 +6,9 @@
 #ifndef STAFF_MODULE_H
 #define STAFF_MODULE_H
 
-#include "Models.h"           // Same folder
-#include "ConsoleUtils.h"     // Same folder
-#include "DatabaseManager.h"  // Same folder
+#include "Models.h"
+#include "ConsoleUtils.h"
+#include "DatabaseManager.h"
 
 class StaffModule {
 private:
@@ -16,9 +16,10 @@ private:
     DatabaseManager& db;
     UserSession& session;
     
-    void viewAppointments();
+    void viewAllAppointments();
     void approveAppointment();
-    void managePatients();
+    void searchPatient();
+    void viewDoctors();
     void generateReport();
     
 public:
@@ -27,4 +28,3 @@ public:
 };
 
 #endif // STAFF_MODULE_H
-

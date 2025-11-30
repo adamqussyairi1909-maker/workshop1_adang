@@ -11,7 +11,6 @@
 #pragma warning(disable: 4251)
 
 // MySQL Connector C++ JDBC Headers
-// Include path should be: ...\include\jdbc
 #include "mysql_driver.h"
 #include "mysql_connection.h"
 #include "cppconn/statement.h"
@@ -30,7 +29,6 @@ private:
     std::unique_ptr<sql::Connection> connection;
     bool isConnected;
     
-    // Database configuration
     std::string host = "tcp://127.0.0.1:3306";
     std::string user = "root";
     std::string password = "";
@@ -40,17 +38,17 @@ public:
     DatabaseManager();
     ~DatabaseManager();
     
-    // Connection management
+    // Connection
     bool connect();
     void disconnect();
     bool checkConnection();
     int getLastInsertId();
     
     // Authentication
-    int authenticatePatient(const std::string& email, const std::string& password);
-    int authenticateDoctor(const std::string& email, const std::string& password);
-    int authenticateStaff(const std::string& email, const std::string& password);
-    int authenticateAdmin(const std::string& email, const std::string& password);
+    int loginPatient(const std::string& email, const std::string& password);
+    int loginDoctor(const std::string& email, const std::string& password);
+    int loginStaff(const std::string& email, const std::string& password);
+    int loginAdmin(const std::string& email, const std::string& password);
     
     // Patient operations
     bool registerPatient(const std::string& name, const std::string& phone,
@@ -60,17 +58,27 @@ public:
     Patient getPatientById(int patientID);
     bool updatePatient(int patientID, const std::string& name, const std::string& phone,
                       const std::string& email, const std::string& address);
-    std::vector<Patient> getAllPatients();
+    bool deletePatient(int patientID);
+    std::vector<Patient> searchPatients(const std::string& search);
     
     // Doctor operations
     Doctor getDoctorById(int doctorID);
-    std::vector<Doctor> getAllDoctors(bool approvedOnly = true);
-    bool approveDoctor(int doctorID);
+    std::vector<Doctor> getAllDoctors(bool availableOnly = false);
+    bool addDoctor(const std::string& name, const std::string& specialty,
+                  const std::string& room, const std::string& phone,
+                  const std::string& email, const std::string& password);
+    bool updateDoctor(int doctorID, const std::string& name, const std::string& specialty,
+                     const std::string& room, const std::string& phone);
+    bool updateDoctorAvailability(int doctorID, bool isAvailable);
+    bool deleteDoctor(int doctorID);
     
     // Staff operations
     Staff getStaffById(int staffID);
-    std::vector<Staff> getAllStaff(bool approvedOnly = true);
-    bool approveStaff(int staffID);
+    std::vector<Staff> getAllStaff();
+    bool addStaff(const std::string& name, const std::string& department,
+                 const std::string& phone, const std::string& email,
+                 const std::string& password);
+    bool deleteStaff(int staffID);
     
     // Admin operations
     Admin getAdminById(int adminID);
@@ -80,23 +88,18 @@ public:
                           const std::string& time, const std::string& reason);
     std::vector<Appointment> getPatientAppointments(int patientID);
     std::vector<Appointment> getDoctorAppointments(int doctorID, const std::string& date = "");
-    std::vector<Appointment> getAllAppointments(const std::string& status = "");
-    bool updateAppointmentStatus(int appointmentID, const std::string& status, int staffID = 0);
+    std::vector<Appointment> getDoctorAllAppointments(int doctorID);
+    std::vector<Appointment> getAllAppointments();
+    std::vector<Appointment> getPendingAppointments();
+    bool updateAppointmentStatus(int appointmentID, const std::string& status);
     bool cancelAppointment(int appointmentID);
     bool checkDoctorAvailability(int doctorID, const std::string& date, const std::string& time);
     bool checkPatientDailyLimit(int patientID, int doctorID, const std::string& date);
     
-    // Report operations
-    AppointmentSummary getDailyAppointmentSummary(const std::string& date);
-    std::string getMostActiveDoctor();
-    std::string getMostFrequentPatient();
-    
-    // Activity log operations
+    // Activity logging
     bool logActivity(const std::string& userType, int userID, 
                     const std::string& action, const std::string& details = "");
-    std::vector<ActivityLogEntry> getActivityLogs(int limit = 50);
-    int getPendingDoctorsCount();
-    int getPendingStaffCount();
+    std::vector<ActivityLog> getActivityLogs(int limit = 50);
 };
 
 #endif // DATABASE_MANAGER_H

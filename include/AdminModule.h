@@ -6,9 +6,9 @@
 #ifndef ADMIN_MODULE_H
 #define ADMIN_MODULE_H
 
-#include "Models.h"           // Same folder
-#include "ConsoleUtils.h"     // Same folder
-#include "DatabaseManager.h"  // Same folder
+#include "Models.h"
+#include "ConsoleUtils.h"
+#include "DatabaseManager.h"
 
 class AdminModule {
 private:
@@ -16,10 +16,28 @@ private:
     DatabaseManager& db;
     UserSession& session;
     
-    void manageUsers();
-    void approveAccounts();
-    void monitorActivity();
-    void generateReports();
+    // Patient management
+    void managePatients();
+    void viewAllPatients();
+    void searchPatient();
+    void deletePatient();
+    
+    // Doctor management
+    void manageDoctors();
+    void viewAllDoctors();
+    void addDoctor();
+    void updateDoctor();
+    void deleteDoctor();
+    
+    // Staff management
+    void manageStaff();
+    void viewAllStaff();
+    void addStaff();
+    void deleteStaff();
+    
+    // Reports
+    void viewSystemLogs();
+    void systemStatistics();
     
 public:
     AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
@@ -27,4 +45,3 @@ public:
 };
 
 #endif // ADMIN_MODULE_H
-

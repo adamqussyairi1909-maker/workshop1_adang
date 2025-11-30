@@ -6,9 +6,9 @@
 #ifndef DOCTOR_MODULE_H
 #define DOCTOR_MODULE_H
 
-#include "Models.h"           // Same folder
-#include "ConsoleUtils.h"     // Same folder
-#include "DatabaseManager.h"  // Same folder
+#include "Models.h"
+#include "ConsoleUtils.h"
+#include "DatabaseManager.h"
 
 class DoctorModule {
 private:
@@ -16,9 +16,11 @@ private:
     DatabaseManager& db;
     UserSession& session;
     
-    void viewSchedule();
+    void viewTodayAppointments();
     void viewAllAppointments();
-    void viewPatientList();
+    void completeAppointment();
+    void viewPatientInfo();
+    void updateAvailability();
     
 public:
     DoctorModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
@@ -26,4 +28,3 @@ public:
 };
 
 #endif // DOCTOR_MODULE_H
-
