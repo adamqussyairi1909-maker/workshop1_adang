@@ -23,17 +23,15 @@ void displayMainMenu() {
     console.displayWelcomeBanner();
     
     console.setColor(CYAN);
-    std::cout << "  Welcome to the Hospital Appointment System!" << std::endl;
-    std::cout << "  Please select an option below to continue.\n" << std::endl;
+    std::cout << "  Welcome to the Hospital Appointment System!\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  MAIN MENU" << std::endl;
-    std::cout << "  ================================================" << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
-    std::cout << std::endl;
     console.printMenuOption(1, "Login");
     console.printMenuOption(2, "Register as Patient");
     console.printMenuOption(3, "Exit");

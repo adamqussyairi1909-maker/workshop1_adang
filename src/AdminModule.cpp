@@ -889,17 +889,15 @@ void AdminModule::showDashboard() {
         console.printHeader("ADMIN DASHBOARD");
         
         console.setColor(CYAN);
-        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
-        std::cout << "  You are logged in as: Administrator\n" << std::endl;
+        std::cout << "\n  Welcome back, " << session.userName << "!\n" << std::endl;
         console.resetColor();
         
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
         std::cout << "  MENU" << std::endl;
-        std::cout << "  ================================================" << std::endl;
+        std::cout << "  ================================================\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.printMenuOption(1, "Manage Patients");
         console.printMenuOption(2, "Manage Doctors");
         console.printMenuOption(3, "Manage Staff");

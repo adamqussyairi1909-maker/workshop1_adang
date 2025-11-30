@@ -17,17 +17,15 @@ bool AuthModule::login() {
     std::cin.ignore(10000, '\n');
     
     console.setColor(CYAN);
-    std::cout << "\n  Login to access your account." << std::endl;
-    std::cout << "  Enter your registered email and password below.\n" << std::endl;
+    std::cout << "\n  Login to access your account.\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  ENTER YOUR CREDENTIALS" << std::endl;
-    std::cout << "  ================================================" << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
-    std::cout << std::endl;
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address:" << std::endl;
     console.resetColor();

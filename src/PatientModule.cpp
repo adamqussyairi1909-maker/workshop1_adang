@@ -22,18 +22,16 @@ void PatientModule::registerPatient() {
     std::string name, phone, email, address, dob, gender, password, confirmPassword;
     
     console.setColor(CYAN);
-    std::cout << "\n  Create your patient account to book appointments." << std::endl;
-    std::cout << "  Please fill in all required fields below.\n" << std::endl;
+    std::cout << "\n  Create your patient account to book appointments.\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 1 OF 4: PERSONAL INFORMATION" << std::endl;
-    std::cout << "  ================================================" << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
     // Full Name
-    std::cout << std::endl;
     console.setColor(YELLOW);
     std::cout << "  >> Enter your full name as per IC/Passport:" << std::endl;
     console.resetColor();
@@ -216,14 +214,13 @@ void PatientModule::bookAppointment() {
     }
     
     console.setColor(CYAN);
-    std::cout << "\n  Book an appointment with one of our doctors." << std::endl;
-    std::cout << "  Follow the 3 steps below to complete booking.\n" << std::endl;
+    std::cout << "\n  Book an appointment with one of our doctors.\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
     std::cout << "  STEP 1 OF 3: SELECT A DOCTOR" << std::endl;
-    std::cout << "  ================================================" << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
     console.setColor(DARK_CYAN);
@@ -635,29 +632,27 @@ void PatientModule::showDashboard() {
         console.clearScreen();
         console.printHeader("PATIENT DASHBOARD");
         
-        console.setColor(CYAN);
-        std::cout << "\n  Welcome back, " << session.userName << "!" << std::endl;
-        std::cout << "  You are logged in as: Patient\n" << std::endl;
-        console.resetColor();
-        
-        console.setColor(DARK_GRAY);
-        std::cout << "  ================================================" << std::endl;
-        std::cout << "  MENU" << std::endl;
-        std::cout << "  ================================================" << std::endl;
-        console.resetColor();
-        
-        std::cout << std::endl;
-        console.printMenuOption(1, "Book New Appointment");
-        console.printMenuOption(2, "View My Appointments");
-        console.printMenuOption(3, "Cancel Appointment");
-        console.printMenuOption(4, "Update Personal Details");
-        console.printMenuOption(5, "Logout");
-        
-        std::cout << std::endl;
-        console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice:" << std::endl;
-        console.resetColor();
-        int choice = console.getIntInput("     Your choice: ", 1, 5);
+    console.setColor(CYAN);
+    std::cout << "\n  Welcome back, " << session.userName << "!\n" << std::endl;
+    console.resetColor();
+    
+    console.setColor(DARK_GRAY);
+    std::cout << "  ================================================" << std::endl;
+    std::cout << "  MENU" << std::endl;
+    std::cout << "  ================================================\n" << std::endl;
+    console.resetColor();
+    
+    console.printMenuOption(1, "Book New Appointment");
+    console.printMenuOption(2, "View My Appointments");
+    console.printMenuOption(3, "Cancel Appointment");
+    console.printMenuOption(4, "Update Personal Details");
+    console.printMenuOption(5, "Logout");
+    
+    std::cout << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Enter your choice:" << std::endl;
+    console.resetColor();
+    int choice = console.getIntInput("     Your choice: ", 1, 5);
         
         switch (choice) {
             case 1: bookAppointment(); break;

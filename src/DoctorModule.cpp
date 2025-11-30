@@ -352,17 +352,15 @@ void DoctorModule::showDashboard() {
         console.printHeader("DOCTOR DASHBOARD");
         
         console.setColor(CYAN);
-        std::cout << "\n  Welcome back, Dr. " << session.userName << "!" << std::endl;
-        std::cout << "  You are logged in as: Doctor\n" << std::endl;
+        std::cout << "\n  Welcome back, Dr. " << session.userName << "!\n" << std::endl;
         console.resetColor();
         
         console.setColor(DARK_GRAY);
         std::cout << "  ================================================" << std::endl;
         std::cout << "  MENU" << std::endl;
-        std::cout << "  ================================================" << std::endl;
+        std::cout << "  ================================================\n" << std::endl;
         console.resetColor();
         
-        std::cout << std::endl;
         console.printMenuOption(1, "Today's Appointments");
         console.printMenuOption(2, "All Appointments");
         console.printMenuOption(3, "Complete Appointment");
