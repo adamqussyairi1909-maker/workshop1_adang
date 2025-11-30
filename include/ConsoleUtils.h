@@ -59,7 +59,7 @@ public:
     
     // Print centered text
     void printCentered(const std::string& text, int width = 50) {
-        int padding = (width - text.length()) / 2;
+        int padding = (width - (int)text.length()) / 2;
         if (padding > 0) {
             std::cout << std::string(padding, ' ');
         }
