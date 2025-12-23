@@ -763,7 +763,7 @@ std::vector<ActivityLog> DatabaseManager::getActivityLogs(int limit) {
 // ============================================================
 
 std::vector<DatabaseManager::DoctorStats> DatabaseManager::getDoctorStatistics() {
-    std::vector<DoctorStats> stats;
+    std::vector<DatabaseManager::DoctorStats> stats;
     try {
         std::unique_ptr<sql::Statement> stmt(connection->createStatement());
         std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
@@ -776,7 +776,11 @@ std::vector<DatabaseManager::DoctorStats> DatabaseManager::getDoctorStatistics()
             "GROUP BY d.DoctorID, d.DoctorName "
             "ORDER BY TotalAppointments DESC"));
         while (res->next()) {
-            DoctorStats s;
+            DatabaseManager::DoctorStats s;
+            s.doctorID = 0;
+            s.totalAppointments = 0;
+            s.confirmedCount = 0;
+            s.completionRate = 0.0;
             s.doctorID = res->getInt("DoctorID");
             s.doctorName = res->getString("DoctorName");
             s.totalAppointments = res->getInt("TotalAppointments");
@@ -792,7 +796,7 @@ std::vector<DatabaseManager::DoctorStats> DatabaseManager::getDoctorStatistics()
 }
 
 std::vector<DatabaseManager::MonthlyStats> DatabaseManager::getMonthlyStatistics() {
-    std::vector<MonthlyStats> stats;
+    std::vector<DatabaseManager::MonthlyStats> stats;
     try {
         std::unique_ptr<sql::Statement> stmt(connection->createStatement());
         std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
@@ -804,7 +808,12 @@ std::vector<DatabaseManager::MonthlyStats> DatabaseManager::getMonthlyStatistics
             "GROUP BY YEAR(AppointmentDate), MONTH(AppointmentDate) "
             "ORDER BY Year DESC, Month DESC"));
         while (res->next()) {
-            MonthlyStats s;
+            DatabaseManager::MonthlyStats s;
+            s.year = 0;
+            s.month = 0;
+            s.totalAppointments = 0;
+            s.completed = 0;
+            s.completionPercentage = 0.0;
             s.year = res->getInt("Year");
             s.month = res->getInt("Month");
             s.totalAppointments = res->getInt("TotalAppointments");
@@ -820,7 +829,7 @@ std::vector<DatabaseManager::MonthlyStats> DatabaseManager::getMonthlyStatistics
 }
 
 std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
-    std::vector<DailyStats> stats;
+    std::vector<DatabaseManager::DailyStats> stats;
     try {
         std::unique_ptr<sql::Statement> stmt(connection->createStatement());
         std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
@@ -834,7 +843,12 @@ std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
             "GROUP BY AppointmentDate "
             "ORDER BY AppointmentDate DESC"));
         while (res->next()) {
-            DailyStats s;
+            DatabaseManager::DailyStats s;
+            s.total = 0;
+            s.confirmed = 0;
+            s.pending = 0;
+            s.completed = 0;
+            s.cancelled = 0;
             s.date = res->getString("AppointmentDate");
             s.total = res->getInt("Total");
             s.confirmed = res->getInt("Confirmed");

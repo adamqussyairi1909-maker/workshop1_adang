@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <windows.h>
+#undef max
 
 StaffModule::StaffModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
     : console(c), db(d), session(s) {}
@@ -430,7 +431,10 @@ void StaffModule::generateReport() {
     std::cout << "  ------------------------------------------------\n" << std::endl;
     console.resetColor();
     
-    int maxCount = std::max({pending, confirmed, completed, cancelled});
+    int maxCount = pending;
+    if (confirmed > maxCount) maxCount = confirmed;
+    if (completed > maxCount) maxCount = completed;
+    if (cancelled > maxCount) maxCount = cancelled;
     if (maxCount > 0) {
         int scale = maxCount > 20 ? maxCount / 20 : 1;
         if (scale == 0) scale = 1;
@@ -455,7 +459,8 @@ void StaffModule::generateReport() {
         std::cout << "  ------------------------------------------------\n" << std::endl;
         console.resetColor();
         
-        for (size_t i = 0; i < std::min(dailyStats.size(), size_t(7)); i++) {
+        size_t maxShow = dailyStats.size() < 7 ? dailyStats.size() : 7;
+        for (size_t i = 0; i < maxShow; i++) {
             console.setColor(WHITE);
             std::cout << "  " << dailyStats[i].date << " : " << dailyStats[i].total << " appointments";
             

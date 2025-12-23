@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <windows.h>
+#undef max
 
 AdminModule::AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
     : console(c), db(d), session(s) {}
@@ -888,7 +889,10 @@ void AdminModule::systemStatistics() {
     std::cout << "  ------------------------------------------------\n" << std::endl;
     console.resetColor();
     
-    int maxCount = std::max({pending, confirmed, completed, cancelled});
+    int maxCount = pending;
+    if (confirmed > maxCount) maxCount = confirmed;
+    if (completed > maxCount) maxCount = completed;
+    if (cancelled > maxCount) maxCount = cancelled;
     if (maxCount > 0) {
         int scale = maxCount > 20 ? maxCount / 20 : 1;
         if (scale == 0) scale = 1;
