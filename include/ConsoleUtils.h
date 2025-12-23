@@ -206,27 +206,22 @@ public:
                 continue;
             }
             
-            // STRICT: Check if input contains ONLY digits (and optional leading minus)
+            // STRICT: Check if input contains ONLY digits (NO signs allowed for menu options)
             bool isValidInteger = true;
-            bool hasSign = false;
             
-            for (size_t i = 0; i < input.length(); i++) {
-                char c = input[i];
-                
-                // Allow minus sign only at the beginning
-                if (c == '-' || c == '+') {
-                    if (i == 0 && !hasSign) {
-                        hasSign = true;
-                        continue;
-                    } else {
+            // Reject any + or - signs completely (menu options are always positive)
+            if (input.find('+') != std::string::npos || input.find('-') != std::string::npos) {
+                isValidInteger = false;
+            }
+            
+            // Check all characters are digits only
+            if (isValidInteger) {
+                for (size_t i = 0; i < input.length(); i++) {
+                    char c = input[i];
+                    if (!std::isdigit(static_cast<unsigned char>(c))) {
                         isValidInteger = false;
                         break;
                     }
-                }
-                // Allow only digits
-                else if (!std::isdigit(static_cast<unsigned char>(c))) {
-                    isValidInteger = false;
-                    break;
                 }
             }
             
