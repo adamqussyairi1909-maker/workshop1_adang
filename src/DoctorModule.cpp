@@ -10,8 +10,9 @@
 #include <vector>
 #include <windows.h>
 
+// OOP: Constructor calls base class constructor
 DoctorModule::DoctorModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
-    : console(c), db(d), session(s) {}
+    : BaseModule(c, d, s) {}
 
 void DoctorModule::viewTodayAppointments() {
     console.clearScreen();

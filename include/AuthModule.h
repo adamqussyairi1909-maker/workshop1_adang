@@ -10,18 +10,22 @@
 #include "ConsoleUtils.h"
 #include "DatabaseManager.h"
 
+// OOP: Encapsulation - Private members, public interface
 class AuthModule {
 private:
     ConsoleUtils& console;
     DatabaseManager& db;
     UserSession& session;
     
+    // Private helper methods (Encapsulation)
+    bool authenticateUser(const std::string& email, const std::string& password);
+    
 public:
     AuthModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
     bool login();
     void logout();
-    bool isLoggedIn();
-    std::string getUserType();
+    bool isLoggedIn() const;
+    std::string getUserType() const;
 };
 
 #endif // AUTH_MODULE_H

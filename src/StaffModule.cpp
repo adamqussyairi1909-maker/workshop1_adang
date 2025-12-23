@@ -13,8 +13,9 @@
 #include <windows.h>
 #undef max
 
+// OOP: Constructor calls base class constructor
 StaffModule::StaffModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
-    : console(c), db(d), session(s) {}
+    : BaseModule(c, d, s) {}
 
 void StaffModule::viewAllAppointments() {
     console.clearScreen();
