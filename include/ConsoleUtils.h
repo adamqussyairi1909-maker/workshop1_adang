@@ -11,6 +11,8 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cctype>
+#include <stdexcept>
 #include <conio.h>
 
 // Console color codes for Windows
@@ -180,31 +182,97 @@ public:
         (void)_getch();  // Cast to void to suppress warning
     }
     
-    // Get validated integer input
+    // Get validated integer input with STRICT validation
     int getIntInput(const std::string& prompt, int min, int max) {
+        std::string input;
         int value;
+        
         while (true) {
             setColor(CYAN);
             std::cout << prompt;
             resetColor();
             
-            if (std::cin >> value) {
-                if (value >= min && value <= max) {
-                    std::cin.ignore(10000, '\n');
-                    return value;
+            // Read entire line as string
+            std::getline(std::cin, input);
+            
+            // Trim leading and trailing whitespace
+            input.erase(0, input.find_first_not_of(" \t\n\r"));
+            input.erase(input.find_last_not_of(" \t\n\r") + 1);
+            
+            // Check if empty
+            if (input.empty()) {
+                printError("Input cannot be empty. Please enter a number between " + 
+                          std::to_string(min) + " and " + std::to_string(max) + ".");
+                continue;
+            }
+            
+            // STRICT: Check if input contains ONLY digits (and optional leading minus)
+            bool isValidInteger = true;
+            bool hasSign = false;
+            
+            for (size_t i = 0; i < input.length(); i++) {
+                char c = input[i];
+                
+                // Allow minus sign only at the beginning
+                if (c == '-' || c == '+') {
+                    if (i == 0 && !hasSign) {
+                        hasSign = true;
+                        continue;
+                    } else {
+                        isValidInteger = false;
+                        break;
+                    }
                 }
-                printError("Please enter a number between " + std::to_string(min) + 
-                          " and " + std::to_string(max));
-            } else {
-                std::cin.clear();
-                std::cin.ignore(10000, '\n');
-                printError("Invalid input. Please enter a number.");
+                // Allow only digits
+                else if (!std::isdigit(static_cast<unsigned char>(c))) {
+                    isValidInteger = false;
+                    break;
+                }
+            }
+            
+            // Reject if contains invalid characters
+            if (!isValidInteger) {
+                printError("Invalid input! Only whole numbers are allowed. Please enter a number between " + 
+                          std::to_string(min) + " and " + std::to_string(max) + ".");
+                continue;
+            }
+            
+            // Check for leading zeros (except for single zero)
+            if (input.length() > 1 && input[0] == '0') {
+                printError("Invalid input! Numbers cannot have leading zeros. Please enter a number between " + 
+                          std::to_string(min) + " and " + std::to_string(max) + ".");
+                continue;
+            }
+            
+            // Convert to integer
+            try {
+                value = std::stoi(input);
+                
+                // Check range
+                if (value < min || value > max) {
+                    printError("Number out of range! Please enter a number between " + 
+                              std::to_string(min) + " and " + std::to_string(max) + ".");
+                    continue;
+                }
+                
+                return value;
+            }
+            catch (const std::out_of_range&) {
+                printError("Number too large! Please enter a number between " + 
+                          std::to_string(min) + " and " + std::to_string(max) + ".");
+                continue;
+            }
+            catch (const std::invalid_argument&) {
+                printError("Invalid input! Please enter a valid number between " + 
+                          std::to_string(min) + " and " + std::to_string(max) + ".");
+                continue;
             }
         }
     }
     
-    // Get string input with validation
-    std::string getStringInput(const std::string& prompt, bool allowEmpty = false) {
+    // Get string input with STRICT validation
+    std::string getStringInput(const std::string& prompt, bool allowEmpty = false, 
+                               size_t maxLength = 255, bool trimWhitespace = true) {
         std::string input;
         while (true) {
             setColor(CYAN);
@@ -212,10 +280,38 @@ public:
             resetColor();
             std::getline(std::cin, input);
             
+            // Trim leading and trailing whitespace if requested
+            if (trimWhitespace) {
+                input.erase(0, input.find_first_not_of(" \t\n\r"));
+                input.erase(input.find_last_not_of(" \t\n\r") + 1);
+            }
+            
+            // Check if empty
             if (!allowEmpty && input.empty()) {
-                printError("This field cannot be empty.");
+                printError("This field cannot be empty. Please enter a value.");
                 continue;
             }
+            
+            // Check maximum length
+            if (input.length() > maxLength) {
+                printError("Input too long! Maximum length is " + std::to_string(maxLength) + " characters.");
+                continue;
+            }
+            
+            // Check for control characters (security)
+            bool hasControlChar = false;
+            for (char c : input) {
+                if (std::iscntrl(static_cast<unsigned char>(c)) && c != '\n' && c != '\r' && c != '\t') {
+                    hasControlChar = true;
+                    break;
+                }
+            }
+            
+            if (hasControlChar) {
+                printError("Invalid characters detected. Please enter valid text only.");
+                continue;
+            }
+            
             return input;
         }
     }
@@ -239,15 +335,30 @@ public:
         return true;
     }
     
-    // Validate date format (YYYY-MM-DD)
+    // Validate date format (YYYY-MM-DD) with STRICT validation
     bool isValidDate(const std::string& date) {
-        if (date.length() != 10) return false;
-        if (date[4] != '-' || date[7] != '-') return false;
+        // Trim whitespace first
+        std::string trimmed = date;
+        trimmed.erase(0, trimmed.find_first_not_of(" \t\n\r"));
+        trimmed.erase(trimmed.find_last_not_of(" \t\n\r") + 1);
+        
+        // Must be exactly 10 characters
+        if (trimmed.length() != 10) return false;
+        
+        // Must have dashes at correct positions
+        if (trimmed[4] != '-' || trimmed[7] != '-') return false;
+        
+        // Check all other characters are digits (STRICT)
+        for (int i = 0; i < 10; i++) {
+            if (i != 4 && i != 7 && !std::isdigit(static_cast<unsigned char>(trimmed[i]))) {
+                return false;
+            }
+        }
         
         try {
-            int year = std::stoi(date.substr(0, 4));
-            int month = std::stoi(date.substr(5, 2));
-            int day = std::stoi(date.substr(8, 2));
+            int year = std::stoi(trimmed.substr(0, 4));
+            int month = std::stoi(trimmed.substr(5, 2));
+            int day = std::stoi(trimmed.substr(8, 2));
             
             if (year < 1900 || year > 2100) return false;
             if (month < 1 || month > 12) return false;
@@ -259,14 +370,29 @@ public:
         }
     }
     
-    // Validate time format (HH:MM)
+    // Validate time format (HH:MM) with STRICT validation
     bool isValidTime(const std::string& time) {
-        if (time.length() != 5) return false;
-        if (time[2] != ':') return false;
+        // Trim whitespace first
+        std::string trimmed = time;
+        trimmed.erase(0, trimmed.find_first_not_of(" \t\n\r"));
+        trimmed.erase(trimmed.find_last_not_of(" \t\n\r") + 1);
+        
+        // Must be exactly 5 characters
+        if (trimmed.length() != 5) return false;
+        
+        // Must have colon at correct position
+        if (trimmed[2] != ':') return false;
+        
+        // Check all other characters are digits (STRICT)
+        for (int i = 0; i < 5; i++) {
+            if (i != 2 && !std::isdigit(static_cast<unsigned char>(trimmed[i]))) {
+                return false;
+            }
+        }
         
         try {
-            int hour = std::stoi(time.substr(0, 2));
-            int minute = std::stoi(time.substr(3, 2));
+            int hour = std::stoi(trimmed.substr(0, 2));
+            int minute = std::stoi(trimmed.substr(3, 2));
             
             if (hour < 0 || hour > 23) return false;
             if (minute < 0 || minute > 59) return false;
