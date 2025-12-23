@@ -108,6 +108,7 @@ public:
         int totalAppointments;
         int confirmedCount;
         double completionRate;
+        DoctorStats() : doctorID(0), totalAppointments(0), confirmedCount(0), completionRate(0.0) {}
     };
     std::vector<DoctorStats> getDoctorStatistics(); // GROUP BY with aggregation
     
@@ -117,6 +118,7 @@ public:
         int totalAppointments;
         int completed;
         double completionPercentage;
+        MonthlyStats() : year(0), month(0), totalAppointments(0), completed(0), completionPercentage(0.0) {}
     };
     std::vector<MonthlyStats> getMonthlyStatistics(); // GROUP BY with date functions
     
@@ -127,6 +129,7 @@ public:
         int pending;
         int completed;
         int cancelled;
+        DailyStats() : total(0), confirmed(0), pending(0), completed(0), cancelled(0) {}
     };
     std::vector<DailyStats> getDailyStatistics(); // GROUP BY with aggregation
 };

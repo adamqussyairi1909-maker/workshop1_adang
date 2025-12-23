@@ -173,10 +173,10 @@ void AuthModule::logout() {
     session = UserSession();
 }
 
-bool AuthModule::isLoggedIn() {
+bool AuthModule::isLoggedIn() const {
     return session.isLoggedIn;
 }
 
-std::string AuthModule::getUserType() {
+std::string AuthModule::getUserType() const {
     return session.userType;
 }

@@ -777,10 +777,6 @@ std::vector<DatabaseManager::DoctorStats> DatabaseManager::getDoctorStatistics()
             "ORDER BY TotalAppointments DESC"));
         while (res->next()) {
             DatabaseManager::DoctorStats s;
-            s.doctorID = 0;
-            s.totalAppointments = 0;
-            s.confirmedCount = 0;
-            s.completionRate = 0.0;
             s.doctorID = res->getInt("DoctorID");
             s.doctorName = res->getString("DoctorName");
             s.totalAppointments = res->getInt("TotalAppointments");
@@ -809,11 +805,6 @@ std::vector<DatabaseManager::MonthlyStats> DatabaseManager::getMonthlyStatistics
             "ORDER BY Year DESC, Month DESC"));
         while (res->next()) {
             DatabaseManager::MonthlyStats s;
-            s.year = 0;
-            s.month = 0;
-            s.totalAppointments = 0;
-            s.completed = 0;
-            s.completionPercentage = 0.0;
             s.year = res->getInt("Year");
             s.month = res->getInt("Month");
             s.totalAppointments = res->getInt("TotalAppointments");
@@ -844,11 +835,6 @@ std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
             "ORDER BY AppointmentDate DESC"));
         while (res->next()) {
             DatabaseManager::DailyStats s;
-            s.total = 0;
-            s.confirmed = 0;
-            s.pending = 0;
-            s.completed = 0;
-            s.cancelled = 0;
             s.date = res->getString("AppointmentDate");
             s.total = res->getInt("Total");
             s.confirmed = res->getInt("Confirmed");
