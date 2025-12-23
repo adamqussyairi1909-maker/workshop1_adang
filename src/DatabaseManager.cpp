@@ -757,3 +757,95 @@ std::vector<ActivityLog> DatabaseManager::getActivityLogs(int limit) {
     }
     return logs;
 }
+
+// ============================================================
+// Grade A: Complex Calculations (SQL Aggregations)
+// ============================================================
+
+std::vector<DatabaseManager::DoctorStats> DatabaseManager::getDoctorStatistics() {
+    std::vector<DoctorStats> stats;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT d.DoctorID, d.DoctorName, "
+            "COUNT(a.AppointmentID) AS TotalAppointments, "
+            "SUM(CASE WHEN a.Status = 'Confirmed' THEN 1 ELSE 0 END) AS ConfirmedCount, "
+            "AVG(CASE WHEN a.Status = 'Completed' THEN 1.0 ELSE 0.0 END) * 100 AS CompletionRate "
+            "FROM Doctors d "
+            "LEFT JOIN Appointment a ON d.DoctorID = a.DoctorID "
+            "GROUP BY d.DoctorID, d.DoctorName "
+            "ORDER BY TotalAppointments DESC"));
+        while (res->next()) {
+            DoctorStats s;
+            s.doctorID = res->getInt("DoctorID");
+            s.doctorName = res->getString("DoctorName");
+            s.totalAppointments = res->getInt("TotalAppointments");
+            s.confirmedCount = res->getInt("ConfirmedCount");
+            s.completionRate = res->getDouble("CompletionRate");
+            stats.push_back(s);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return stats;
+}
+
+std::vector<DatabaseManager::MonthlyStats> DatabaseManager::getMonthlyStatistics() {
+    std::vector<MonthlyStats> stats;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT YEAR(AppointmentDate) AS Year, MONTH(AppointmentDate) AS Month, "
+            "COUNT(*) AS TotalAppointments, "
+            "SUM(CASE WHEN Status = 'Completed' THEN 1 ELSE 0 END) AS Completed, "
+            "AVG(CASE WHEN Status = 'Completed' THEN 1.0 ELSE 0.0 END) * 100 AS CompletionPercentage "
+            "FROM Appointment "
+            "GROUP BY YEAR(AppointmentDate), MONTH(AppointmentDate) "
+            "ORDER BY Year DESC, Month DESC"));
+        while (res->next()) {
+            MonthlyStats s;
+            s.year = res->getInt("Year");
+            s.month = res->getInt("Month");
+            s.totalAppointments = res->getInt("TotalAppointments");
+            s.completed = res->getInt("Completed");
+            s.completionPercentage = res->getDouble("CompletionPercentage");
+            stats.push_back(s);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return stats;
+}
+
+std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
+    std::vector<DailyStats> stats;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT AppointmentDate, "
+            "COUNT(*) AS Total, "
+            "SUM(CASE WHEN Status = 'Confirmed' THEN 1 ELSE 0 END) AS Confirmed, "
+            "SUM(CASE WHEN Status = 'Pending' THEN 1 ELSE 0 END) AS Pending, "
+            "SUM(CASE WHEN Status = 'Completed' THEN 1 ELSE 0 END) AS Completed, "
+            "SUM(CASE WHEN Status = 'Cancelled' THEN 1 ELSE 0 END) AS Cancelled "
+            "FROM Appointment "
+            "GROUP BY AppointmentDate "
+            "ORDER BY AppointmentDate DESC"));
+        while (res->next()) {
+            DailyStats s;
+            s.date = res->getString("AppointmentDate");
+            s.total = res->getInt("Total");
+            s.confirmed = res->getInt("Confirmed");
+            s.pending = res->getInt("Pending");
+            s.completed = res->getInt("Completed");
+            s.cancelled = res->getInt("Cancelled");
+            stats.push_back(s);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return stats;
+}

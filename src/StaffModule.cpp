@@ -5,9 +5,11 @@
 
 #include "../include/StaffModule.h"
 #include "../include/Utilities.h"
+#include "../include/DatabaseManager.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include <windows.h>
 
 StaffModule::StaffModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
@@ -419,6 +421,61 @@ void StaffModule::generateReport() {
     }
     std::cout << "  Available Doctors     : " << availableDocs << std::endl;
     console.resetColor();
+    
+    // Grade A: Text-Based Bar Chart
+    std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ------------------------------------------------" << std::endl;
+    std::cout << "  APPOINTMENT STATUS CHART" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
+    
+    int maxCount = std::max({pending, confirmed, completed, cancelled});
+    if (maxCount > 0) {
+        int scale = maxCount > 20 ? maxCount / 20 : 1;
+        if (scale == 0) scale = 1;
+        console.setColor(YELLOW);
+        std::cout << "  Pending   : " << std::string(pending / scale, '*') << " (" << pending << ")" << std::endl;
+        console.setColor(GREEN);
+        std::cout << "  Confirmed : " << std::string(confirmed / scale, '*') << " (" << confirmed << ")" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  Completed : " << std::string(completed / scale, '*') << " (" << completed << ")" << std::endl;
+        console.setColor(RED);
+        std::cout << "  Cancelled : " << std::string(cancelled / scale, '*') << " (" << cancelled << ")" << std::endl;
+        console.resetColor();
+    }
+    
+    // Grade A: Text-Based Graph Summary with Percentage Changes
+    std::vector<DatabaseManager::DailyStats> dailyStats = db.getDailyStatistics();
+    if (dailyStats.size() >= 2 && choice >= 2) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  DAILY APPOINTMENT TREND" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        for (size_t i = 0; i < std::min(dailyStats.size(), size_t(7)); i++) {
+            console.setColor(WHITE);
+            std::cout << "  " << dailyStats[i].date << " : " << dailyStats[i].total << " appointments";
+            
+            if (i > 0 && dailyStats[i-1].total > 0) {
+                double change = ((dailyStats[i].total - dailyStats[i-1].total) * 100.0) / dailyStats[i-1].total;
+                if (change > 0) {
+                    console.setColor(GREEN);
+                    std::cout << " (" << std::fixed << std::setprecision(1) << change << "% increase from " << dailyStats[i-1].date << ")";
+                } else if (change < 0) {
+                    console.setColor(RED);
+                    std::cout << " (" << std::fixed << std::setprecision(1) << -change << "% decrease from " << dailyStats[i-1].date << ")";
+                } else {
+                    console.setColor(YELLOW);
+                    std::cout << " (no change from " << dailyStats[i-1].date << ")";
+                }
+            }
+            std::cout << std::endl;
+            console.resetColor();
+        }
+    }
     
     db.logActivity("Staff", session.userID, "Generate Report", 
                   "Report Type: " + std::to_string(choice));

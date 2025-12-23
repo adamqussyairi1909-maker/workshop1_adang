@@ -61,7 +61,7 @@ int main() {
         console.setColor(WHITE);
         std::cout << "  Please check:" << std::endl;
         std::cout << "    1. XAMPP MySQL is running" << std::endl;
-        std::cout << "    2. Database 'hospital_db' exists" << std::endl;
+        std::cout << "    2. Database 'hospital_appointment_db' exists" << std::endl;
         std::cout << "    3. Database credentials are correct" << std::endl;
         console.resetColor();
         

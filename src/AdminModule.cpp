@@ -5,9 +5,11 @@
 
 #include "../include/AdminModule.h"
 #include "../include/Utilities.h"
+#include "../include/DatabaseManager.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include <windows.h>
 
 AdminModule::AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
@@ -875,6 +877,58 @@ void AdminModule::systemStatistics() {
         std::cout << std::fixed << std::setprecision(1);
         std::cout << "  Completion Rate       : " << completionRate << "%" << std::endl;
         std::cout << "  Cancellation Rate     : " << cancellationRate << "%" << std::endl;
+        console.resetColor();
+    }
+    
+    // Grade A: Text-Based Bar Chart for Statistics
+    std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ------------------------------------------------" << std::endl;
+    std::cout << "  APPOINTMENT STATUS CHART" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
+    
+    int maxCount = std::max({pending, confirmed, completed, cancelled});
+    if (maxCount > 0) {
+        int scale = maxCount > 20 ? maxCount / 20 : 1;
+        if (scale == 0) scale = 1;
+        console.setColor(YELLOW);
+        std::cout << "  Pending   : " << std::string(pending / scale, '*') << " (" << pending << ")" << std::endl;
+        console.setColor(GREEN);
+        std::cout << "  Confirmed : " << std::string(confirmed / scale, '*') << " (" << confirmed << ")" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  Completed : " << std::string(completed / scale, '*') << " (" << completed << ")" << std::endl;
+        console.setColor(RED);
+        std::cout << "  Cancelled : " << std::string(cancelled / scale, '*') << " (" << cancelled << ")" << std::endl;
+        console.resetColor();
+    }
+    
+    // Grade A: Doctor Statistics with SQL Aggregation
+    std::vector<DatabaseManager::DoctorStats> doctorStats = db.getDoctorStatistics();
+    if (!doctorStats.empty()) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  DOCTOR PERFORMANCE (SQL GROUP BY)" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        console.setColor(DARK_CYAN);
+        std::cout << "  " << std::left 
+                  << std::setw(25) << "Doctor Name"
+                  << std::setw(15) << "Total"
+                  << std::setw(15) << "Confirmed"
+                  << std::setw(15) << "Rate %" << std::endl;
+        std::cout << "  " << std::string(70, '-') << std::endl;
+        console.resetColor();
+        
+        for (const auto& stat : doctorStats) {
+            console.setColor(WHITE);
+            std::cout << "  " << std::setw(25) << stat.doctorName
+                      << std::setw(15) << stat.totalAppointments
+                      << std::setw(15) << stat.confirmedCount
+                      << std::setw(15) << std::fixed << std::setprecision(1) << stat.completionRate << std::endl;
+        }
         console.resetColor();
     }
     
