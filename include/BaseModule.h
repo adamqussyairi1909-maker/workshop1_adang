@@ -42,17 +42,3 @@ public:
 
 #endif // BASE_MODULE_H
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> c3fd1bc12d6d1399ff5806391b9d7f93e2c6502a
