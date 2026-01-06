@@ -5,13 +5,17 @@
 
 #include "../include/StaffModule.h"
 #include "../include/Utilities.h"
+#include "../include/DatabaseManager.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include <windows.h>
+#undef max
 
+// OOP: Constructor calls base class constructor
 StaffModule::StaffModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
-    : console(c), db(d), session(s) {}
+    : BaseModule(c, d, s) {}
 
 void StaffModule::viewAllAppointments() {
     console.clearScreen();
@@ -420,6 +424,65 @@ void StaffModule::generateReport() {
     std::cout << "  Available Doctors     : " << availableDocs << std::endl;
     console.resetColor();
     
+    // Grade A: Text-Based Bar Chart
+    std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ------------------------------------------------" << std::endl;
+    std::cout << "  APPOINTMENT STATUS CHART" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
+    
+    int maxCount = pending;
+    if (confirmed > maxCount) maxCount = confirmed;
+    if (completed > maxCount) maxCount = completed;
+    if (cancelled > maxCount) maxCount = cancelled;
+    if (maxCount > 0) {
+        int scale = maxCount > 20 ? maxCount / 20 : 1;
+        if (scale == 0) scale = 1;
+        console.setColor(YELLOW);
+        std::cout << "  Pending   : " << std::string(pending / scale, '*') << " (" << pending << ")" << std::endl;
+        console.setColor(GREEN);
+        std::cout << "  Confirmed : " << std::string(confirmed / scale, '*') << " (" << confirmed << ")" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  Completed : " << std::string(completed / scale, '*') << " (" << completed << ")" << std::endl;
+        console.setColor(RED);
+        std::cout << "  Cancelled : " << std::string(cancelled / scale, '*') << " (" << cancelled << ")" << std::endl;
+        console.resetColor();
+    }
+    
+    // Grade A: Text-Based Graph Summary with Percentage Changes
+    std::vector<DatabaseManager::DailyStats> dailyStats = db.getDailyStatistics();
+    if (dailyStats.size() >= 2 && choice >= 2) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  DAILY APPOINTMENT TREND" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        size_t maxShow = dailyStats.size() < 7 ? dailyStats.size() : 7;
+        for (size_t i = 0; i < maxShow; i++) {
+            console.setColor(WHITE);
+            std::cout << "  " << dailyStats[i].date << " : " << dailyStats[i].total << " appointments";
+            
+            if (i > 0 && dailyStats[i-1].total > 0) {
+                double change = ((dailyStats[i].total - dailyStats[i-1].total) * 100.0) / dailyStats[i-1].total;
+                if (change > 0) {
+                    console.setColor(GREEN);
+                    std::cout << " (" << std::fixed << std::setprecision(1) << change << "% increase from " << dailyStats[i-1].date << ")";
+                } else if (change < 0) {
+                    console.setColor(RED);
+                    std::cout << " (" << std::fixed << std::setprecision(1) << -change << "% decrease from " << dailyStats[i-1].date << ")";
+                } else {
+                    console.setColor(YELLOW);
+                    std::cout << " (no change from " << dailyStats[i-1].date << ")";
+                }
+            }
+            std::cout << std::endl;
+            console.resetColor();
+        }
+    }
+    
     db.logActivity("Staff", session.userID, "Generate Report", 
                   "Report Type: " + std::to_string(choice));
     
@@ -441,6 +504,7 @@ void StaffModule::showDashboard() {
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "View All Appointments");
         console.printMenuOption(2, "Approve Appointments");
         console.printMenuOption(3, "Search Patient");
@@ -450,9 +514,9 @@ void StaffModule::showDashboard() {
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice:" << std::endl;
+        std::cout << "  >> Enter your choice (1-6): ";
         console.resetColor();
-        int choice = console.getIntInput("     Your choice: ", 1, 6);
+        int choice = console.getIntInput("", 1, 6);
         
         switch (choice) {
             case 1: viewAllAppointments(); break;

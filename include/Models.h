@@ -75,6 +75,7 @@ struct Appointment {
     std::string appointmentTime;
     std::string appointmentDate;
     std::string reason;
+    int duration = 30; // Duration in minutes (default 30 minutes)
     int patientID = 0;
     int doctorID = 0;
     int staffID = 0;

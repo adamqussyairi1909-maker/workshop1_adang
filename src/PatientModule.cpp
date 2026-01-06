@@ -11,8 +11,9 @@
 #include <windows.h>
 #undef max
 
+// OOP: Constructor calls base class constructor
 PatientModule::PatientModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
-    : console(c), db(d), session(s) {}
+    : BaseModule(c, d, s) {}
 
 void PatientModule::registerPatient() {
     console.clearScreen();
@@ -30,20 +31,51 @@ void PatientModule::registerPatient() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
-    // Full Name
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your full name: ";
+    std::cout << "  >> Enter your full name (or press 0 to return to main menu): ";
     console.resetColor();
     
     if (std::cin.peek() == '\n') std::cin.ignore();
     std::getline(std::cin, name);
     
+    // Check for back option
+    if (name == "0") {
+        console.printInfo("Registration cancelled. Returning to main menu.");
+        Sleep(1000);
+        return;
+    }
+    
+    // Validate name
+    if (name.empty()) {
+        console.printError("Name cannot be empty!");
+        console.pauseScreen();
+        return;
+    }
+    
+    if (name.length() < 2) {
+        console.printError("Name must be at least 2 characters long!");
+        console.pauseScreen();
+        return;
+    }
+    
     // Phone validation
     do {
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your phone number (10-12 digits): ";
+        std::cout << "  >> Enter your phone number (10-12 digits, or press 0 to return): ";
         console.resetColor();
         std::getline(std::cin, phone);
+        
+        if (phone == "0") {
+            console.printInfo("Registration cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (phone.empty()) {
+            console.printError("Phone number cannot be empty!");
+            continue;
+        }
+        
         if (!console.isValidPhone(phone)) {
             console.printError("Invalid format! Example: 0123456789");
         }
@@ -52,9 +84,21 @@ void PatientModule::registerPatient() {
     // Email validation
     do {
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your email address: ";
+        std::cout << "  >> Enter your email address (or press 0 to return): ";
         console.resetColor();
         std::getline(std::cin, email);
+        
+        if (email == "0") {
+            console.printInfo("Registration cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (email.empty()) {
+            console.printError("Email cannot be empty!");
+            continue;
+        }
+        
         if (!console.isValidEmail(email)) {
             console.printError("Invalid format! Example: name@email.com");
         }
@@ -62,9 +106,21 @@ void PatientModule::registerPatient() {
     
     // Address
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your home address: ";
+    std::cout << "  >> Enter your home address (or press 0 to return): ";
     console.resetColor();
     std::getline(std::cin, address);
+    
+    if (address == "0") {
+        console.printInfo("Registration cancelled. Returning to main menu.");
+        Sleep(1000);
+        return;
+    }
+    
+    if (address.empty()) {
+        console.printError("Address cannot be empty!");
+        console.pauseScreen();
+        return;
+    }
     
     std::cout << std::endl;
     console.setColor(DARK_GRAY);
@@ -77,9 +133,21 @@ void PatientModule::registerPatient() {
     std::cout << std::endl;
     do {
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your date of birth (YYYY-MM-DD): ";
+        std::cout << "  >> Enter your date of birth (YYYY-MM-DD, or press 0 to return): ";
         console.resetColor();
         std::getline(std::cin, dob);
+        
+        if (dob == "0") {
+            console.printInfo("Registration cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (dob.empty()) {
+            console.printError("Date of birth cannot be empty!");
+            continue;
+        }
+        
         if (!console.isValidDate(dob)) {
             console.printError("Invalid format! Example: 1990-05-15");
         }
@@ -87,9 +155,16 @@ void PatientModule::registerPatient() {
     
     // Gender selection
     console.setColor(YELLOW);
-    std::cout << "  >> Select your gender (1=Male, 2=Female): ";
+    std::cout << "  >> Select your gender (1=Male, 2=Female, 0=Return): ";
     console.resetColor();
-    int genderChoice = console.getIntInput("", 1, 2);
+    int genderChoice = console.getIntInput("", 0, 2);
+    
+    if (genderChoice == 0) {
+        console.printInfo("Registration cancelled. Returning to main menu.");
+        Sleep(1000);
+        return;
+    }
+    
     gender = (genderChoice == 1) ? "Male" : "Female";
     
     
@@ -102,9 +177,20 @@ void PatientModule::registerPatient() {
     
     do {
         console.setColor(YELLOW);
-        std::cout << "  >> Create a password (min 6 characters): ";
+        std::cout << "  >> Create a password (min 6 characters, or type '0' to return): ";
         console.resetColor();
         password = console.getPasswordInput();
+        
+        if (password == "0") {
+            console.printInfo("Registration cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (password.empty()) {
+            console.printError("Password cannot be empty!");
+            continue;
+        }
         
         if (password.length() < 6) {
             console.printError("Too short! Minimum 6 characters.");
@@ -115,6 +201,12 @@ void PatientModule::registerPatient() {
         std::cout << "  >> Confirm your password: ";
         console.resetColor();
         confirmPassword = console.getPasswordInput();
+        
+        if (confirmPassword == "0") {
+            console.printInfo("Registration cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
         
         if (password != confirmPassword) {
             console.printError("Passwords don't match! Try again.");
@@ -144,10 +236,16 @@ void PatientModule::registerPatient() {
     
     
     console.setColor(YELLOW);
-    std::cout << "  >> Confirm registration (Y/N): ";
+    std::cout << "  >> Confirm registration (Y/N, or press 0 to return): ";
     console.resetColor();
     std::string confirm;
     std::getline(std::cin, confirm);
+    
+    if (confirm == "0") {
+        console.printInfo("Registration cancelled. Returning to main menu.");
+        Sleep(1000);
+        return;
+    }
     
     if (confirm != "Y" && confirm != "y") {
         console.printInfo("Registration cancelled. No account created.");
@@ -203,7 +301,7 @@ void PatientModule::bookAppointment() {
     
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
-    std::cout << "  STEP 1 OF 3: SELECT A DOCTOR" << std::endl;
+    std::cout << "  STEP 1 OF 4: SELECT A DOCTOR" << std::endl;
     std::cout << "  ================================================" << std::endl;
     console.resetColor();
     
@@ -226,9 +324,16 @@ void PatientModule::bookAppointment() {
     
     std::cout << std::endl;
     console.setColor(YELLOW);
-    std::cout << "  >> Select a doctor from the list above:" << std::endl;
+    std::cout << "  >> Select a doctor from the list above (or enter 0 to return):" << std::endl;
     console.resetColor();
-    int doctorChoice = console.getIntInput("     Enter number (1-" + std::to_string(doctors.size()) + "): ", 1, (int)doctors.size());
+    int doctorChoice = console.getIntInput("     Enter number (0-" + std::to_string(doctors.size()) + "): ", 0, (int)doctors.size());
+    
+    if (doctorChoice == 0) {
+        console.printInfo("Booking cancelled. Returning to main menu.");
+        Sleep(1000);
+        return;
+    }
+    
     int selectedDoctorID = doctors[doctorChoice - 1].doctorID;
     
     console.setColor(GREEN);
@@ -243,7 +348,7 @@ void PatientModule::bookAppointment() {
     std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
-    std::cout << "  STEP 2 OF 3: SELECT DATE AND TIME" << std::endl;
+    std::cout << "  STEP 2 OF 4: SELECT DATE AND TIME" << std::endl;
     std::cout << "  ================================================" << std::endl;
     console.resetColor();
     
@@ -256,9 +361,22 @@ void PatientModule::bookAppointment() {
     console.resetColor();
     
     do {
-        date = console.getStringInput("     Appointment Date: ");
+        date = console.getStringInput("     Appointment Date (or press 0 to return): ");
+        
+        if (date == "0") {
+            console.printInfo("Booking cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (date.empty()) {
+            console.printError("Date cannot be empty!");
+            continue;
+        }
+        
         if (!console.isValidDate(date)) {
             console.printError("Invalid format! Use YYYY-MM-DD");
+            date = "";
         } else if (date < getCurrentDate()) {
             console.printError("Cannot book past dates!");
             date = "";
@@ -274,18 +392,86 @@ void PatientModule::bookAppointment() {
     console.resetColor();
     
     do {
-        time = console.getStringInput("     Appointment Time: ");
+        time = console.getStringInput("     Appointment Time (or press 0 to return): ");
+        
+        if (time == "0") {
+            console.printInfo("Booking cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        
+        if (time.empty()) {
+            console.printError("Time cannot be empty!");
+            continue;
+        }
+        
         if (!console.isValidTime(time)) {
             console.printError("Invalid format! Use HH:MM (e.g., 10:30)");
+        } else {
+            // Validate clinic hours (08:00 - 17:00)
+            int hour = std::stoi(time.substr(0, 2));
+            if (hour < 8 || hour >= 17) {
+                console.printError("Clinic hours are 08:00 - 17:00. Please select a time within these hours.");
+                time = "";
+            }
         }
-    } while (!console.isValidTime(time));
+    } while (time.empty() || !console.isValidTime(time));
     
-    // Step 3: Reason
+    // Step 3: Duration
     std::cout << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "  ================================================" << std::endl;
-    std::cout << "  STEP 3 OF 3: REASON FOR VISIT" << std::endl;
+    std::cout << "  STEP 3 OF 4: APPOINTMENT DURATION" << std::endl;
     std::cout << "  ================================================" << std::endl;
+    console.resetColor();
+    
+    std::cout << std::endl;
+    console.setColor(YELLOW);
+    std::cout << "  >> Select expected appointment duration (in minutes):" << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "     15 minutes - Quick checkup, Prescription refill" << std::endl;
+    std::cout << "     30 minutes - Standard consultation, Follow-up" << std::endl;
+    std::cout << "     45 minutes - Detailed examination, Multiple concerns" << std::endl;
+    std::cout << "     60 minutes - Complex consultation, Procedure" << std::endl;
+    std::cout << "     0 - Return to main menu" << std::endl;
+    console.resetColor();
+    
+    int duration;
+    do {
+        duration = console.getIntInput("     Duration (15/30/45/60, or 0 to return): ", 0, 60);
+        if (duration == 0) {
+            console.printInfo("Booking cancelled. Returning to main menu.");
+            Sleep(1000);
+            return;
+        }
+        if (duration != 15 && duration != 30 && duration != 45 && duration != 60) {
+            console.printError("Invalid duration! Please select 15, 30, 45, or 60 minutes.");
+        }
+    } while (duration != 15 && duration != 30 && duration != 45 && duration != 60);
+    
+    // Calculate reason category based on duration
+    std::string reasonCategory;
+    if (duration <= 15) {
+        reasonCategory = "Quick Checkup";
+    } else if (duration <= 30) {
+        reasonCategory = "Standard Consultation";
+    } else if (duration <= 45) {
+        reasonCategory = "Detailed Examination";
+    } else {
+        reasonCategory = "Complex Consultation";
+    }
+    
+    // Step 4: Reason
+    std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ================================================" << std::endl;
+    std::cout << "  STEP 4 OF 4: REASON FOR VISIT" << std::endl;
+    std::cout << "  ================================================" << std::endl;
+    console.resetColor();
+    
+    std::cout << std::endl;
+    console.setColor(CYAN);
+    std::cout << "  [CALCULATED] Reason Category: " << reasonCategory << " (based on " << duration << " min duration)" << std::endl;
     console.resetColor();
     
     std::cout << std::endl;
@@ -293,9 +479,19 @@ void PatientModule::bookAppointment() {
     std::cout << "  >> Briefly describe why you need to see the doctor:" << std::endl;
     console.setColor(DARK_GRAY);
     std::cout << "     Example: Fever and headache, Follow-up checkup" << std::endl;
+    std::cout << "     Suggested: " << reasonCategory << " - " << std::endl;
     console.resetColor();
     
     reason = console.getStringInput("     Reason: ");
+    
+    if (reason.empty()) {
+        console.printError("Reason cannot be empty!");
+        console.pauseScreen();
+        return;
+    }
+    
+    // Append duration info to reason
+    reason = reason + " [" + reasonCategory + " - " + std::to_string(duration) + " min]";
     
     // Check daily limit
     if (!db.checkPatientDailyLimit(session.userID, selectedDoctorID, date)) {
@@ -332,11 +528,13 @@ void PatientModule::bookAppointment() {
         std::cout << "  Doctor         : " << doctors[doctorChoice - 1].doctorName << std::endl;
         std::cout << "  Specialty      : " << doctors[doctorChoice - 1].specialty << std::endl;
         std::cout << "  Room           : " << doctors[doctorChoice - 1].roomNo << std::endl;
-        std::cout << "  Date           : " << date << std::endl;
-        std::cout << "  Time           : " << time << std::endl;
-        std::cout << "  Status         : Pending Approval" << std::endl;
-        std::cout << "  " << std::string(40, '-') << std::endl;
-        console.resetColor();
+    std::cout << "  Date           : " << date << std::endl;
+    std::cout << "  Time           : " << time << std::endl;
+    std::cout << "  Duration       : " << duration << " minutes" << std::endl;
+    std::cout << "  Category       : " << reasonCategory << std::endl;
+    std::cout << "  Status         : Pending Approval" << std::endl;
+    std::cout << "  " << std::string(40, '-') << std::endl;
+    console.resetColor();
         
         console.setColor(YELLOW);
         std::cout << "\n  Note: Your appointment is PENDING." << std::endl;
@@ -534,26 +732,24 @@ void PatientModule::updateDetails() {
     std::cout << "  ------------------------------------------------\n" << std::endl;
     console.resetColor();
     
+    // Clear input buffer properly
+    if (std::cin.peek() == '\n') std::cin.ignore();
     std::cin.ignore(10000, '\n');
     
     std::string name, phone, email, address;
     
-    console.setColor(WHITE);
-    std::cout << "  New name (or press ENTER to keep: " << p.patientName << ")" << std::endl;
-    console.resetColor();
-    console.setColor(CYAN);
-    std::cout << "  Name: ";
+    // Name input - direct prompt
+    console.setColor(YELLOW);
+    std::cout << "  >> Name: ";
     console.resetColor();
     std::getline(std::cin, name);
     if (name.empty()) name = p.patientName;
     
+    // Phone input - direct prompt
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  New phone (or press ENTER to keep: " << p.phoneNumber << ")" << std::endl;
-    console.resetColor();
     do {
-        console.setColor(CYAN);
-        std::cout << "  Phone: ";
+        console.setColor(YELLOW);
+        std::cout << "  >> Phone: ";
         console.resetColor();
         std::getline(std::cin, phone);
         if (phone.empty()) {
@@ -565,13 +761,11 @@ void PatientModule::updateDetails() {
         }
     } while (!phone.empty() && !console.isValidPhone(phone));
     
+    // Email input - direct prompt
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  New email (or press ENTER to keep: " << p.email << ")" << std::endl;
-    console.resetColor();
     do {
-        console.setColor(CYAN);
-        std::cout << "  Email: ";
+        console.setColor(YELLOW);
+        std::cout << "  >> Email: ";
         console.resetColor();
         std::getline(std::cin, email);
         if (email.empty()) {
@@ -583,12 +777,10 @@ void PatientModule::updateDetails() {
         }
     } while (!email.empty() && !console.isValidEmail(email));
     
+    // Address input - direct prompt
     std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  New address (or press ENTER to keep current)" << std::endl;
-    console.resetColor();
-    console.setColor(CYAN);
-    std::cout << "  Address: ";
+    console.setColor(YELLOW);
+    std::cout << "  >> Address: ";
     console.resetColor();
     std::getline(std::cin, address);
     if (address.empty()) address = p.address;
@@ -626,6 +818,7 @@ void PatientModule::showDashboard() {
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "Book New Appointment");
         console.printMenuOption(2, "View My Appointments");
         console.printMenuOption(3, "Cancel Appointment");
@@ -634,9 +827,9 @@ void PatientModule::showDashboard() {
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice:" << std::endl;
+        std::cout << "  >> Enter your choice (1-5): ";
         console.resetColor();
-        int choice = console.getIntInput("     Your choice: ", 1, 5);
+        int choice = console.getIntInput("", 1, 5);
         
         switch (choice) {
             case 1: bookAppointment(); break;

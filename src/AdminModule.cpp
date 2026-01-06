@@ -5,13 +5,17 @@
 
 #include "../include/AdminModule.h"
 #include "../include/Utilities.h"
+#include "../include/DatabaseManager.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include <windows.h>
+#undef max
 
+// OOP: Constructor calls base class constructor
 AdminModule::AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s)
-    : console(c), db(d), session(s) {}
+    : BaseModule(c, d, s) {}
 
 void AdminModule::managePatients() {
     while (true) {
@@ -878,6 +882,61 @@ void AdminModule::systemStatistics() {
         console.resetColor();
     }
     
+    // Grade A: Text-Based Bar Chart for Statistics
+    std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  ------------------------------------------------" << std::endl;
+    std::cout << "  APPOINTMENT STATUS CHART" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
+    
+    int maxCount = pending;
+    if (confirmed > maxCount) maxCount = confirmed;
+    if (completed > maxCount) maxCount = completed;
+    if (cancelled > maxCount) maxCount = cancelled;
+    if (maxCount > 0) {
+        int scale = maxCount > 20 ? maxCount / 20 : 1;
+        if (scale == 0) scale = 1;
+        console.setColor(YELLOW);
+        std::cout << "  Pending   : " << std::string(pending / scale, '*') << " (" << pending << ")" << std::endl;
+        console.setColor(GREEN);
+        std::cout << "  Confirmed : " << std::string(confirmed / scale, '*') << " (" << confirmed << ")" << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  Completed : " << std::string(completed / scale, '*') << " (" << completed << ")" << std::endl;
+        console.setColor(RED);
+        std::cout << "  Cancelled : " << std::string(cancelled / scale, '*') << " (" << cancelled << ")" << std::endl;
+        console.resetColor();
+    }
+    
+    // Grade A: Doctor Statistics with SQL Aggregation
+    std::vector<DatabaseManager::DoctorStats> doctorStats = db.getDoctorStatistics();
+    if (!doctorStats.empty()) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  DOCTOR PERFORMANCE (SQL GROUP BY)" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        console.setColor(DARK_CYAN);
+        std::cout << "  " << std::left 
+                  << std::setw(25) << "Doctor Name"
+                  << std::setw(15) << "Total"
+                  << std::setw(15) << "Confirmed"
+                  << std::setw(15) << "Rate %" << std::endl;
+        std::cout << "  " << std::string(70, '-') << std::endl;
+        console.resetColor();
+        
+        for (const auto& stat : doctorStats) {
+            console.setColor(WHITE);
+            std::cout << "  " << std::setw(25) << stat.doctorName
+                      << std::setw(15) << stat.totalAppointments
+                      << std::setw(15) << stat.confirmedCount
+                      << std::setw(15) << std::fixed << std::setprecision(1) << stat.completionRate << std::endl;
+        }
+        console.resetColor();
+    }
+    
     db.logActivity("Admin", session.userID, "View Statistics", "System stats viewed");
     
     console.pauseScreen();
@@ -898,6 +957,7 @@ void AdminModule::showDashboard() {
         std::cout << "  ================================================" << std::endl;
         console.resetColor();
         
+        std::cout << std::endl;
         console.printMenuOption(1, "Manage Patients");
         console.printMenuOption(2, "Manage Doctors");
         console.printMenuOption(3, "Manage Staff");
@@ -907,9 +967,9 @@ void AdminModule::showDashboard() {
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice:" << std::endl;
+        std::cout << "  >> Enter your choice (1-6): ";
         console.resetColor();
-        int choice = console.getIntInput("     Your choice: ", 1, 6);
+        int choice = console.getIntInput("", 1, 6);
         
         switch (choice) {
             case 1: managePatients(); break;

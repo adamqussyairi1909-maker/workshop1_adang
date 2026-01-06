@@ -32,13 +32,16 @@ void displayMainMenu() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
-    console.printMenuOption(1, "Login");
-    console.printMenuOption(2, "Register as Patient");
-    console.printMenuOption(3, "Exit");
+    console.printMenuOption(1, "Login as Patient");
+    console.printMenuOption(2, "Login as Doctor");
+    console.printMenuOption(3, "Login as Staff");
+    console.printMenuOption(4, "Login as Admin");
+    console.printMenuOption(5, "Register as Patient");
+    console.printMenuOption(6, "Exit");
     
     
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your choice (1-3): ";
+    std::cout << "  >> Enter your choice (1-6): ";
     console.resetColor();
 }
 
@@ -61,7 +64,7 @@ int main() {
         console.setColor(WHITE);
         std::cout << "  Please check:" << std::endl;
         std::cout << "    1. XAMPP MySQL is running" << std::endl;
-        std::cout << "    2. Database 'hospital_db' exists" << std::endl;
+        std::cout << "    2. Database 'hospital_appointment_db' exists" << std::endl;
         std::cout << "    3. Database credentials are correct" << std::endl;
         console.resetColor();
         
@@ -82,29 +85,38 @@ int main() {
     // Main application loop
     while (true) {
         displayMainMenu();
-        int choice = console.getIntInput("", 1, 3);
+        int choice = console.getIntInput("", 1, 6);
         
         switch (choice) {
-            case 1: // Login
-                if (auth.login()) {
-                    // Redirect to appropriate dashboard based on user type
-                    if (currentSession.userType == "Patient") {
-                        patientModule.showDashboard();
-                    } else if (currentSession.userType == "Doctor") {
-                        doctorModule.showDashboard();
-                    } else if (currentSession.userType == "Staff") {
-                        staffModule.showDashboard();
-                    } else if (currentSession.userType == "Admin") {
-                        adminModule.showDashboard();
-                    }
+            case 1: // Login as Patient
+                if (auth.loginAsPatient()) {
+                    patientModule.showDashboard();
                 }
                 break;
                 
-            case 2: // Register as Patient
+            case 2: // Login as Doctor
+                if (auth.loginAsDoctor()) {
+                    doctorModule.showDashboard();
+                }
+                break;
+                
+            case 3: // Login as Staff
+                if (auth.loginAsStaff()) {
+                    staffModule.showDashboard();
+                }
+                break;
+                
+            case 4: // Login as Admin
+                if (auth.loginAsAdmin()) {
+                    adminModule.showDashboard();
+                }
+                break;
+                
+            case 5: // Register as Patient
                 patientModule.registerPatient();
                 break;
                 
-            case 3: // Exit
+            case 6: // Exit
                 console.clearScreen();
                 console.setColor(CYAN);
                 std::cout << "\n\n";

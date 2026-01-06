@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\AdminModule.h" />
     <ClInclude Include="include\AuthModule.h" />
+    <ClInclude Include="include\BaseModule.h" />
     <ClInclude Include="include\ConsoleUtils.h" />
     <ClInclude Include="include\DatabaseManager.h" />
     <ClInclude Include="include\DoctorModule.h" />

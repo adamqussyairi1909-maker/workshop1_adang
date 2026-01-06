@@ -6,16 +6,11 @@
 #ifndef DOCTOR_MODULE_H
 #define DOCTOR_MODULE_H
 
-#include "Models.h"
-#include "ConsoleUtils.h"
-#include "DatabaseManager.h"
+#include "BaseModule.h"
 
-class DoctorModule {
+// Derived class from BaseModule (OOP Inheritance)
+class DoctorModule : public BaseModule {
 private:
-    ConsoleUtils& console;
-    DatabaseManager& db;
-    UserSession& session;
-    
     void viewTodayAppointments();
     void viewAllAppointments();
     void completeAppointment();
@@ -24,7 +19,7 @@ private:
     
 public:
     DoctorModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
-    void showDashboard();
+    void showDashboard() override; // Polymorphism - override base class method
 };
 
 #endif // DOCTOR_MODULE_H

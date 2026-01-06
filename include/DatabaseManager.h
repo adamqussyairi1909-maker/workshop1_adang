@@ -100,6 +100,38 @@ public:
     bool logActivity(const std::string& userType, int userID, 
                     const std::string& action, const std::string& details = "");
     std::vector<ActivityLog> getActivityLogs(int limit = 50);
+    
+    // Grade A: Complex Calculations (Aggregations)
+    struct DoctorStats {
+        int doctorID;
+        std::string doctorName;
+        int totalAppointments;
+        int confirmedCount;
+        double completionRate;
+        DoctorStats() : doctorID(0), totalAppointments(0), confirmedCount(0), completionRate(0.0) {}
+    };
+    std::vector<DoctorStats> getDoctorStatistics(); // GROUP BY with aggregation
+    
+    struct MonthlyStats {
+        int year;
+        int month;
+        int totalAppointments;
+        int completed;
+        double completionPercentage;
+        MonthlyStats() : year(0), month(0), totalAppointments(0), completed(0), completionPercentage(0.0) {}
+    };
+    std::vector<MonthlyStats> getMonthlyStatistics(); // GROUP BY with date functions
+    
+    struct DailyStats {
+        std::string date;
+        int total;
+        int confirmed;
+        int pending;
+        int completed;
+        int cancelled;
+        DailyStats() : total(0), confirmed(0), pending(0), completed(0), cancelled(0) {}
+    };
+    std::vector<DailyStats> getDailyStatistics(); // GROUP BY with aggregation
 };
 
 #endif // DATABASE_MANAGER_H

@@ -6,16 +6,11 @@
 #ifndef ADMIN_MODULE_H
 #define ADMIN_MODULE_H
 
-#include "Models.h"
-#include "ConsoleUtils.h"
-#include "DatabaseManager.h"
+#include "BaseModule.h"
 
-class AdminModule {
+// Derived class from BaseModule (OOP Inheritance)
+class AdminModule : public BaseModule {
 private:
-    ConsoleUtils& console;
-    DatabaseManager& db;
-    UserSession& session;
-    
     // Patient management
     void managePatients();
     void viewAllPatients();
@@ -41,7 +36,7 @@ private:
     
 public:
     AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);
-    void showDashboard();
+    void showDashboard() override; // Polymorphism - override base class method
 };
 
 #endif // ADMIN_MODULE_H
