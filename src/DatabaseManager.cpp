@@ -500,17 +500,20 @@ Admin DatabaseManager::getAdminById(int adminID) {
 // ============================================================
 
 bool DatabaseManager::createAppointment(int patientID, int doctorID, const std::string& date,
-                                        const std::string& time, const std::string& reason) {
+                                        const std::string& time, const std::string& reason, int duration) {
     try {
+        double cost = calculateCost(duration);
         std::unique_ptr<sql::PreparedStatement> pstmt(
             connection->prepareStatement(
-                "INSERT INTO Appointment (PatientID, DoctorID, AppointmentDate, AppointmentTime, Reason, Status) "
-                "VALUES (?, ?, ?, ?, ?, 'Pending')"));
+                "INSERT INTO Appointment (PatientID, DoctorID, AppointmentDate, AppointmentTime, Reason, Duration, Cost, Status) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')"));
         pstmt->setInt(1, patientID);
         pstmt->setInt(2, doctorID);
         pstmt->setString(3, date);
         pstmt->setString(4, time);
         pstmt->setString(5, reason);
+        pstmt->setInt(6, duration);
+        pstmt->setDouble(7, cost);
         pstmt->executeUpdate();
         return true;
     }
@@ -518,6 +521,11 @@ bool DatabaseManager::createAppointment(int patientID, int doctorID, const std::
         std::cerr << "[ERROR] " << e.what() << std::endl;
         return false;
     }
+}
+
+double DatabaseManager::calculateCost(int duration) {
+    // RM1 per minute
+    return static_cast<double>(duration);
 }
 
 std::vector<Appointment> DatabaseManager::getPatientAppointments(int patientID) {
@@ -538,6 +546,8 @@ std::vector<Appointment> DatabaseManager::getPatientAppointments(int patientID) 
             a.appointmentTime = res->getString("AppointmentTime");
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.cost = res->getDouble("Cost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -576,6 +586,8 @@ std::vector<Appointment> DatabaseManager::getDoctorAppointments(int doctorID, co
             a.appointmentTime = res->getString("AppointmentTime");
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.cost = res->getDouble("Cost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -609,6 +621,8 @@ std::vector<Appointment> DatabaseManager::getAllAppointments() {
             a.appointmentTime = res->getString("AppointmentTime");
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.cost = res->getDouble("Cost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -639,6 +653,8 @@ std::vector<Appointment> DatabaseManager::getPendingAppointments() {
             a.appointmentTime = res->getString("AppointmentTime");
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.cost = res->getDouble("Cost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");

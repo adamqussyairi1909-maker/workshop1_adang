@@ -819,10 +819,12 @@ void AdminModule::systemStatistics() {
     std::vector<Appointment> appointments = db.getAllAppointments();
     
     int pending = 0, confirmed = 0, completed = 0, cancelled = 0;
+    double totalRevenue = 0.0;
+    double potentialRevenue = 0.0;
     for (const auto& apt : appointments) {
-        if (apt.status == "Pending") pending++;
-        else if (apt.status == "Confirmed") confirmed++;
-        else if (apt.status == "Completed") completed++;
+        if (apt.status == "Pending") { pending++; potentialRevenue += apt.cost; }
+        else if (apt.status == "Confirmed") { confirmed++; potentialRevenue += apt.cost; }
+        else if (apt.status == "Completed") { completed++; totalRevenue += apt.cost; }
         else if (apt.status == "Cancelled") cancelled++;
     }
     
@@ -867,6 +869,7 @@ void AdminModule::systemStatistics() {
     if (appointments.size() > 0) {
         double completionRate = (completed * 100.0) / appointments.size();
         double cancellationRate = (cancelled * 100.0) / appointments.size();
+        double averageCost = (completed > 0) ? (totalRevenue / completed) : 0.0;
         
         std::cout << std::endl;
         console.setColor(DARK_GRAY);
@@ -879,6 +882,21 @@ void AdminModule::systemStatistics() {
         std::cout << std::fixed << std::setprecision(1);
         std::cout << "  Completion Rate       : " << completionRate << "%" << std::endl;
         std::cout << "  Cancellation Rate     : " << cancellationRate << "%" << std::endl;
+        console.resetColor();
+        
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  REVENUE ANALYSIS (RM1/MINUTE)" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        console.setColor(GREEN);
+        std::cout << "  Total Revenue         : RM " << std::fixed << std::setprecision(2) << totalRevenue << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  Potential Revenue     : RM " << std::fixed << std::setprecision(2) << potentialRevenue << std::endl;
+        console.setColor(WHITE);
+        std::cout << "  Average Cost/Appt     : RM " << std::fixed << std::setprecision(2) << averageCost << std::endl;
         console.resetColor();
     }
     

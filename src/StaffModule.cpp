@@ -35,46 +35,49 @@ void StaffModule::viewAllAppointments() {
     
     console.setColor(DARK_CYAN);
     std::cout << "  " << std::left 
-              << std::setw(6) << "ID"
-              << std::setw(18) << "Patient"
-              << std::setw(18) << "Doctor"
+              << std::setw(5) << "ID"
+              << std::setw(16) << "Patient"
+              << std::setw(16) << "Doctor"
               << std::setw(11) << "Date"
-              << std::setw(8) << "Time"
-              << std::setw(10) << "Status" << std::endl;
-    std::cout << "  " << std::string(71, '-') << std::endl;
+              << std::setw(7) << "Time"
+              << std::setw(8) << "Cost"
+              << std::setw(11) << "Status" << std::endl;
+    std::cout << "  " << std::string(74, '-') << std::endl;
     console.resetColor();
     
     int pending = 0, confirmed = 0, completed = 0, cancelled = 0;
+    double totalRevenue = 0.0;
     
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") { console.setColor(GREEN); confirmed++; }
         else if (apt.status == "Pending") { console.setColor(YELLOW); pending++; }
-        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; }
+        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; totalRevenue += apt.cost; }
         else if (apt.status == "Cancelled") { console.setColor(RED); cancelled++; }
         else console.resetColor();
         
-        std::string pName = apt.patientName.length() > 16 ? 
-            apt.patientName.substr(0, 13) + "..." : apt.patientName;
-        std::string dName = apt.doctorName.length() > 16 ? 
-            apt.doctorName.substr(0, 13) + "..." : apt.doctorName;
+        std::string pName = apt.patientName.length() > 14 ? 
+            apt.patientName.substr(0, 11) + "..." : apt.patientName;
+        std::string dName = apt.doctorName.length() > 14 ? 
+            apt.doctorName.substr(0, 11) + "..." : apt.doctorName;
         
-        std::cout << "  " << std::setw(6) << apt.appointmentID
-                  << std::setw(18) << pName
-                  << std::setw(18) << dName
+        std::cout << "  " << std::setw(5) << apt.appointmentID
+                  << std::setw(16) << pName
+                  << std::setw(16) << dName
                   << std::setw(11) << apt.appointmentDate
-                  << std::setw(8) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(10) << apt.status << std::endl;
+                  << std::setw(7) << apt.appointmentTime.substr(0, 5)
+                  << std::setw(8) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(11) << apt.status << std::endl;
     }
     console.resetColor();
     
-    std::cout << "\n  " << std::string(71, '-') << std::endl;
+    std::cout << "\n  " << std::string(74, '-') << std::endl;
     std::cout << "  SUMMARY: ";
     console.setColor(YELLOW); std::cout << pending << " Pending  ";
     console.setColor(GREEN); std::cout << confirmed << " Confirmed  ";
     console.setColor(CYAN); std::cout << completed << " Completed  ";
     console.setColor(RED); std::cout << cancelled << " Cancelled";
     console.resetColor();
-    std::cout << std::endl;
+    std::cout << "\n  Total Revenue (Completed): RM " << std::fixed << std::setprecision(2) << totalRevenue << std::endl;
     
     console.pauseScreen();
 }
@@ -132,11 +135,13 @@ void StaffModule::approveAppointment() {
     console.setColor(WHITE);
     std::cout << "\n  APPOINTMENT DETAILS:" << std::endl;
     std::cout << "  " << std::string(40, '-') << std::endl;
-    std::cout << "  Patient : " << selected.patientName << std::endl;
-    std::cout << "  Doctor  : " << selected.doctorName << std::endl;
-    std::cout << "  Date    : " << selected.appointmentDate << std::endl;
-    std::cout << "  Time    : " << selected.appointmentTime.substr(0, 5) << std::endl;
-    std::cout << "  Reason  : " << selected.reason << std::endl;
+    std::cout << "  Patient  : " << selected.patientName << std::endl;
+    std::cout << "  Doctor   : " << selected.doctorName << std::endl;
+    std::cout << "  Date     : " << selected.appointmentDate << std::endl;
+    std::cout << "  Time     : " << selected.appointmentTime.substr(0, 5) << std::endl;
+    std::cout << "  Duration : " << selected.duration << " minutes" << std::endl;
+    std::cout << "  Cost     : RM " << std::fixed << std::setprecision(2) << selected.cost << std::endl;
+    std::cout << "  Reason   : " << selected.reason << std::endl;
     std::cout << "  " << std::string(40, '-') << std::endl;
     console.resetColor();
     

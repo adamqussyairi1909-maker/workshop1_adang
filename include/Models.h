@@ -76,6 +76,7 @@ struct Appointment {
     std::string appointmentDate;
     std::string reason;
     int duration = 30; // Duration in minutes (default 30 minutes)
+    double cost = 30.0; // Cost in RM (RM1 per minute)
     int patientID = 0;
     int doctorID = 0;
     int staffID = 0;

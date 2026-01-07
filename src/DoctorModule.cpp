@@ -37,40 +37,45 @@ void DoctorModule::viewTodayAppointments() {
     
     console.setColor(DARK_CYAN);
     std::cout << "  " << std::left 
-              << std::setw(8) << "ID"
-              << std::setw(25) << "Patient Name"
-              << std::setw(10) << "Time"
-              << std::setw(12) << "Status"
-              << std::setw(20) << "Reason" << std::endl;
-    std::cout << "  " << std::string(75, '-') << std::endl;
+              << std::setw(6) << "ID"
+              << std::setw(22) << "Patient Name"
+              << std::setw(8) << "Time"
+              << std::setw(7) << "Cost"
+              << std::setw(11) << "Status"
+              << std::setw(18) << "Reason" << std::endl;
+    std::cout << "  " << std::string(72, '-') << std::endl;
     console.resetColor();
     
     int confirmed = 0, pending = 0, completed = 0;
+    double todayRevenue = 0.0;
     
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") { console.setColor(GREEN); confirmed++; }
         else if (apt.status == "Pending") { console.setColor(YELLOW); pending++; }
-        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; }
+        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; todayRevenue += apt.cost; }
         else console.resetColor();
         
-        std::string shortReason = apt.reason.length() > 18 ? 
-            apt.reason.substr(0, 15) + "..." : apt.reason;
+        std::string shortReason = apt.reason.length() > 16 ? 
+            apt.reason.substr(0, 13) + "..." : apt.reason;
+        std::string patientName = apt.patientName.length() > 20 ? 
+            apt.patientName.substr(0, 17) + "..." : apt.patientName;
         
-        std::cout << "  " << std::setw(8) << apt.appointmentID
-                  << std::setw(25) << apt.patientName
-                  << std::setw(10) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(12) << apt.status
-                  << std::setw(20) << shortReason << std::endl;
+        std::cout << "  " << std::setw(6) << apt.appointmentID
+                  << std::setw(22) << patientName
+                  << std::setw(8) << apt.appointmentTime.substr(0, 5)
+                  << std::setw(7) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(11) << apt.status
+                  << std::setw(18) << shortReason << std::endl;
     }
     console.resetColor();
     
-    std::cout << "\n  " << std::string(75, '-') << std::endl;
+    std::cout << "\n  " << std::string(72, '-') << std::endl;
     std::cout << "  SUMMARY: ";
     console.setColor(GREEN); std::cout << confirmed << " Confirmed  ";
     console.setColor(YELLOW); std::cout << pending << " Pending  ";
     console.setColor(CYAN); std::cout << completed << " Completed";
     console.resetColor();
-    std::cout << std::endl;
+    std::cout << "\n  Today's Revenue: RM " << std::fixed << std::setprecision(2) << todayRevenue << std::endl;
     
     console.pauseScreen();
 }
@@ -93,30 +98,40 @@ void DoctorModule::viewAllAppointments() {
     
     console.setColor(DARK_CYAN);
     std::cout << "  " << std::left 
-              << std::setw(8) << "ID"
-              << std::setw(20) << "Patient"
+              << std::setw(6) << "ID"
+              << std::setw(18) << "Patient"
               << std::setw(12) << "Date"
-              << std::setw(10) << "Time"
-              << std::setw(12) << "Status" << std::endl;
-    std::cout << "  " << std::string(62, '-') << std::endl;
+              << std::setw(8) << "Time"
+              << std::setw(8) << "Cost"
+              << std::setw(11) << "Status" << std::endl;
+    std::cout << "  " << std::string(63, '-') << std::endl;
     console.resetColor();
     
+    double totalEarnings = 0.0;
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") console.setColor(GREEN);
         else if (apt.status == "Pending") console.setColor(YELLOW);
-        else if (apt.status == "Completed") console.setColor(CYAN);
+        else if (apt.status == "Completed") { console.setColor(CYAN); totalEarnings += apt.cost; }
         else if (apt.status == "Cancelled") console.setColor(RED);
         else console.resetColor();
         
-        std::cout << "  " << std::setw(8) << apt.appointmentID
-                  << std::setw(20) << apt.patientName
+        std::string patientName = apt.patientName.length() > 16 ? 
+            apt.patientName.substr(0, 13) + "..." : apt.patientName;
+        
+        std::cout << "  " << std::setw(6) << apt.appointmentID
+                  << std::setw(18) << patientName
                   << std::setw(12) << apt.appointmentDate
-                  << std::setw(10) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(12) << apt.status << std::endl;
+                  << std::setw(8) << apt.appointmentTime.substr(0, 5)
+                  << std::setw(8) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(11) << apt.status << std::endl;
     }
     console.resetColor();
     
-    std::cout << "\n  Total: " << appointments.size() << " appointment(s)" << std::endl;
+    std::cout << "\n  Total: " << appointments.size() << " appointment(s)";
+    console.setColor(CYAN);
+    std::cout << "  |  Total Earnings: RM " << std::fixed << std::setprecision(2) << totalEarnings;
+    console.resetColor();
+    std::cout << std::endl;
     
     console.pauseScreen();
 }

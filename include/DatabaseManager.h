@@ -85,7 +85,7 @@ public:
     
     // Appointment operations
     bool createAppointment(int patientID, int doctorID, const std::string& date,
-                          const std::string& time, const std::string& reason);
+                          const std::string& time, const std::string& reason, int duration = 30);
     std::vector<Appointment> getPatientAppointments(int patientID);
     std::vector<Appointment> getDoctorAppointments(int doctorID, const std::string& date = "");
     std::vector<Appointment> getDoctorAllAppointments(int doctorID);
@@ -95,6 +95,7 @@ public:
     bool cancelAppointment(int appointmentID);
     bool checkDoctorAvailability(int doctorID, const std::string& date, const std::string& time);
     bool checkPatientDailyLimit(int patientID, int doctorID, const std::string& date);
+    double calculateCost(int duration); // Helper method to calculate cost based on duration
     
     // Activity logging
     bool logActivity(const std::string& userType, int userID, 

@@ -76,6 +76,8 @@ CREATE TABLE Appointment (
     AppointmentTime TIME NOT NULL,
     AppointmentDate DATE NOT NULL,
     Reason VARCHAR(100),
+    Duration INT NOT NULL DEFAULT 30,
+    Cost DECIMAL(10,2) NOT NULL DEFAULT 30.00,
     PatientID INT NOT NULL,
     DoctorID INT NOT NULL,
     StaffID INT,
@@ -126,13 +128,13 @@ INSERT INTO Patient (PatientName, PhoneNumber, Email, Address, DOB, Gender, Pass
 ('Nurul Aina', '0166666666', 'aina@email.com', '321 Jalan Bahagia, Melaka', '1992-08-25', 'Female', 'patient123');
 
 -- Insert Sample Appointments (for testing)
-INSERT INTO Appointment (Status, AppointmentTime, AppointmentDate, Reason, PatientID, DoctorID, StaffID) VALUES
-('Confirmed', '10:30:00', CURDATE(), 'Fever and cough', 1, 1, 1),
-('Pending', '11:00:00', DATE_ADD(CURDATE(), INTERVAL 1 DAY), 'Regular checkup', 2, 1, NULL),
-('Completed', '14:00:00', DATE_SUB(CURDATE(), INTERVAL 1 DAY), 'Skin rash', 3, 3, 1),
-('Confirmed', '09:00:00', DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'Back pain', 4, 4, 1),
-('Pending', '15:30:00', DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'Follow-up', 5, 2, NULL),
-('Cancelled', '10:00:00', DATE_SUB(CURDATE(), INTERVAL 2 DAY), 'Cancelled appointment', 1, 2, 1);
+INSERT INTO Appointment (Status, AppointmentTime, AppointmentDate, Reason, Duration, Cost, PatientID, DoctorID, StaffID) VALUES
+('Confirmed', '10:30:00', CURDATE(), 'Fever and cough [Standard Consultation - 30 min]', 30, 30.00, 1, 1, 1),
+('Pending', '11:00:00', DATE_ADD(CURDATE(), INTERVAL 1 DAY), 'Regular checkup [Quick Checkup - 15 min]', 15, 15.00, 2, 1, NULL),
+('Completed', '14:00:00', DATE_SUB(CURDATE(), INTERVAL 1 DAY), 'Skin rash [Detailed Examination - 45 min]', 45, 45.00, 3, 3, 1),
+('Confirmed', '09:00:00', DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'Back pain [Complex Consultation - 60 min]', 60, 60.00, 4, 4, 1),
+('Pending', '15:30:00', DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'Follow-up [Standard Consultation - 30 min]', 30, 30.00, 5, 2, NULL),
+('Cancelled', '10:00:00', DATE_SUB(CURDATE(), INTERVAL 2 DAY), 'Cancelled appointment [Quick Checkup - 15 min]', 15, 15.00, 1, 2, 1);
 
 -- Insert Sample Activity Logs
 INSERT INTO ActivityLog (UserType, UserID, Action, Details) VALUES
