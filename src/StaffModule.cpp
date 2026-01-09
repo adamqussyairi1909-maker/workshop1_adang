@@ -135,13 +135,18 @@ void StaffModule::approveAppointment() {
     console.setColor(WHITE);
     std::cout << "\n  APPOINTMENT DETAILS:" << std::endl;
     std::cout << "  " << std::string(40, '-') << std::endl;
-    std::cout << "  Patient  : " << selected.patientName << std::endl;
-    std::cout << "  Doctor   : " << selected.doctorName << std::endl;
-    std::cout << "  Date     : " << selected.appointmentDate << std::endl;
-    std::cout << "  Time     : " << selected.appointmentTime.substr(0, 5) << std::endl;
-    std::cout << "  Duration : " << selected.duration << " minutes" << std::endl;
-    std::cout << "  Cost     : RM " << std::fixed << std::setprecision(2) << selected.cost << std::endl;
-    std::cout << "  Reason   : " << selected.reason << std::endl;
+    std::cout << "  Patient          : " << selected.patientName << std::endl;
+    std::cout << "  Doctor           : " << selected.doctorName << std::endl;
+    std::cout << "  Date             : " << selected.appointmentDate << std::endl;
+    std::cout << "  Time             : " << selected.appointmentTime.substr(0, 5) << std::endl;
+    std::cout << "  Duration         : " << selected.duration << " minutes" << std::endl;
+    std::cout << "  Reason           : " << selected.reason << std::endl;
+    std::cout << "  " << std::string(40, '-') << std::endl;
+    std::cout << "  Consultation Fee : RM " << std::fixed << std::setprecision(2) << selected.consultationFee << std::endl;
+    std::cout << "  Medicine Fee     : RM " << std::fixed << std::setprecision(2) << selected.medicineFee << std::endl;
+    console.setColor(GREEN);
+    std::cout << "  TOTAL COST       : RM " << std::fixed << std::setprecision(2) << selected.totalCost << std::endl;
+    console.resetColor();
     std::cout << "  " << std::string(40, '-') << std::endl;
     console.resetColor();
     
