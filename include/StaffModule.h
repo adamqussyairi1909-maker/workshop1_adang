@@ -15,7 +15,6 @@ private:
     void approveAppointment();
     void searchPatient();
     void viewDoctors();
-    void generateReport();
     
 public:
     StaffModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);

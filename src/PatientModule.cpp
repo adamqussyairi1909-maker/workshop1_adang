@@ -490,8 +490,10 @@ void PatientModule::bookAppointment() {
         return;
     }
     
-    // Append duration info to reason
-    reason = reason + " [" + reasonCategory + " - " + std::to_string(duration) + " min]";
+    // Calculate fees
+    double consultationFee = db.calculateConsultationFee(duration);
+    double medicineFee = db.calculateMedicineFee(reason);
+    double totalCost = consultationFee + medicineFee;
     
     // Check daily limit
     if (!db.checkPatientDailyLimit(session.userID, selectedDoctorID, date)) {
@@ -511,9 +513,8 @@ void PatientModule::bookAppointment() {
     }
     
     // Create appointment
-    if (db.createAppointment(session.userID, selectedDoctorID, date, time + ":00", reason, duration)) {
+    if (db.createAppointment(session.userID, selectedDoctorID, date, time + ":00", reason, duration, consultationFee, medicineFee)) {
         int appointmentID = db.getLastInsertId();
-        double cost = db.calculateCost(duration);
         
         console.setColor(GREEN);
         std::cout << "\n  +-----------------------------------------+" << std::endl;
@@ -524,18 +525,27 @@ void PatientModule::bookAppointment() {
         std::cout << std::endl;
         console.setColor(WHITE);
         std::cout << "  YOUR APPOINTMENT DETAILS:" << std::endl;
-        std::cout << "  " << std::string(40, '-') << std::endl;
-        std::cout << "  Appointment ID : APT-" << appointmentID << std::endl;
-        std::cout << "  Doctor         : " << doctors[doctorChoice - 1].doctorName << std::endl;
-        std::cout << "  Specialty      : " << doctors[doctorChoice - 1].specialty << std::endl;
-        std::cout << "  Room           : " << doctors[doctorChoice - 1].roomNo << std::endl;
-        std::cout << "  Date           : " << date << std::endl;
-        std::cout << "  Time           : " << time << std::endl;
-        std::cout << "  Duration       : " << duration << " minutes" << std::endl;
-        std::cout << "  Cost           : RM " << std::fixed << std::setprecision(2) << cost << std::endl;
-        std::cout << "  Category       : " << reasonCategory << std::endl;
-        std::cout << "  Status         : Pending Approval" << std::endl;
-        std::cout << "  " << std::string(40, '-') << std::endl;
+        std::cout << "  " << std::string(50, '-') << std::endl;
+        std::cout << "  Appointment ID    : APT-" << appointmentID << std::endl;
+        std::cout << "  Doctor            : " << doctors[doctorChoice - 1].doctorName << std::endl;
+        std::cout << "  Specialty         : " << doctors[doctorChoice - 1].specialty << std::endl;
+        std::cout << "  Room              : " << doctors[doctorChoice - 1].roomNo << std::endl;
+        std::cout << "  Date              : " << date << std::endl;
+        std::cout << "  Time              : " << time << std::endl;
+        std::cout << "  Duration          : " << duration << " minutes" << std::endl;
+        std::cout << "  Category          : " << reasonCategory << std::endl;
+        std::cout << "  Reason            : " << reason << std::endl;
+        std::cout << "  " << std::string(50, '-') << std::endl;
+        std::cout << "  Consultation Fee  : RM " << std::fixed << std::setprecision(2) << consultationFee << std::endl;
+        std::cout << "  Medicine Fee      : RM " << std::fixed << std::setprecision(2) << medicineFee << std::endl;
+        std::cout << "  " << std::string(50, '-') << std::endl;
+        console.setColor(GREEN);
+        std::cout << "  TOTAL COST        : RM " << std::fixed << std::setprecision(2) << totalCost << std::endl;
+        console.resetColor();
+        console.setColor(WHITE);
+        std::cout << "  " << std::string(50, '-') << std::endl;
+        std::cout << "  Status            : Pending Approval" << std::endl;
+        std::cout << "  " << std::string(50, '-') << std::endl;
         console.resetColor();
         
         console.setColor(YELLOW);
@@ -574,16 +584,20 @@ void PatientModule::viewAppointments() {
     
     console.setColor(DARK_CYAN);
     std::cout << "  " << std::left 
-              << std::setw(6) << "ID"
-              << std::setw(18) << "Doctor"
-              << std::setw(12) << "Date"
-              << std::setw(8) << "Time"
-              << std::setw(8) << "Cost"
-              << std::setw(12) << "Status" << std::endl;
-    std::cout << "  " << std::string(64, '-') << std::endl;
+              << std::setw(5) << "ID"
+              << std::setw(16) << "Doctor"
+              << std::setw(11) << "Date"
+              << std::setw(6) << "Time"
+              << std::setw(9) << "Duration"
+              << std::setw(9) << "Total"
+              << std::setw(11) << "Status" << std::endl;
+    std::cout << "  " << std::string(67, '-') << std::endl;
     console.resetColor();
     
-    double totalCost = 0.0;
+    double totalAmount = 0.0;
+    double totalConsultation = 0.0;
+    double totalMedicine = 0.0;
+    
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") console.setColor(GREEN);
         else if (apt.status == "Pending") console.setColor(YELLOW);
@@ -591,28 +605,33 @@ void PatientModule::viewAppointments() {
         else if (apt.status == "Completed") console.setColor(CYAN);
         else console.resetColor();
         
-        std::string doctorName = apt.doctorName.length() > 16 ? 
-            apt.doctorName.substr(0, 13) + "..." : apt.doctorName;
+        std::string doctorName = apt.doctorName.length() > 14 ? 
+            apt.doctorName.substr(0, 11) + "..." : apt.doctorName;
         
-        std::cout << "  " << std::setw(6) << apt.appointmentID
-                  << std::setw(18) << doctorName
-                  << std::setw(12) << apt.appointmentDate
-                  << std::setw(8) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(8) << ("RM" + std::to_string((int)apt.cost))
-                  << std::setw(12) << apt.status << std::endl;
+        std::cout << "  " << std::setw(5) << apt.appointmentID
+                  << std::setw(16) << doctorName
+                  << std::setw(11) << apt.appointmentDate
+                  << std::setw(6) << apt.appointmentTime.substr(0, 5)
+                  << std::setw(9) << (std::to_string(apt.duration) + "m")
+                  << std::setw(9) << ("RM" + std::to_string((int)apt.totalCost))
+                  << std::setw(11) << apt.status << std::endl;
         
         if (apt.status != "Cancelled") {
-            totalCost += apt.cost;
+            totalAmount += apt.totalCost;
+            totalConsultation += apt.consultationFee;
+            totalMedicine += apt.medicineFee;
         }
     }
     console.resetColor();
     
-    std::cout << "\n  " << std::string(64, '-') << std::endl;
-    std::cout << "  Total: " << appointments.size() << " appointment(s)";
+    std::cout << "\n  " << std::string(67, '-') << std::endl;
+    std::cout << "  Total Appointments: " << appointments.size() << std::endl;
+    console.setColor(WHITE);
+    std::cout << "  Consultation Fees : RM " << std::fixed << std::setprecision(2) << totalConsultation << std::endl;
+    std::cout << "  Medicine Fees     : RM " << std::fixed << std::setprecision(2) << totalMedicine << std::endl;
     console.setColor(CYAN);
-    std::cout << "  |  Total Cost: RM " << std::fixed << std::setprecision(2) << totalCost;
+    std::cout << "  GRAND TOTAL       : RM " << std::fixed << std::setprecision(2) << totalAmount << std::endl;
     console.resetColor();
-    std::cout << std::endl;
     
     // Legend
     std::cout << "\n  STATUS LEGEND:" << std::endl;

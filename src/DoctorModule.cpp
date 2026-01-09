@@ -52,7 +52,7 @@ void DoctorModule::viewTodayAppointments() {
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") { console.setColor(GREEN); confirmed++; }
         else if (apt.status == "Pending") { console.setColor(YELLOW); pending++; }
-        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; todayRevenue += apt.cost; }
+        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; todayRevenue += apt.totalCost; }
         else console.resetColor();
         
         std::string shortReason = apt.reason.length() > 16 ? 
@@ -63,7 +63,7 @@ void DoctorModule::viewTodayAppointments() {
         std::cout << "  " << std::setw(6) << apt.appointmentID
                   << std::setw(22) << patientName
                   << std::setw(8) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(7) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(7) << ("RM" + std::to_string((int)apt.totalCost))
                   << std::setw(11) << apt.status
                   << std::setw(18) << shortReason << std::endl;
     }
@@ -111,7 +111,7 @@ void DoctorModule::viewAllAppointments() {
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") console.setColor(GREEN);
         else if (apt.status == "Pending") console.setColor(YELLOW);
-        else if (apt.status == "Completed") { console.setColor(CYAN); totalEarnings += apt.cost; }
+        else if (apt.status == "Completed") { console.setColor(CYAN); totalEarnings += apt.totalCost; }
         else if (apt.status == "Cancelled") console.setColor(RED);
         else console.resetColor();
         
@@ -122,7 +122,7 @@ void DoctorModule::viewAllAppointments() {
                   << std::setw(18) << patientName
                   << std::setw(12) << apt.appointmentDate
                   << std::setw(8) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(8) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(8) << ("RM" + std::to_string((int)apt.totalCost))
                   << std::setw(11) << apt.status << std::endl;
     }
     console.resetColor();

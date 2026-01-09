@@ -33,6 +33,7 @@ private:
     // Reports
     void viewSystemLogs();
     void systemStatistics();
+    void generateReport();
     
 public:
     AdminModule(ConsoleUtils& c, DatabaseManager& d, UserSession& s);

@@ -5,6 +5,8 @@
 
 #include "../include/DatabaseManager.h"
 #include <iostream>
+#include <algorithm>
+#include <cctype>
 
 DatabaseManager::DatabaseManager() : driver(nullptr), isConnected(false) {}
 
@@ -500,20 +502,23 @@ Admin DatabaseManager::getAdminById(int adminID) {
 // ============================================================
 
 bool DatabaseManager::createAppointment(int patientID, int doctorID, const std::string& date,
-                                        const std::string& time, const std::string& reason, int duration) {
+                                        const std::string& time, const std::string& reason,
+                                        int duration, double consultationFee, double medicineFee) {
     try {
-        double cost = calculateCost(duration);
+        double totalCost = consultationFee + medicineFee;
         std::unique_ptr<sql::PreparedStatement> pstmt(
             connection->prepareStatement(
-                "INSERT INTO Appointment (PatientID, DoctorID, AppointmentDate, AppointmentTime, Reason, Duration, Cost, Status) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')"));
+                "INSERT INTO Appointment (PatientID, DoctorID, AppointmentDate, AppointmentTime, Reason, Duration, ConsultationFee, MedicineFee, TotalCost, Status) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')"));
         pstmt->setInt(1, patientID);
         pstmt->setInt(2, doctorID);
         pstmt->setString(3, date);
         pstmt->setString(4, time);
         pstmt->setString(5, reason);
         pstmt->setInt(6, duration);
-        pstmt->setDouble(7, cost);
+        pstmt->setDouble(7, consultationFee);
+        pstmt->setDouble(8, medicineFee);
+        pstmt->setDouble(9, totalCost);
         pstmt->executeUpdate();
         return true;
     }
@@ -523,9 +528,54 @@ bool DatabaseManager::createAppointment(int patientID, int doctorID, const std::
     }
 }
 
-double DatabaseManager::calculateCost(int duration) {
+double DatabaseManager::calculateConsultationFee(int duration) {
     // RM1 per minute
     return static_cast<double>(duration);
+}
+
+double DatabaseManager::calculateMedicineFee(const std::string& reason) {
+    // Calculate medicine fee based on appointment reason
+    std::string lowerReason = reason;
+    std::transform(lowerReason.begin(), lowerReason.end(), lowerReason.begin(), ::tolower);
+    
+    // Common conditions and their medicine fees (in RM)
+    if (lowerReason.find("fever") != std::string::npos || 
+        lowerReason.find("flu") != std::string::npos || 
+        lowerReason.find("cough") != std::string::npos ||
+        lowerReason.find("cold") != std::string::npos) {
+        return 25.00; // Basic medication for common cold/flu
+    }
+    else if (lowerReason.find("pain") != std::string::npos ||
+             lowerReason.find("headache") != std::string::npos ||
+             lowerReason.find("backache") != std::string::npos) {
+        return 40.00; // Pain medication
+    }
+    else if (lowerReason.find("allergy") != std::string::npos ||
+             lowerReason.find("rash") != std::string::npos ||
+             lowerReason.find("itch") != std::string::npos ||
+             lowerReason.find("skin") != std::string::npos) {
+        return 35.00; // Antihistamines and topical treatments
+    }
+    else if (lowerReason.find("infection") != std::string::npos ||
+             lowerReason.find("throat") != std::string::npos) {
+        return 50.00; // Antibiotics
+    }
+    else if (lowerReason.find("diabetes") != std::string::npos ||
+             lowerReason.find("blood pressure") != std::string::npos ||
+             lowerReason.find("hypertension") != std::string::npos ||
+             lowerReason.find("heart") != std::string::npos) {
+        return 80.00; // Chronic condition medication
+    }
+    else if (lowerReason.find("checkup") != std::string::npos ||
+             lowerReason.find("check up") != std::string::npos ||
+             lowerReason.find("follow-up") != std::string::npos ||
+             lowerReason.find("follow up") != std::string::npos ||
+             lowerReason.find("screening") != std::string::npos) {
+        return 0.00; // No medicine needed for routine checkups
+    }
+    else {
+        return 30.00; // Default medicine fee for general conditions
+    }
 }
 
 std::vector<Appointment> DatabaseManager::getPatientAppointments(int patientID) {
@@ -547,7 +597,9 @@ std::vector<Appointment> DatabaseManager::getPatientAppointments(int patientID) 
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
             a.duration = res->getInt("Duration");
-            a.cost = res->getDouble("Cost");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -587,7 +639,9 @@ std::vector<Appointment> DatabaseManager::getDoctorAppointments(int doctorID, co
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
             a.duration = res->getInt("Duration");
-            a.cost = res->getDouble("Cost");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -622,7 +676,9 @@ std::vector<Appointment> DatabaseManager::getAllAppointments() {
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
             a.duration = res->getInt("Duration");
-            a.cost = res->getDouble("Cost");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -654,7 +710,9 @@ std::vector<Appointment> DatabaseManager::getPendingAppointments() {
             a.appointmentDate = res->getString("AppointmentDate");
             a.reason = res->getString("Reason");
             a.duration = res->getInt("Duration");
-            a.cost = res->getDouble("Cost");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
             a.patientID = res->getInt("PatientID");
             a.doctorID = res->getInt("DoctorID");
             a.patientName = res->getString("PatientName");
@@ -666,6 +724,180 @@ std::vector<Appointment> DatabaseManager::getPendingAppointments() {
         std::cerr << "[ERROR] " << e.what() << std::endl;
     }
     return appointments;
+}
+
+std::vector<Appointment> DatabaseManager::getAppointmentsByDateRange(const std::string& startDate, const std::string& endDate) {
+    std::vector<Appointment> appointments;
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement(
+                "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+                "JOIN Patient p ON a.PatientID = p.PatientID "
+                "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+                "WHERE a.AppointmentDate BETWEEN ? AND ? "
+                "ORDER BY a.AppointmentDate DESC, a.AppointmentTime"));
+        pstmt->setString(1, startDate);
+        pstmt->setString(2, endDate);
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        while (res->next()) {
+            Appointment a;
+            a.appointmentID = res->getInt("AppointmentID");
+            a.status = res->getString("Status");
+            a.appointmentTime = res->getString("AppointmentTime");
+            a.appointmentDate = res->getString("AppointmentDate");
+            a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
+            a.patientID = res->getInt("PatientID");
+            a.doctorID = res->getInt("DoctorID");
+            a.patientName = res->getString("PatientName");
+            a.doctorName = res->getString("DoctorName");
+            appointments.push_back(a);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appointments;
+}
+
+std::vector<Appointment> DatabaseManager::getTodayAppointments() {
+    std::vector<Appointment> appointments;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+            "JOIN Patient p ON a.PatientID = p.PatientID "
+            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+            "WHERE a.AppointmentDate = CURDATE() "
+            "ORDER BY a.AppointmentTime"));
+        while (res->next()) {
+            Appointment a;
+            a.appointmentID = res->getInt("AppointmentID");
+            a.status = res->getString("Status");
+            a.appointmentTime = res->getString("AppointmentTime");
+            a.appointmentDate = res->getString("AppointmentDate");
+            a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
+            a.patientID = res->getInt("PatientID");
+            a.doctorID = res->getInt("DoctorID");
+            a.patientName = res->getString("PatientName");
+            a.doctorName = res->getString("DoctorName");
+            appointments.push_back(a);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appointments;
+}
+
+std::vector<Appointment> DatabaseManager::getWeeklyAppointments() {
+    std::vector<Appointment> appointments;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+            "JOIN Patient p ON a.PatientID = p.PatientID "
+            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+            "WHERE a.AppointmentDate >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) "
+            "AND a.AppointmentDate <= CURDATE() "
+            "ORDER BY a.AppointmentDate DESC, a.AppointmentTime"));
+        while (res->next()) {
+            Appointment a;
+            a.appointmentID = res->getInt("AppointmentID");
+            a.status = res->getString("Status");
+            a.appointmentTime = res->getString("AppointmentTime");
+            a.appointmentDate = res->getString("AppointmentDate");
+            a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
+            a.patientID = res->getInt("PatientID");
+            a.doctorID = res->getInt("DoctorID");
+            a.patientName = res->getString("PatientName");
+            a.doctorName = res->getString("DoctorName");
+            appointments.push_back(a);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appointments;
+}
+
+std::vector<Appointment> DatabaseManager::getMonthlyAppointments() {
+    std::vector<Appointment> appointments;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+            "JOIN Patient p ON a.PatientID = p.PatientID "
+            "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+            "WHERE a.AppointmentDate >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) "
+            "AND a.AppointmentDate <= CURDATE() "
+            "ORDER BY a.AppointmentDate DESC, a.AppointmentTime"));
+        while (res->next()) {
+            Appointment a;
+            a.appointmentID = res->getInt("AppointmentID");
+            a.status = res->getString("Status");
+            a.appointmentTime = res->getString("AppointmentTime");
+            a.appointmentDate = res->getString("AppointmentDate");
+            a.reason = res->getString("Reason");
+            a.duration = res->getInt("Duration");
+            a.consultationFee = res->getDouble("ConsultationFee");
+            a.medicineFee = res->getDouble("MedicineFee");
+            a.totalCost = res->getDouble("TotalCost");
+            a.patientID = res->getInt("PatientID");
+            a.doctorID = res->getInt("DoctorID");
+            a.patientName = res->getString("PatientName");
+            a.doctorName = res->getString("DoctorName");
+            appointments.push_back(a);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appointments;
+}
+
+Appointment DatabaseManager::getAppointmentById(int appointmentID) {
+    Appointment appt;
+    try {
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            connection->prepareStatement(
+                "SELECT a.*, p.PatientName, d.DoctorName FROM Appointment a "
+                "JOIN Patient p ON a.PatientID = p.PatientID "
+                "JOIN Doctors d ON a.DoctorID = d.DoctorID "
+                "WHERE a.AppointmentID = ?"));
+        pstmt->setInt(1, appointmentID);
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        if (res->next()) {
+            appt.appointmentID = res->getInt("AppointmentID");
+            appt.status = res->getString("Status");
+            appt.appointmentTime = res->getString("AppointmentTime");
+            appt.appointmentDate = res->getString("AppointmentDate");
+            appt.reason = res->getString("Reason");
+            appt.duration = res->getInt("Duration");
+            appt.consultationFee = res->getDouble("ConsultationFee");
+            appt.medicineFee = res->getDouble("MedicineFee");
+            appt.totalCost = res->getDouble("TotalCost");
+            appt.patientID = res->getInt("PatientID");
+            appt.doctorID = res->getInt("DoctorID");
+            appt.patientName = res->getString("PatientName");
+            appt.doctorName = res->getString("DoctorName");
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return appt;
 }
 
 bool DatabaseManager::updateAppointmentStatus(int appointmentID, const std::string& status) {
@@ -858,6 +1090,32 @@ std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
             s.completed = res->getInt("Completed");
             s.cancelled = res->getInt("Cancelled");
             stats.push_back(s);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return stats;
+}
+
+DatabaseManager::RevenueStats DatabaseManager::getRevenueStatistics() {
+    RevenueStats stats;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT "
+            "SUM(CASE WHEN Status = 'Completed' THEN TotalCost ELSE 0 END) AS TotalRevenue, "
+            "SUM(CASE WHEN Status IN ('Pending', 'Confirmed') THEN TotalCost ELSE 0 END) AS PotentialRevenue, "
+            "AVG(TotalCost) AS AverageCost, "
+            "SUM(CASE WHEN Status = 'Completed' THEN ConsultationFee ELSE 0 END) AS TotalConsultation, "
+            "SUM(CASE WHEN Status = 'Completed' THEN MedicineFee ELSE 0 END) AS TotalMedicine "
+            "FROM Appointment WHERE Status != 'Cancelled'"));
+        if (res->next()) {
+            stats.totalRevenue = res->getDouble("TotalRevenue");
+            stats.potentialRevenue = res->getDouble("PotentialRevenue");
+            stats.averageCost = res->getDouble("AverageCost");
+            stats.totalConsultation = res->getDouble("TotalConsultation");
+            stats.totalMedicine = res->getDouble("TotalMedicine");
         }
     }
     catch (sql::SQLException& e) {

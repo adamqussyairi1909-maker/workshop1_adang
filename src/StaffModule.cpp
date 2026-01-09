@@ -51,7 +51,7 @@ void StaffModule::viewAllAppointments() {
     for (const auto& apt : appointments) {
         if (apt.status == "Confirmed") { console.setColor(GREEN); confirmed++; }
         else if (apt.status == "Pending") { console.setColor(YELLOW); pending++; }
-        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; totalRevenue += apt.cost; }
+        else if (apt.status == "Completed") { console.setColor(CYAN); completed++; totalRevenue += apt.totalCost; }
         else if (apt.status == "Cancelled") { console.setColor(RED); cancelled++; }
         else console.resetColor();
         
@@ -65,7 +65,7 @@ void StaffModule::viewAllAppointments() {
                   << std::setw(16) << dName
                   << std::setw(11) << apt.appointmentDate
                   << std::setw(7) << apt.appointmentTime.substr(0, 5)
-                  << std::setw(8) << ("RM" + std::to_string((int)apt.cost))
+                  << std::setw(8) << ("RM" + std::to_string((int)apt.totalCost))
                   << std::setw(11) << apt.status << std::endl;
     }
     console.resetColor();
@@ -333,167 +333,6 @@ void StaffModule::viewDoctors() {
     console.pauseScreen();
 }
 
-void StaffModule::generateReport() {
-    console.clearScreen();
-    console.printHeader("GENERATE REPORT");
-    
-    console.setColor(WHITE);
-    std::cout << "\n  Select the type of report to generate.\n" << std::endl;
-    console.resetColor();
-    
-    console.printMenuOption(1, "Today's Report      - Appointments for today");
-    console.printMenuOption(2, "Weekly Summary      - Last 7 days summary");
-    console.printMenuOption(3, "Monthly Summary     - Last 30 days summary");
-    console.printMenuOption(4, "Go Back             - Return to dashboard");
-    
-    std::cout << std::endl;
-    console.setColor(WHITE);
-    std::cout << "  Enter a number (1-4) to select." << std::endl;
-    console.resetColor();
-    int choice = console.getIntInput("  Your choice: ", 1, 4);
-    
-    if (choice == 4) return;
-    
-    console.showLoading("\n  Generating report", 2);
-    
-    std::string today = getCurrentDate();
-    
-    console.clearScreen();
-    
-    if (choice == 1) {
-        console.printHeader("TODAY'S REPORT");
-        console.setColor(WHITE);
-        std::cout << "\n  Date: " << today << std::endl;
-        console.resetColor();
-    } else if (choice == 2) {
-        console.printHeader("WEEKLY SUMMARY REPORT");
-        console.setColor(WHITE);
-        std::cout << "\n  Period: Last 7 days" << std::endl;
-        console.resetColor();
-    } else {
-        console.printHeader("MONTHLY SUMMARY REPORT");
-        console.setColor(WHITE);
-        std::cout << "\n  Period: Last 30 days" << std::endl;
-        console.resetColor();
-    }
-    
-    std::vector<Appointment> appointments = db.getAllAppointments();
-    
-    int total = (int)appointments.size();
-    int pending = 0, confirmed = 0, completed = 0, cancelled = 0;
-    
-    for (const auto& apt : appointments) {
-        if (apt.status == "Pending") pending++;
-        else if (apt.status == "Confirmed") confirmed++;
-        else if (apt.status == "Completed") completed++;
-        else if (apt.status == "Cancelled") cancelled++;
-    }
-    
-    std::cout << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "  ------------------------------------------------" << std::endl;
-    std::cout << "  APPOINTMENT STATISTICS" << std::endl;
-    std::cout << "  ------------------------------------------------\n" << std::endl;
-    console.resetColor();
-    
-    console.setColor(WHITE);
-    std::cout << "  Total Appointments    : " << total << std::endl;
-    console.setColor(YELLOW);
-    std::cout << "  Pending               : " << pending << std::endl;
-    console.setColor(GREEN);
-    std::cout << "  Confirmed             : " << confirmed << std::endl;
-    console.setColor(CYAN);
-    std::cout << "  Completed             : " << completed << std::endl;
-    console.setColor(RED);
-    std::cout << "  Cancelled             : " << cancelled << std::endl;
-    console.resetColor();
-    
-    std::vector<Patient> patients = db.searchPatients("");
-    std::vector<Doctor> doctors = db.getAllDoctors(false);
-    
-    std::cout << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "  ------------------------------------------------" << std::endl;
-    std::cout << "  SYSTEM OVERVIEW" << std::endl;
-    std::cout << "  ------------------------------------------------\n" << std::endl;
-    console.resetColor();
-    
-    console.setColor(WHITE);
-    std::cout << "  Total Patients        : " << patients.size() << std::endl;
-    std::cout << "  Total Doctors         : " << doctors.size() << std::endl;
-    
-    int availableDocs = 0;
-    for (const auto& doc : doctors) {
-        if (doc.isAvailable) availableDocs++;
-    }
-    std::cout << "  Available Doctors     : " << availableDocs << std::endl;
-    console.resetColor();
-    
-    // Grade A: Text-Based Bar Chart
-    std::cout << std::endl;
-    console.setColor(DARK_GRAY);
-    std::cout << "  ------------------------------------------------" << std::endl;
-    std::cout << "  APPOINTMENT STATUS CHART" << std::endl;
-    std::cout << "  ------------------------------------------------\n" << std::endl;
-    console.resetColor();
-    
-    int maxCount = pending;
-    if (confirmed > maxCount) maxCount = confirmed;
-    if (completed > maxCount) maxCount = completed;
-    if (cancelled > maxCount) maxCount = cancelled;
-    if (maxCount > 0) {
-        int scale = maxCount > 20 ? maxCount / 20 : 1;
-        if (scale == 0) scale = 1;
-        console.setColor(YELLOW);
-        std::cout << "  Pending   : " << std::string(pending / scale, '*') << " (" << pending << ")" << std::endl;
-        console.setColor(GREEN);
-        std::cout << "  Confirmed : " << std::string(confirmed / scale, '*') << " (" << confirmed << ")" << std::endl;
-        console.setColor(CYAN);
-        std::cout << "  Completed : " << std::string(completed / scale, '*') << " (" << completed << ")" << std::endl;
-        console.setColor(RED);
-        std::cout << "  Cancelled : " << std::string(cancelled / scale, '*') << " (" << cancelled << ")" << std::endl;
-        console.resetColor();
-    }
-    
-    // Grade A: Text-Based Graph Summary with Percentage Changes
-    std::vector<DatabaseManager::DailyStats> dailyStats = db.getDailyStatistics();
-    if (dailyStats.size() >= 2 && choice >= 2) {
-        std::cout << std::endl;
-        console.setColor(DARK_GRAY);
-        std::cout << "  ------------------------------------------------" << std::endl;
-        std::cout << "  DAILY APPOINTMENT TREND" << std::endl;
-        std::cout << "  ------------------------------------------------\n" << std::endl;
-        console.resetColor();
-        
-        size_t maxShow = dailyStats.size() < 7 ? dailyStats.size() : 7;
-        for (size_t i = 0; i < maxShow; i++) {
-            console.setColor(WHITE);
-            std::cout << "  " << dailyStats[i].date << " : " << dailyStats[i].total << " appointments";
-            
-            if (i > 0 && dailyStats[i-1].total > 0) {
-                double change = ((dailyStats[i].total - dailyStats[i-1].total) * 100.0) / dailyStats[i-1].total;
-                if (change > 0) {
-                    console.setColor(GREEN);
-                    std::cout << " (" << std::fixed << std::setprecision(1) << change << "% increase from " << dailyStats[i-1].date << ")";
-                } else if (change < 0) {
-                    console.setColor(RED);
-                    std::cout << " (" << std::fixed << std::setprecision(1) << -change << "% decrease from " << dailyStats[i-1].date << ")";
-                } else {
-                    console.setColor(YELLOW);
-                    std::cout << " (no change from " << dailyStats[i-1].date << ")";
-                }
-            }
-            std::cout << std::endl;
-            console.resetColor();
-        }
-    }
-    
-    db.logActivity("Staff", session.userID, "Generate Report", 
-                  "Report Type: " + std::to_string(choice));
-    
-    console.pauseScreen();
-}
-
 void StaffModule::showDashboard() {
     while (session.isLoggedIn) {
         console.clearScreen();
@@ -514,22 +353,20 @@ void StaffModule::showDashboard() {
         console.printMenuOption(2, "Approve Appointments");
         console.printMenuOption(3, "Search Patient");
         console.printMenuOption(4, "View Doctors");
-        console.printMenuOption(5, "Generate Report");
-        console.printMenuOption(6, "Logout");
+        console.printMenuOption(5, "Logout");
         
         std::cout << std::endl;
         console.setColor(YELLOW);
-        std::cout << "  >> Enter your choice (1-6): ";
+        std::cout << "  >> Enter your choice (1-5): ";
         console.resetColor();
-        int choice = console.getIntInput("", 1, 6);
+        int choice = console.getIntInput("", 1, 5);
         
         switch (choice) {
             case 1: viewAllAppointments(); break;
             case 2: approveAppointment(); break;
             case 3: searchPatient(); break;
             case 4: viewDoctors(); break;
-            case 5: generateReport(); break;
-            case 6:
+            case 5:
                 db.logActivity("Staff", session.userID, "Logout", "User logged out");
                 session = UserSession();
                 console.printSuccess("You have been logged out successfully!");

@@ -85,17 +85,24 @@ public:
     
     // Appointment operations
     bool createAppointment(int patientID, int doctorID, const std::string& date,
-                          const std::string& time, const std::string& reason, int duration = 30);
+                          const std::string& time, const std::string& reason, 
+                          int duration, double consultationFee, double medicineFee);
     std::vector<Appointment> getPatientAppointments(int patientID);
     std::vector<Appointment> getDoctorAppointments(int doctorID, const std::string& date = "");
     std::vector<Appointment> getDoctorAllAppointments(int doctorID);
     std::vector<Appointment> getAllAppointments();
+    std::vector<Appointment> getAppointmentsByDateRange(const std::string& startDate, const std::string& endDate);
+    std::vector<Appointment> getTodayAppointments();
+    std::vector<Appointment> getWeeklyAppointments();
+    std::vector<Appointment> getMonthlyAppointments();
     std::vector<Appointment> getPendingAppointments();
+    Appointment getAppointmentById(int appointmentID);
     bool updateAppointmentStatus(int appointmentID, const std::string& status);
     bool cancelAppointment(int appointmentID);
     bool checkDoctorAvailability(int doctorID, const std::string& date, const std::string& time);
     bool checkPatientDailyLimit(int patientID, int doctorID, const std::string& date);
-    double calculateCost(int duration); // Helper method to calculate cost based on duration
+    double calculateConsultationFee(int duration); // RM1 per minute
+    double calculateMedicineFee(const std::string& reason); // Calculate medicine fee based on reason
     
     // Activity logging
     bool logActivity(const std::string& userType, int userID, 
@@ -133,6 +140,17 @@ public:
         DailyStats() : total(0), confirmed(0), pending(0), completed(0), cancelled(0) {}
     };
     std::vector<DailyStats> getDailyStatistics(); // GROUP BY with aggregation
+    
+    struct RevenueStats {
+        double totalRevenue;
+        double potentialRevenue;
+        double averageCost;
+        double totalConsultation;
+        double totalMedicine;
+        RevenueStats() : totalRevenue(0.0), potentialRevenue(0.0), averageCost(0.0), 
+                        totalConsultation(0.0), totalMedicine(0.0) {}
+    };
+    RevenueStats getRevenueStatistics();
 };
 
 #endif // DATABASE_MANAGER_H
