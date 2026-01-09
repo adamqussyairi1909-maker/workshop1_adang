@@ -883,15 +883,44 @@ void AdminModule::generateReport() {
     console.resetColor();
     
     console.setColor(WHITE);
-    std::cout << "  Total Appointments    : " << total << std::endl;
+    std::cout << "  Total Appointments    : " << total;
+    if (total > 0) {
+        console.setColor(DARK_GRAY);
+        std::cout << " " << std::string(total > 50 ? 50 : total, '*');
+    }
+    std::cout << std::endl;
+    
     console.setColor(YELLOW);
-    std::cout << "  Pending               : " << pending << std::endl;
+    std::cout << "  Pending               : " << pending;
+    if (pending > 0) {
+        int bars = pending > 50 ? 50 : pending;
+        std::cout << " " << std::string(bars, '*');
+    }
+    std::cout << std::endl;
+    
     console.setColor(GREEN);
-    std::cout << "  Confirmed             : " << confirmed << std::endl;
+    std::cout << "  Confirmed             : " << confirmed;
+    if (confirmed > 0) {
+        int bars = confirmed > 50 ? 50 : confirmed;
+        std::cout << " " << std::string(bars, '*');
+    }
+    std::cout << std::endl;
+    
     console.setColor(CYAN);
-    std::cout << "  Completed             : " << completed << std::endl;
+    std::cout << "  Completed             : " << completed;
+    if (completed > 0) {
+        int bars = completed > 50 ? 50 : completed;
+        std::cout << " " << std::string(bars, '*');
+    }
+    std::cout << std::endl;
+    
     console.setColor(RED);
-    std::cout << "  Cancelled             : " << cancelled << std::endl;
+    std::cout << "  Cancelled             : " << cancelled;
+    if (cancelled > 0) {
+        int bars = cancelled > 50 ? 50 : cancelled;
+        std::cout << " " << std::string(bars, '*');
+    }
+    std::cout << std::endl;
     console.resetColor();
     
     // Revenue Analysis
@@ -913,6 +942,29 @@ void AdminModule::generateReport() {
         double avgCost = totalRevenue / completed;
         console.setColor(WHITE);
         std::cout << "  Average per Appt      : RM " << std::fixed << std::setprecision(2) << avgCost << std::endl;
+        console.resetColor();
+    }
+    
+    // Revenue Visualization with Asterisks
+    if (totalRevenue > 0) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  REVENUE BREAKDOWN CHART" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        int totalBars = 40; // Total width for the bar
+        int consultationBars = (int)((consultationRevenue / totalRevenue) * totalBars);
+        int medicineBars = totalBars - consultationBars;
+        
+        console.setColor(CYAN);
+        std::cout << "  Consultation : " << std::string(consultationBars, '*') 
+                  << " " << std::fixed << std::setprecision(1) 
+                  << (consultationRevenue / totalRevenue * 100) << "%" << std::endl;
+        console.setColor(YELLOW);
+        std::cout << "  Medicine     : " << std::string(medicineBars, '*') 
+                  << " " << std::fixed << std::setprecision(1) 
+                  << (medicineRevenue / totalRevenue * 100) << "%" << std::endl;
         console.resetColor();
     }
     
