@@ -211,7 +211,16 @@ void StaffModule::searchPatient() {
     std::cout << "    - Phone: 012, 0123456789\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 to return to menu)\n" << std::endl;
+    console.resetColor();
+    
     std::string search = console.getStringInput("  Enter search term: ");
+    
+    // Check if user wants to return
+    if (search == "0") {
+        return;
+    }
     
     console.showLoading("\n  Searching", 2);
     
