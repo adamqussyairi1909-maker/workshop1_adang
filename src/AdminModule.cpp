@@ -738,6 +738,10 @@ void AdminModule::addStaff() {
     std::cout << "  All fields are required.\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 in any field to return to menu)\n" << std::endl;
+    console.resetColor();
+    
     std::string name, department, phone, email, password;
     
     console.setColor(DARK_GRAY);
@@ -751,6 +755,11 @@ void AdminModule::addStaff() {
     console.resetColor();
     name = console.getStringInput("  Full Name: ");
     
+    // Check if user wants to return
+    if (name == "0") {
+        return;
+    }
+    
     std::cout << std::endl;
     console.setColor(WHITE);
     std::cout << "  Enter department." << std::endl;
@@ -758,12 +767,23 @@ void AdminModule::addStaff() {
     console.resetColor();
     department = console.getStringInput("  Department: ");
     
+    // Check if user wants to return
+    if (department == "0") {
+        return;
+    }
+    
     std::cout << std::endl;
     console.setColor(WHITE);
     std::cout << "  Enter phone number (10-12 digits)." << std::endl;
     console.resetColor();
     do {
         phone = console.getStringInput("  Phone: ");
+        
+        // Check if user wants to return
+        if (phone == "0") {
+            return;
+        }
+        
         if (!console.isValidPhone(phone)) {
             console.printError("Invalid format! Use 10-12 digits.");
         }
@@ -775,6 +795,12 @@ void AdminModule::addStaff() {
     console.resetColor();
     do {
         email = console.getStringInput("  Email: ");
+        
+        // Check if user wants to return
+        if (email == "0") {
+            return;
+        }
+        
         if (!console.isValidEmail(email)) {
             console.printError("Invalid format! Include @ and domain.");
         }
