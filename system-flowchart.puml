@@ -1,0 +1,185 @@
+@startuml Hospital Appointment Booking System
+
+title Hospital Appointment Booking System - Flowchart
+
+start
+
+:Start System;
+
+if (Database Connected?) then (yes)
+  :Show Success Message;
+else (no)
+  :Show Error Message;
+  stop
+endif
+
+:Display Main Menu;
+
+repeat
+  :User Selects Option;
+  
+  if (Option?) then (1 - Patient Login)
+    :Enter Email & Password;
+    if (Valid Credentials?) then (yes)
+      :Load Patient Session;
+      
+      repeat
+        :Patient Dashboard;
+        :Show Options:
+        * Book Appointment
+        * View Appointments
+        * Update Profile
+        * Cancel Appointment
+        * Logout;
+        
+        :User Selects Action;
+        
+        if (Action?) then (Book Appointment)
+          :Select Doctor;
+          :Enter Date & Time;
+          :Enter Reason;
+          :Select Duration;
+          :Calculate Cost (RM1/min + Medicine);
+          :Display Receipt;
+          if (Confirm?) then (yes)
+            :Save Appointment;
+            :Show Success;
+          else (no)
+            :Cancel;
+          endif
+        elseif (View Appointments) then
+          :Display All Appointments;
+        elseif (Update Profile) then
+          :Update Patient Info;
+        elseif (Cancel Appointment) then
+          :Select & Cancel Appointment;
+        endif
+        
+      repeat while (Logout?) is (no)
+      ->yes;
+      :Clear Session;
+      
+    else (no)
+      :Show Error;
+    endif
+    
+  elseif (2 - Doctor Login) then
+    :Enter Email & Password;
+    if (Valid Credentials?) then (yes)
+      :Load Doctor Session;
+      
+      repeat
+        :Doctor Dashboard;
+        :Show Options:
+        * View Today's Appointments
+        * View All Appointments
+        * Update Availability
+        * View Patient History
+        * Logout;
+        
+        :User Selects Action;
+        
+      repeat while (Logout?) is (no)
+      ->yes;
+      :Clear Session;
+    else (no)
+      :Show Error;
+    endif
+    
+  elseif (3 - Staff Login) then
+    :Enter Email & Password;
+    if (Valid Credentials?) then (yes)
+      :Load Staff Session;
+      
+      repeat
+        :Staff Dashboard;
+        :Show Options:
+        * View All Appointments
+        * Approve Appointments
+        * View Patient Records
+        * Logout;
+        
+        :User Selects Action;
+        
+      repeat while (Logout?) is (no)
+      ->yes;
+      :Clear Session;
+    else (no)
+      :Show Error;
+    endif
+    
+  elseif (4 - Admin Login) then
+    :Enter Email & Password;
+    if (Valid Credentials?) then (yes)
+      :Load Admin Session;
+      
+      repeat
+        :Admin Dashboard;
+        :Show Options:
+        * Manage Patients
+        * Manage Doctors
+        * Manage Staff
+        * Generate Reports
+        * System Statistics
+        * Logout;
+        
+        :User Selects Action;
+        
+        if (Action?) then (Generate Report)
+          :Select Report Type:
+          * Today's Report
+          * Weekly Report
+          * Monthly Report;
+          :Calculate Statistics;
+          :Display Report with Revenue Analysis;
+        elseif (Manage Users) then
+          :Add/View/Delete Users;
+        elseif (System Statistics) then
+          :Display System Stats;
+        endif
+        
+      repeat while (Logout?) is (no)
+      ->yes;
+      :Clear Session;
+    else (no)
+      :Show Error;
+    endif
+    
+  elseif (5 - Register Patient) then
+    :Enter Personal Information;
+    :Enter Contact Details;
+    :Enter Address;
+    :Create Password;
+    if (Valid Data?) then (yes)
+      :Save to Database;
+      :Show Success;
+    else (no)
+      :Show Error;
+    endif
+    
+  elseif (6 - Pointer Examples) then
+    :Display Pointer Examples Menu;
+    :Show 9 Interactive Demos:
+    1. Basic Pointers
+    2. Dynamic Allocation
+    3. Structure Pointers
+    4. Array of Pointers
+    5. Double Pointers
+    6. Pointer Parameters
+    7. Pointer Arithmetic
+    8. Returning Pointers
+    9. Null Pointer Safety;
+    :User Selects & Runs Example;
+    
+  endif
+  
+repeat while (Exit Selected?) is (no)
+->yes;
+
+:Disconnect Database;
+:Show Thank You Message;
+
+stop
+
+@enduml
+
