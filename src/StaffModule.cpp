@@ -273,18 +273,90 @@ void StaffModule::searchPatient() {
     console.clearScreen();
     console.printHeader("PATIENT DETAILS");
     
+    console.setColor(DARK_GRAY);
+    std::cout << "\n  ------------------------------------------------" << std::endl;
+    std::cout << "  PATIENT INFORMATION" << std::endl;
+    std::cout << "  ------------------------------------------------\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(WHITE);
-    std::cout << "\n  PATIENT INFORMATION:" << std::endl;
-    std::cout << "  " << std::string(40, '-') << std::endl;
-    std::cout << "  ID            : " << p.patientID << std::endl;
-    std::cout << "  Name          : " << p.patientName << std::endl;
+    std::cout << "  Patient ID    : " << p.patientID << std::endl;
+    std::cout << "  Full Name     : " << p.patientName << std::endl;
     std::cout << "  Gender        : " << p.gender << std::endl;
     std::cout << "  Date of Birth : " << p.dateOfBirth << std::endl;
     std::cout << "  Phone         : " << p.phoneNumber << std::endl;
     std::cout << "  Email         : " << p.email << std::endl;
     std::cout << "  Address       : " << p.address << std::endl;
-    std::cout << "  " << std::string(40, '-') << std::endl;
     console.resetColor();
+    
+    // Get all appointments for this patient
+    std::vector<Appointment> patientAppointments = db.getPatientAppointments(p.patientID);
+    
+    if (!patientAppointments.empty()) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  APPOINTMENT HISTORY" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        for (const auto& apt : patientAppointments) {
+            console.setColor(CYAN);
+            std::cout << "  Appointment ID: " << apt.appointmentID << std::endl;
+            console.resetColor();
+            console.setColor(WHITE);
+            std::cout << "  Doctor        : " << apt.doctorName << std::endl;
+            std::cout << "  Date          : " << apt.appointmentDate << std::endl;
+            std::cout << "  Time          : " << apt.appointmentTime << std::endl;
+            std::cout << "  Reason        : " << apt.reason << std::endl;
+            std::cout << "  Duration      : " << apt.duration << " minutes" << std::endl;
+            std::cout << "  Status        : ";
+            console.resetColor();
+            
+            if (apt.status == "Completed") console.setColor(GREEN);
+            else if (apt.status == "Confirmed") console.setColor(CYAN);
+            else if (apt.status == "Pending") console.setColor(YELLOW);
+            else if (apt.status == "Cancelled") console.setColor(RED);
+            std::cout << apt.status << std::endl;
+            console.resetColor();
+            
+            console.setColor(WHITE);
+            std::cout << "  Consultation  : RM" << std::fixed << std::setprecision(2) << apt.consultationFee << std::endl;
+            std::cout << "  Medicine      : RM" << std::fixed << std::setprecision(2) << apt.medicineFee << std::endl;
+            std::cout << "  Total Cost    : RM" << std::fixed << std::setprecision(2) << apt.totalCost << std::endl;
+            console.resetColor();
+            
+            console.setColor(DARK_GRAY);
+            std::cout << "  " << std::string(48, '-') << std::endl;
+            console.resetColor();
+        }
+        
+        // Summary
+        int totalAppointments = patientAppointments.size();
+        int completedCount = 0;
+        double totalRevenue = 0.0;
+        for (const auto& apt : patientAppointments) {
+            if (apt.status == "Completed") {
+                completedCount++;
+                totalRevenue += apt.totalCost;
+            }
+        }
+        
+        std::cout << std::endl;
+        console.setColor(CYAN);
+        std::cout << "  SUMMARY:" << std::endl;
+        console.resetColor();
+        console.setColor(WHITE);
+        std::cout << "  Total Appointments : " << totalAppointments << std::endl;
+        std::cout << "  Completed          : " << completedCount << std::endl;
+        std::cout << "  Total Revenue      : RM" << std::fixed << std::setprecision(2) << totalRevenue << std::endl;
+        console.resetColor();
+    } else {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  No appointment history found." << std::endl;
+        console.resetColor();
+    }
     
     db.logActivity("Staff", session.userID, "Search Patient", 
                   "Viewed ID: " + std::to_string(patientID));
