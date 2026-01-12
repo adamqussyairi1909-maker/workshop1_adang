@@ -180,6 +180,10 @@ bool AuthModule::loginAsPatient() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 to return to Main Menu)\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address: ";
     console.resetColor();
@@ -187,6 +191,11 @@ bool AuthModule::loginAsPatient() {
     if (std::cin.peek() == '\n') std::cin.ignore();
     std::string email;
     std::getline(std::cin, email);
+    
+    // Check if user wants to return to main menu
+    if (email == "0") {
+        return false;
+    }
     
     if (email.empty() || !console.isValidEmail(email)) {
         console.printError("Invalid email format!");
@@ -265,6 +274,10 @@ bool AuthModule::loginAsDoctor() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 to return to Main Menu)\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address: ";
     console.resetColor();
@@ -272,6 +285,11 @@ bool AuthModule::loginAsDoctor() {
     if (std::cin.peek() == '\n') std::cin.ignore();
     std::string email;
     std::getline(std::cin, email);
+    
+    // Check if user wants to return to main menu
+    if (email == "0") {
+        return false;
+    }
     
     if (email.empty() || !console.isValidEmail(email)) {
         console.printError("Invalid email format!");
@@ -350,6 +368,10 @@ bool AuthModule::loginAsStaff() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 to return to Main Menu)\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address: ";
     console.resetColor();
@@ -357,6 +379,11 @@ bool AuthModule::loginAsStaff() {
     if (std::cin.peek() == '\n') std::cin.ignore();
     std::string email;
     std::getline(std::cin, email);
+    
+    // Check if user wants to return to main menu
+    if (email == "0") {
+        return false;
+    }
     
     if (email.empty() || !console.isValidEmail(email)) {
         console.printError("Invalid email format!");
@@ -435,6 +462,10 @@ bool AuthModule::loginAsAdmin() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Enter 0 to return to Main Menu)\n" << std::endl;
+    console.resetColor();
+    
     console.setColor(YELLOW);
     std::cout << "  >> Enter your email address: ";
     console.resetColor();
@@ -442,6 +473,11 @@ bool AuthModule::loginAsAdmin() {
     if (std::cin.peek() == '\n') std::cin.ignore();
     std::string email;
     std::getline(std::cin, email);
+    
+    // Check if user wants to return to main menu
+    if (email == "0") {
+        return false;
+    }
     
     if (email.empty() || !console.isValidEmail(email)) {
         console.printError("Invalid email format!");
