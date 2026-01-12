@@ -23,7 +23,7 @@ public:
     // EXAMPLE 1: Basic Pointers
     // ============================================================
     void demonstrateBasicPointers() {
-        console.showHeader("BASIC POINTERS DEMONSTRATION");
+        console.printHeader("BASIC POINTERS DEMONSTRATION");
         
         // Regular variable
         int patientCount = 5;
@@ -41,14 +41,14 @@ public:
         std::cout << "  patientCount: " << patientCount << std::endl;
         std::cout << "  *ptr: " << *ptr << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 2: Dynamic Memory Allocation
     // ============================================================
     void demonstrateDynamicAllocation() {
-        console.showHeader("DYNAMIC MEMORY ALLOCATION");
+        console.printHeader("DYNAMIC MEMORY ALLOCATION");
         
         // Allocate single integer
         int* age = new int;
@@ -71,14 +71,14 @@ public:
         delete[] appointmentIDs;  // Free array memory
         std::cout << "  Array memory freed!" << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 3: Pointers with Structures
     // ============================================================
     void demonstrateStructurePointers() {
-        console.showHeader("POINTERS WITH STRUCTURES");
+        console.printHeader("POINTERS WITH STRUCTURES");
         
         // Create patient on stack
         Patient patient1;
@@ -110,14 +110,14 @@ public:
         delete dynamicPatient;
         std::cout << "  Dynamic patient deleted!" << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 4: Array of Structure Pointers
     // ============================================================
     void demonstrateArrayOfPointers() {
-        console.showHeader("ARRAY OF STRUCTURE POINTERS");
+        console.printHeader("ARRAY OF STRUCTURE POINTERS");
         
         const int MAX_DOCTORS = 3;
         Doctor* doctors[MAX_DOCTORS];  // Array of pointers
@@ -155,14 +155,14 @@ public:
         }
         std::cout << "\n  All doctors deleted!" << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 5: Pointer to Pointer (Double Pointer)
     // ============================================================
     void demonstrateDoublePointer() {
-        console.showHeader("DOUBLE POINTER DEMONSTRATION");
+        console.printHeader("DOUBLE POINTER DEMONSTRATION");
         
         int appointmentID = 1001;
         int* ptr1 = &appointmentID;        // Pointer to int
@@ -185,7 +185,7 @@ public:
         std::cout << "\n  After **ptr2 = 2002:" << std::endl;
         std::cout << "  appointmentID: " << appointmentID << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
@@ -204,7 +204,7 @@ public:
     }
     
     void demonstratePointerParameters() {
-        console.showHeader("POINTER PARAMETERS IN FUNCTIONS");
+        console.printHeader("POINTER PARAMETERS IN FUNCTIONS");
         
         // Swap example
         int patientID1 = 101;
@@ -229,14 +229,14 @@ public:
         updatePatientInfo(&patient, "Updated Name");
         std::cout << "  After update: " << patient.patientName << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 7: Pointer Arithmetic
     // ============================================================
     void demonstratePointerArithmetic() {
-        console.showHeader("POINTER ARITHMETIC");
+        console.printHeader("POINTER ARITHMETIC");
         
         int appointmentSlots[] = {9, 10, 11, 14, 15};
         int* ptr = appointmentSlots;
@@ -255,7 +255,7 @@ public:
         ptr += 2;
         std::cout << "  After ptr += 2: " << *ptr << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
@@ -269,7 +269,7 @@ public:
     }
     
     void demonstrateReturningPointers() {
-        console.showHeader("RETURNING POINTERS FROM FUNCTIONS");
+        console.printHeader("RETURNING POINTERS FROM FUNCTIONS");
         
         std::cout << "  Creating patient using function that returns pointer..." << std::endl;
         Patient* patient = createPatient(999, "Ali bin Ahmad");
@@ -283,14 +283,14 @@ public:
             std::cout << "\n  Patient deleted!" << std::endl;
         }
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
     // EXAMPLE 9: Null Pointer Safety
     // ============================================================
     void demonstrateNullPointer() {
-        console.showHeader("NULL POINTER SAFETY");
+        console.printHeader("NULL POINTER SAFETY");
         
         Doctor* doctor = nullptr;
         
@@ -317,7 +317,7 @@ public:
         std::cout << "\n  After delete and setting to nullptr:" << std::endl;
         std::cout << "  doctor == nullptr: " << (doctor == nullptr ? "true" : "false") << std::endl;
         
-        console.pause();
+        console.pauseScreen();
     }
 
     // ============================================================
@@ -325,7 +325,7 @@ public:
     // ============================================================
     void showExamplesMenu() {
         while (true) {
-            console.showHeader("POINTER EXAMPLES - C++ WORKSHOP");
+            console.printHeader("POINTER EXAMPLES - C++ WORKSHOP");
             
             console.printMenuOption(1, "Basic Pointers");
             console.printMenuOption(2, "Dynamic Memory Allocation");
@@ -358,4 +358,7 @@ public:
 };
 
 #endif // POINTER_EXAMPLES_H
+
+
+
 
