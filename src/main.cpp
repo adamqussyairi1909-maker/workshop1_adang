@@ -11,6 +11,7 @@
 #include "../include/DoctorModule.h"
 #include "../include/StaffModule.h"
 #include "../include/AdminModule.h"
+#include "../include/PointerExamples.h"
 #include <iostream>
 #include <windows.h>
 
@@ -37,11 +38,14 @@ void displayMainMenu() {
     console.printMenuOption(3, "Login as Staff");
     console.printMenuOption(4, "Login as Admin");
     console.printMenuOption(5, "Register as Patient");
-    console.printMenuOption(6, "Exit");
+    console.setColor(YELLOW);
+    console.printMenuOption(6, "View Pointer Examples (Workshop)");
+    console.resetColor();
+    console.printMenuOption(7, "Exit");
     
     
     console.setColor(YELLOW);
-    std::cout << "  >> Enter your choice (1-6): ";
+    std::cout << "  >> Enter your choice (1-7): ";
     console.resetColor();
 }
 
@@ -81,11 +85,12 @@ int main() {
     DoctorModule doctorModule(console, db, currentSession);
     StaffModule staffModule(console, db, currentSession);
     AdminModule adminModule(console, db, currentSession);
+    PointerExamples pointerExamples(console);
     
     // Main application loop
     while (true) {
         displayMainMenu();
-        int choice = console.getIntInput("", 1, 6);
+        int choice = console.getIntInput("", 1, 7);
         
         switch (choice) {
             case 1: // Login as Patient
@@ -116,7 +121,11 @@ int main() {
                 patientModule.registerPatient();
                 break;
                 
-            case 6: // Exit
+            case 6: // Pointer Examples
+                pointerExamples.showExamplesMenu();
+                break;
+                
+            case 7: // Exit
                 console.clearScreen();
                 console.setColor(CYAN);
                 std::cout << "\n\n";
