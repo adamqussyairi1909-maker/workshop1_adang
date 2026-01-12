@@ -769,7 +769,6 @@ void PatientModule::updateDetails() {
     
     // Clear input buffer properly
     if (std::cin.peek() == '\n') std::cin.ignore();
-    std::cin.ignore(10000, '\n');
     
     std::string name, phone, email, address;
     
