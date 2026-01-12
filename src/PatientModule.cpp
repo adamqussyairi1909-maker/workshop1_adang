@@ -773,6 +773,9 @@ void PatientModule::updateDetails() {
     std::string name, phone, email, address;
     
     // Name input - direct prompt
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Press ENTER to keep current)" << std::endl;
+    console.resetColor();
     console.setColor(YELLOW);
     std::cout << "  >> Name: ";
     console.resetColor();
@@ -782,6 +785,9 @@ void PatientModule::updateDetails() {
     // Phone input - direct prompt
     std::cout << std::endl;
     do {
+        console.setColor(DARK_GRAY);
+        std::cout << "  (Press ENTER to keep current)" << std::endl;
+        console.resetColor();
         console.setColor(YELLOW);
         std::cout << "  >> Phone: ";
         console.resetColor();
@@ -798,6 +804,9 @@ void PatientModule::updateDetails() {
     // Email input - direct prompt
     std::cout << std::endl;
     do {
+        console.setColor(DARK_GRAY);
+        std::cout << "  (Press ENTER to keep current)" << std::endl;
+        console.resetColor();
         console.setColor(YELLOW);
         std::cout << "  >> Email: ";
         console.resetColor();
@@ -813,6 +822,9 @@ void PatientModule::updateDetails() {
     
     // Address input - direct prompt
     std::cout << std::endl;
+    console.setColor(DARK_GRAY);
+    std::cout << "  (Press ENTER to keep current)" << std::endl;
+    console.resetColor();
     console.setColor(YELLOW);
     std::cout << "  >> Address: ";
     console.resetColor();
