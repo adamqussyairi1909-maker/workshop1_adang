@@ -290,6 +290,52 @@ void DoctorModule::viewPatientInfo() {
     std::cout << "  Address       : " << p.address << std::endl;
     console.resetColor();
     
+    // Get appointments for this patient with this doctor
+    std::vector<Appointment> patientAppointments;
+    for (const auto& apt : appointments) {
+        if (apt.patientID == p.patientID) {
+            patientAppointments.push_back(apt);
+        }
+    }
+    
+    // Display appointment history
+    if (!patientAppointments.empty()) {
+        std::cout << std::endl;
+        console.setColor(DARK_GRAY);
+        std::cout << "  ------------------------------------------------" << std::endl;
+        std::cout << "  APPOINTMENT HISTORY WITH YOU" << std::endl;
+        std::cout << "  ------------------------------------------------\n" << std::endl;
+        console.resetColor();
+        
+        for (const auto& apt : patientAppointments) {
+            console.setColor(CYAN);
+            std::cout << "  Appointment ID: " << apt.appointmentID << std::endl;
+            console.resetColor();
+            console.setColor(WHITE);
+            std::cout << "  Date          : " << apt.appointmentDate << std::endl;
+            std::cout << "  Time          : " << apt.appointmentTime << std::endl;
+            std::cout << "  Reason        : " << apt.reason << std::endl;
+            std::cout << "  Duration      : " << apt.duration << " minutes" << std::endl;
+            std::cout << "  Status        : ";
+            console.resetColor();
+            
+            if (apt.status == "Completed") console.setColor(GREEN);
+            else if (apt.status == "Confirmed") console.setColor(CYAN);
+            else if (apt.status == "Pending") console.setColor(YELLOW);
+            else if (apt.status == "Cancelled") console.setColor(RED);
+            std::cout << apt.status << std::endl;
+            console.resetColor();
+            
+            console.setColor(WHITE);
+            std::cout << "  Total Cost    : RM" << std::fixed << std::setprecision(2) << apt.totalCost << std::endl;
+            console.resetColor();
+            
+            console.setColor(DARK_GRAY);
+            std::cout << "  " << std::string(48, '-') << std::endl;
+            console.resetColor();
+        }
+    }
+    
     db.logActivity("Doctor", session.userID, "View Patient", "Patient ID: " + std::to_string(p.patientID));
     
     console.pauseScreen();
