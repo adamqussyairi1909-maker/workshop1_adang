@@ -1,0 +1,157 @@
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                            HOSPITAL APPOINTMENT BOOKING SYSTEM - HORIZONTAL FLOWCHART                                                                                                                          ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+                                                                                         ┌─────────────────────────────────────────┐
+                                                                            ┌────────────│         PATIENT DASHBOARD               │
+                                                                            │            ├─────────────────────────────────────────┤
+                                                                            │            │ 1. Book Appointment                     │
+                                                                            │            │    - Select Doctor                      │
+                                                    ┌────────────┐          │            │    - Choose Date & Time                 │
+                                              ┌─────│  Patient   │──────────┤            │    - Enter Reason                       │
+                                              │     │   Login    │  [VALID] │            │    - Select Duration (15/30/45/60 min) │──┐
+                                              │     └────────────┘          │            │    - Calculate: Consultation (RM1/min) │  │
+                                              │                             │            │                Medicine Fee (Keyword)  │  │
+                                              │                             │            │                Total Cost              │  │
+                                              │                             │            │    - Display Receipt & Confirm         │  │
+                                              │                             │            │ 2. View My Appointments                 │  │
+                                              │                             │            │ 3. Update Profile                       │  │
+                                              │                             │            │ 4. Cancel Appointment                   │  │
+┌──────────┐      ┌────────────┐      ┌──────┴──────┐                      │            │ 5. Logout                               │  │
+│  START   │─────▶│  Database  │─────▶│  MAIN MENU  │                      └────────────│                                         │  │
+│  SYSTEM  │      │ Connection │      │             │                                   └──────────┬──────────────────────────────┘  │
+└──────────┘      │  [CHECK]   │      │  7 Options  │                                              │                                  │
+                  └─────┬──────┘      └──────┬──────┘                                              │ [LOGOUT]                         │
+                        │                    │                                                     └───────────────┐                  │
+                   [FAILED]                  │                             ┌─────────────────────────────────────┐ │                  │
+                        │                    │                             │         DOCTOR DASHBOARD            │ │                  │
+                        ▼                    │                             ├─────────────────────────────────────┤ │                  │
+                  ┌───────────┐              │                    ┌────────│ 1. View Today's Appointments        │ │                  │
+                  │Show Error │              │              ┌─────│ Doctor │    - See scheduled patients         │ │                  │
+                  │Exit System│              │              │     │ Login  │    - Check appointment details      │ │                  │
+                  └───────────┘              │              │     └────────│    - View total earnings today      │ │                  │
+                                             │              │     [VALID]  │ 2. View All Appointments            │ │                  │
+                                             │              │              │    - Complete appointment history   │ │                  │
+                                             │              └──────────────│    - Track total earnings           │ │                  │
+                                             │                             │ 3. Update Availability Status       │ │                  │
+                                             │                             │    - Available / Not Available      │ │                  │
+                                             │                             │ 4. View Patient History             │ │                  │
+                                             │                             │ 5. Logout                           │ │                  │
+                                             │                             └──────────┬──────────────────────────┘ │                  │
+                                             │                                        │                             │                  │
+                                             │                                        │ [LOGOUT]                    │                  │
+                                             │                                        └──────────────┐              │                  │
+                                             │                                                       │              │                  │
+                                             │                             ┌─────────────────────────┴─────────┐   │                  │
+                                             │                             │        STAFF DASHBOARD            │   │                  │
+                                             │                             ├───────────────────────────────────┤   │                  │
+                                             │                    ┌────────│ 1. View All Appointments          │   │                  │
+                                             │              ┌─────│ Staff  │    - See all patient bookings     │   │                  │
+                                             ├──────────────┤     │ Login  │    - View across all doctors      │   │                  │
+                                             │              │     └────────│ 2. Approve Appointments           │   │                  │
+                                             │              │     [VALID]  │    - Confirm pending bookings     │   │                  │
+                                             │              │              │    - Update appointment status    │   │                  │
+                                             │              └──────────────│ 3. View Patient Records           │   │                  │
+                                             │                             │    - Access patient information   │   │                  │
+                                             │                             │ 4. Logout                         │   │                  │
+                                             │                             └──────────┬────────────────────────┘   │                  │
+                                             │                                        │                             │                  │
+                                             │                                        │ [LOGOUT]                    │                  │
+                                             │                                        └──────────────┐              │                  │
+                                             │                                                       │              │                  │
+                                             │                             ┌─────────────────────────┴──────────┐  │                  │
+                                             │                             │        ADMIN DASHBOARD             │  │                  │
+                                             │                             ├────────────────────────────────────┤  │                  │
+                                             │                    ┌────────│ 1. Manage Patients                 │  │                  │
+                                             │              ┌─────│ Admin  │    - Add/View/Delete patients      │  │                  │
+                                             ├──────────────┤     │ Login  │ 2. Manage Doctors                  │  │                  │
+                                             │              │     └────────│    - Add/View/Delete doctors       │  │                  │
+                                             │              │     [VALID]  │ 3. Manage Staff                    │  │                  │
+                                             │              │              │    - Add/View/Delete staff         │  │                  │
+                                             │              └──────────────│ 4. Generate Reports                │  │                  │
+                                             │                             │    - Today's Report (CURDATE)      │  │                  │
+                                             │                             │    - Weekly Report (7 days)        │  │                  │
+                                             │                             │    - Monthly Report (30 days)      │  │                  │
+                                             │                             │    - Revenue Analysis with ***     │  │                  │
+                                             │                             │    - Statistics & Charts           │  │                  │
+                                             │                             │ 5. View System Statistics          │  │                  │
+                                             │                             │ 6. Logout                          │  │                  │
+                                             │                             └──────────┬─────────────────────────┘  │                  │
+                                             │                                        │                             │                  │
+                                             │                                        │ [LOGOUT]                    │                  │
+                                             │                                        └──────────────┐              │                  │
+                                             │                                                       │              │                  │
+                                             │                                                       └──────────────┼──────────────────┤
+                                             │                                                                      │                  │
+                                             │                             ┌────────────────────────────────────────┴──────────────────┴───────┐
+                                             │                             │                 CLEAR SESSION & LOG ACTIVITY                      │
+                                             │              ┌──────────────┤                                                                   │
+                                             │              │  Register    │                       Return to Main Menu                         │
+                                             ├──────────────┤  Patient     │                                                                   │
+                                             │              │              │                     [Continue] ──────┐    [Exit] ───────────────┐ │
+                                             │              └──────────────┤                                      │                           │ │
+                                             │                             │                                      │                           │ │
+                                             │                             └──────────────────────────────────────┼───────────────────────────┼─┘
+                                             │                                                                    │                           │
+                                             │              ┌──────────────┐                                      │                           │
+                                             │              │   Pointer    │                                      │                           ▼
+                                             └──────────────┤   Examples   │                                      │                    ┌──────────────┐
+                                                            │  (Workshop)  │                                      │                    │ Disconnect   │
+                                                            └──────┬───────┘                                      │                    │   Database   │
+                                                                   │                                              │                    ├──────────────┤
+                                                                   │                                              │                    │ Show Thank   │
+                                                            ┌──────┴───────────────────────────┐                  │                    │     You      │
+                                                            │  9 Interactive C++ Pointer Demos │                  │                    ├──────────────┤
+                                                            │  1. Basic Pointers               │                  │                    │     END      │
+                                                            │  2. Dynamic Allocation           │                  │                    └──────────────┘
+                                                            │  3. Structure Pointers           │                  │
+                                                            │  4. Array of Pointers            │                  │
+                                                            │  5. Double Pointers              │                  │
+                                                            │  6. Pointer Parameters           │                  │
+                                                            │  7. Pointer Arithmetic           │                  │
+                                                            │  8. Returning Pointers           │                  │
+                                                            │  9. Null Pointer Safety          │                  │
+                                                            └──────────────────────────────────┘                  │
+                                                                             │                                    │
+                                                                             │ [Back to Menu]                     │
+                                                                             └────────────────────────────────────┘
+
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                             COST CALCULATION FLOW                                                                                                                                 ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+                                                                ┌──────────────┐     ┌──────────────────┐     ┌────────────────────┐     ┌─────────────────┐
+  Patient Books Appointment ──────▶  Select Duration ──────▶   │   15 min     │     │  Consultation    │     │  Medicine Fee      │     │  Total Cost =   │
+                                     (15/30/45/60)             │   30 min     │────▶│  Fee Calculated  │────▶│  (Based on Reason) │────▶│  Consultation + │────▶  Display Receipt  ────▶  Confirm?  ────▶  [Yes] Save to DB
+                                                                │   45 min     │     │  Duration × RM1  │     │  Fever/Flu: RM50   │     │  Medicine       │                                   │
+                                                                │   60 min     │     │  per minute      │     │  Cold/Cough: RM30  │     │                 │                                   │
+                                                                └──────────────┘     └──────────────────┘     │  Pain/Ache: RM40   │     └─────────────────┘                                  [No] Cancel
+                                                                                                               │  Injury: RM60      │
+                                                                                                               │  Checkup: RM20     │
+                                                                                                               │  Default: RM25     │
+                                                                                                               └────────────────────┘
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                        KEY FEATURES SUMMARY                                                                                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────┬─────────────────────────────────────────┬─────────────────────────────────────────┬─────────────────────────────────────────┐
+│          PATIENT FEATURES               │          DOCTOR FEATURES                │          STAFF FEATURES                 │          ADMIN FEATURES                 │
+├─────────────────────────────────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┤
+│ ✓ Book appointments with cost calc     │ ✓ View today's schedule                 │ ✓ View all appointments                 │ ✓ Manage patients (CRUD)               │
+│ ✓ RM1/min consultation + medicine       │ ✓ View all appointments                 │ ✓ Approve pending appointments          │ ✓ Manage doctors (CRUD)                │
+│ ✓ View appointment history              │ ✓ Track total earnings                  │ ✓ View patient records                  │ ✓ Manage staff (CRUD)                  │
+│ ✓ Update personal profile               │ ✓ Update availability status            │ ✓ Cross-doctor oversight                │ ✓ Generate reports (Today/Week/Month)  │
+│ ✓ Cancel appointments                   │ ✓ View patient history                  │ ✓ Appointment management                │ ✓ Revenue analysis with asterisk chart │
+│ ✓ View detailed receipts                │ ✓ See appointment details               │                                         │ ✓ System statistics dashboard          │
+└─────────────────────────────────────────┴─────────────────────────────────────────┴─────────────────────────────────────────┴─────────────────────────────────────────┘
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                          END OF HORIZONTAL FLOWCHART                                                                                                                              ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
