@@ -139,7 +139,8 @@ public:
         int cancelled;
         DailyStats() : total(0), confirmed(0), pending(0), completed(0), cancelled(0) {}
     };
-    std::vector<DailyStats> getDailyStatistics(); // GROUP BY with aggregation
+    std::vector<DailyStats> getDailyStatistics(); // GROUP BY with aggregation (last 30 days)
+    std::vector<DailyStats> getWeeklyDailyStatistics(); // GROUP BY for last 7 days
     
     struct RevenueStats {
         double totalRevenue;

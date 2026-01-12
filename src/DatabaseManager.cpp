@@ -1079,6 +1079,41 @@ std::vector<DatabaseManager::DailyStats> DatabaseManager::getDailyStatistics() {
             "SUM(CASE WHEN Status = 'Completed' THEN 1 ELSE 0 END) AS Completed, "
             "SUM(CASE WHEN Status = 'Cancelled' THEN 1 ELSE 0 END) AS Cancelled "
             "FROM Appointment "
+            "WHERE AppointmentDate >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) "
+            "AND AppointmentDate <= CURDATE() "
+            "GROUP BY AppointmentDate "
+            "ORDER BY AppointmentDate DESC"));
+        while (res->next()) {
+            DatabaseManager::DailyStats s;
+            s.date = res->getString("AppointmentDate");
+            s.total = res->getInt("Total");
+            s.confirmed = res->getInt("Confirmed");
+            s.pending = res->getInt("Pending");
+            s.completed = res->getInt("Completed");
+            s.cancelled = res->getInt("Cancelled");
+            stats.push_back(s);
+        }
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
+    }
+    return stats;
+}
+
+std::vector<DatabaseManager::DailyStats> DatabaseManager::getWeeklyDailyStatistics() {
+    std::vector<DatabaseManager::DailyStats> stats;
+    try {
+        std::unique_ptr<sql::Statement> stmt(connection->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT AppointmentDate, "
+            "COUNT(*) AS Total, "
+            "SUM(CASE WHEN Status = 'Confirmed' THEN 1 ELSE 0 END) AS Confirmed, "
+            "SUM(CASE WHEN Status = 'Pending' THEN 1 ELSE 0 END) AS Pending, "
+            "SUM(CASE WHEN Status = 'Completed' THEN 1 ELSE 0 END) AS Completed, "
+            "SUM(CASE WHEN Status = 'Cancelled' THEN 1 ELSE 0 END) AS Cancelled "
+            "FROM Appointment "
+            "WHERE AppointmentDate >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) "
+            "AND AppointmentDate <= CURDATE() "
             "GROUP BY AppointmentDate "
             "ORDER BY AppointmentDate DESC"));
         while (res->next()) {

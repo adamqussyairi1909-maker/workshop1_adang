@@ -1320,8 +1320,15 @@ void AdminModule::generateReport() {
     
     // Daily Trend (for weekly and monthly reports)
     if (choice >= 2) {
-        std::vector<DatabaseManager::DailyStats> dailyStats = db.getDailyStatistics();
-        if (dailyStats.size() >= 2) {
+        // Get daily stats filtered by the correct date range
+        std::vector<DatabaseManager::DailyStats> dailyStats;
+        if (choice == 2) {
+            dailyStats = db.getWeeklyDailyStatistics();  // Last 7 days only
+        } else {
+            dailyStats = db.getDailyStatistics();  // Last 30 days only
+        }
+        
+        if (dailyStats.size() >= 1) {
             std::cout << std::endl;
             console.setColor(DARK_GRAY);
             std::cout << "  ================================================" << std::endl;
@@ -1329,8 +1336,7 @@ void AdminModule::generateReport() {
             std::cout << "  ================================================\n" << std::endl;
             console.resetColor();
             
-            size_t maxShow = choice == 2 ? 7 : 30;
-            if (dailyStats.size() < maxShow) maxShow = dailyStats.size();
+            size_t maxShow = dailyStats.size();
             
             for (size_t i = 0; i < maxShow; i++) {
                 console.setColor(WHITE);
