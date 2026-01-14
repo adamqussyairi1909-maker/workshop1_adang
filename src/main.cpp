@@ -32,12 +32,31 @@ void displayMainMenu() {
     std::cout << "  ================================================\n" << std::endl;
     console.resetColor();
     
-    console.printMenuOption(1, "Login as Patient");
-    console.printMenuOption(2, "Login as Doctor");
-    console.printMenuOption(3, "Login as Staff");
-    console.printMenuOption(4, "Login as Admin");
-    console.printMenuOption(5, "Register as Patient");
-    console.printMenuOption(6, "Exit");
+    // Option 1 - Blue
+    console.setColor(BLUE);
+    std::cout << "  [1] Login as Patient" << std::endl;
+    
+    // Option 2 - Red
+    console.setColor(RED);
+    std::cout << "  [2] Login as Doctor" << std::endl;
+    
+    // Option 3 - Purple (Magenta)
+    console.setColor(MAGENTA);
+    std::cout << "  [3] Login as Staff" << std::endl;
+    
+    // Option 4 - Orange (Dark Yellow)
+    console.setColor(DARK_YELLOW);
+    std::cout << "  [4] Login as Admin" << std::endl;
+    
+    // Option 5 - Brown (Dark Red)
+    console.setColor(DARK_RED);
+    std::cout << "  [5] Register as Patient" << std::endl;
+    
+    // Option 6 - Yellow
+    console.setColor(YELLOW);
+    std::cout << "  [6] Exit" << std::endl;
+    
+    console.resetColor();
     
     
     console.setColor(YELLOW);
